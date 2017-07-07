@@ -6,6 +6,7 @@
 <link rel="import" href="../../d2l-typography/d2l-typography-shared-styles.html">
 <link rel="import" href="../src/behaviors/date-behavior.html">
 <link rel="import" href="../src/behaviors/localize-behavior.html">
+<link rel="import" href="d2l-all-assessments-list.html">
 <link rel="import" href="d2l-assessments-list.html">
 
 <dom-module id="d2l-upcoming-assessments">
@@ -68,42 +69,45 @@
 		</style>
 
 
-		<template is="dom-if" if="[[_showNoUpcomingAssessmentsMessage(_assessments, _showError)]]">
-			<div class="no-upcoming-assessments">[[_noUpcomingAssessments]]</div>
-		</template>
+		<div class="no-upcoming-assessments"
+			 hidden$="[[!_showNoUpcomingAssessmentsMessage(_assessments, _showError)]]">
+			 [[_noUpcomingAssessments]]
+		</div>
 
 		<template is="dom-if" if="[[_showUpcomingAssessments(_assessments, _showError)]]">
 			<d2l-assessments-list assessment-items=[[_assessments]]></d2l-assessments-list>
 		</template>
 
-		<template is="dom-if" if="[[_showError]]">
-			<div class="error-message">[[localize('errorMessage')]]</div>
-		</template>
+		<div hidden$="[[!_showError]]" class="error-message">[[localize('errorMessage')]]</div>
 
-		<template is="dom-if" if="[[!_showError]]">
-			<a class="view-all-assignments-link"
-				is="d2l-link"
-				on-tap="_openAllAssignmentsView"
-				on-keypress="_keypressOpenAllAssignmentsView" >
-				<h3>[[localize('viewAllAssignments')]]</h3>
-			</a>
-		</template>
+		<a class="view-all-assignments-link"
+			is="d2l-link"
+			on-tap="_openAllAssignmentsView"
+			on-keypress="_keypressOpenAllAssignmentsView"
+			hidden$=[[_showError]]>
+			<h3>[[localize('viewAllAssignments')]]</h3>
+		</a>
 
 		<d2l-simple-overlay
 			id="view-all-assignments-overlay"
 			title-name="[[localize('viewAllAssignments')]]"
 			locale="[[locale]]"
 			close-simple-overlay-alt-text="[[localize('closeSimpleOverlayText')]]"
+			no-cancel-on-outside-click
 			with-backdrop>
 			<div class="view-all-container" slot="header">
 				<d2l-simple-overlay-close-button>
 					<div class="overlay-close-button-content-wrapper">
 						<d2l-icon icon="d2l-tier1:chevron-left"></d2l-icon>
-						<span>[[localize('closeSimpleOverlayText')]]</span>
+						<span>[[_closeSimpleOverlayText]]</span>
 					</div>
 				</d2l-simple-overlay-close-button>
 			</div>
-			<div class="no-assessments-in-time-frame">[[_noAssessmentsInThisTimeFrame]]</div>
+			<template is="dom-if" if="[[_hasActivities(_allActivities)]]">
+				<d2l-all-assessments-list assessment-items=[[_allActivities]]></d2l-all-assessments-list>
+			</template>
+			<div hidden$="[[_hasActivities(_allActivities)]]" class="no-assessments-in-time-frame">[[_noAssessmentsInThisTimeFrame]]</div>
+
 		</d2l-simple-overlay>
 	</template>
 
@@ -117,7 +121,7 @@
 			properties: {
 				userUrl: String,
 				token: String,
-				ready: {
+				loaded: {
 					type: Boolean,
 					notify: true,
 					readOnly: true,
@@ -137,6 +141,12 @@
 						return [];
 					}
 				},
+				_allActivities: {
+					type: Array,
+					value: function() {
+						return [];
+					}
+				},
 				_userName: String,
 				_showError: {
 					type: Boolean,
@@ -149,6 +159,9 @@
 				_noAssessmentsInThisTimeFrame: {
 					type: String,
 					computed: 'localize("noAssessmentsInThisTimeFrame", "userName", _userName)'
+				},
+				_closeSimpleOverlayText: {
+					type: String
 				}
 			},
 
@@ -161,6 +174,12 @@
 			observers: [
 				'_onApiConfigChanged(userUrl, token)'
 			],
+
+			ready: function() {
+				var mql = window.matchMedia('(max-width: 767px)');
+				this._updateCloseSimpleOverlayText(mql.matches);
+				mql.addListener(this._mobileBreakpointListener.bind(this));
+			},
 
 			_debounceTime: 20,
 
@@ -189,7 +208,7 @@
 						self._showError = true;
 					})
 					.then(function() {
-						self._setReady(true);
+						self._setLoaded(true);
 					});
 			},
 
@@ -203,6 +222,10 @@
 
 			_showNoUpcomingAssessmentsMessage: function(assessments, showError) {
 				return !showError && (!assessments || assessments.length <= 0);
+			},
+
+			_hasActivities: function(activities) {
+				return activities && activities.length > 0;
 			},
 
 			_getUserActivityUsages: function(userEntity) {
@@ -270,8 +293,9 @@
 
 								resolve({
 									name: activity.properties.name,
-									dueDate: activity.properties.dueDate,
 									courseName: organization.properties.name,
+									dueDate: activity.properties.dueDate,
+									instructions: activity.properties.instructions,
 									isCompleted: activityIsComplete
 								});
 							});
@@ -302,6 +326,7 @@
 
 				var basicListActivities = upcomingActivities.slice(0, 4);
 				this.set('_assessments', basicListActivities);
+				this.set('_allActivities', activities);
 			},
 
 			_keypressOpenAllAssignmentsView: function(e) {
@@ -334,6 +359,16 @@
 					});
 					xhr.send();
 				});
+			},
+
+			_mobileBreakpointListener: function(mqlevent) {
+				this._updateCloseSimpleOverlayText(mqlevent.matches);
+			},
+
+			_updateCloseSimpleOverlayText: function(isMobile) {
+				this._closeSimpleOverlayText = isMobile
+					? this.localize('closeSimpleOverlayTextMobile')
+					: this.localize('closeSimpleOverlayText');
 			}
 		});
 

@@ -73,7 +73,7 @@
 								name: activity.properties.name,
 								courseName: organization.properties.name,
 								dueDate: activity.properties.dueDate,
-								instructions: activity.properties.instructions,
+								instructions: activity.properties.instructionsText || activity.properties.instructions,
 								isCompleted: activityIsComplete
 							});
 						});

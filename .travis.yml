@@ -4,12 +4,19 @@ dist: trusty
 sudo: required
 before_script:
 - npm run test:lint:js
+- export CHROME_BIN=/usr/bin/google-chrome
+- wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+- sudo gdebi --non-interactive google-chrome*.deb
 script:
-#- xvfb-run wct
+- set -e
+- xvfb-run wct test --skip-plugin sauce
+- 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then xvfb-run wct test --skip-plugin local; fi'
 - if [ "$TRAVIS_BRANCH" == "master" ]; then frauci-update-version; fi
 env:
   global:
   - REPO_NAME=d2l-upcoming-assessments-ui
+  #SAUCE_USERNAME
+  - secure: 1qUaWFEJAPZlvjF0YQyixG0H3X8EC1IYUVJ22hqz0C8L611eg9YfIhxHZz1SVY03TKcyMb+QV39fEmQ5R90FGkVo281fUU7Iejsx3pscbhdxIPDJ3H6S4n10Loewo9NQj1GvM1wqBudj429y2lXqSdghor9k6neBfEG1SDF3xZprW9U6Hc5K9RbwdKBXKxs5GZFc9ThH57ZDuMcvs0qsJvvSaDK9KQsGQ6adkrIJHVHZBAAxizCggVD8E1SrMySwXg3Td/1YRNk7NQaFdS4W+f0mii+gS0lXcA+SsjN1h7Gq3mYlkGMAORA9tOw8w5U52xgSmQA8gP7MlXr02TNpzUnwdkTanduWXugyquGcJquURZqGfPvCLSCHkr4piL3xo1p/6fGzFy0RzL7EvlMzrZHRhs96w4Qfvhajjr78dwVc0FXF0GSQw4/kNo16ssJMMJOYQ0/v5upVHGj210BpzRGwZQ49cB+jQR+k3YCqtrXKpcRCR+QQEW2LA5PE8/+2SgCtKBr4LkyoWYYt6SL016MlJoBaBJCo3695qofXpsGtlFCibSGDNC7VDIFnRNOv+EDqI/ZVlANepLYpd200pfkyK3IyGZ26Pklnng+6PYU3V9BfCblnvpyAh8v29fMVikkjETgoXwuAmmi2jOmAQZm5Fm6BVjea6NdArLA5HN8=
 addons:
   firefox: latest
   apt:
@@ -17,3 +24,6 @@ addons:
     - gdebi
     - oracle-java8-installer
     - oracle-java8-set-default
+  jwt:
+    #SAUCE_ACCESS_KEY
+    secure: rsa2x2uliaeXzm/8zrwNnHcYf/kV/vUVd52t2AcRcL02jUD0VPNbf5+aBqtyieOLgskwR6es09+Fcx/9EUYDjGQ8GIW8ZT4SLsdjCqdhBl6fOaMqVqL0dR0FsuRqruExIvYjY+8fDCIWVNlUhtSQ1E5UJ9hWf4gArj0tG0JIoxPM9J4Aay94VPeH8CfXKsEMSp+uiY8mH0qzJPa2c1ggk7k+LkzgjQMouoDJyLab2CipQENdb4Wwr9UO+5EetnMVzYmRmBOsv/G23QueRfx5Q1FMcdu9oOHjqWQtS7simzfsclUNODej3Ct1b2GvTInkVywJDWrzeTZiMiaV+lgdtPFhg1FIFiaDQAdvTXnlf/G29BsYivp+i5BUSshjCt8pRdhbUd+z+lEjV0WnyBy3Jbt1tSrkcA9WLsLvWLupzA87loxmdcY6MNmlxuE16AsK6wEYr6VCwj4RwC6KR7+zMMENI3Pg+Ml1kPeYbVbC2fsfXPXUkCGmusUktZsMA8k5GwSyKtR70niJo6gHHs5vyQ4Y8RNcpWt6lE/+dArWnJEj3OnFxNS1Ek1kKvZxTg/qVCiKhHAgwOb1JFCgy/i06nd2TgNRDNaeR1zGog1N7/96f6WLrzvJfo321FLXftvYuc2bIhowmMojC1Wedo8JG8zWNqkQ01HusX9JvyiezXo=

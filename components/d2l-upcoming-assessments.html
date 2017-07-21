@@ -1,6 +1,8 @@
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../../d2l-hm-constants-behavior/d2l-hm-constants-behavior.html">
+<link rel="import" href="../../d2l-intl/d2l-intl.html">
 <link rel="import" href="../../d2l-link/d2l-link.html">
+<link rel="import" href="../../d2l-page-load-progress/d2l-page-load-progress.html">
 <link rel="import" href="../../d2l-simple-overlay/d2l-simple-overlay.html">
 <link rel="import" href="../../d2l-simple-overlay/d2l-simple-overlay-close-button.html">
 <link rel="import" href="../../d2l-typography/d2l-typography-shared-styles.html">
@@ -20,6 +22,10 @@
 			h2 {
 				font-weight: normal;
 				margin-left: 15px;
+			}
+
+			d2l-simple-overlay {
+				border-top: 0;
 			}
 
 			d2l-simple-overlay-close-button {
@@ -67,6 +73,13 @@
 				align-items: center;
 				vertical-align: middle;
 			}
+
+			.period-selection-container {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 10px;
+			}
 		</style>
 
 
@@ -97,13 +110,21 @@
 			close-simple-overlay-alt-text="[[localize('closeSimpleOverlayText')]]"
 			no-cancel-on-outside-click
 			with-backdrop>
-			<div class="view-all-container" slot="header">
-				<d2l-simple-overlay-close-button>
-					<div class="overlay-close-button-content-wrapper">
-						<d2l-icon icon="d2l-tier1:chevron-left"></d2l-icon>
-						<span>[[_closeSimpleOverlayText]]</span>
-					</div>
-				</d2l-simple-overlay-close-button>
+			<div slot="header">
+				<d2l-page-load-progress id="allAssignmentsProgressBar" autostart color="#003b71"></d2l-page-load-progress>
+				<div class="view-all-container">
+					<d2l-simple-overlay-close-button>
+						<div class="overlay-close-button-content-wrapper">
+							<d2l-icon icon="d2l-tier1:chevron-left"></d2l-icon>
+							<span>[[_closeSimpleOverlayText]]</span>
+						</div>
+					</d2l-simple-overlay-close-button>
+				</div>
+			</div>
+			<div class="period-selection-container">
+				<a is="d2l-link" on-tap="_goPrev" on-keypress="_keypressGoPrev">[[localize('goPreviousText')]]</a>
+				<div>[[_currentPeriodText]]</div>
+				<a is="d2l-link" on-tap="_goNext" on-keypress="_keypressGoNext">[[localize('goNextText')]]</a>
 			</div>
 			<template is="dom-if" if="[[_hasActivities(_allActivities)]]">
 				<d2l-all-assessments-list assessment-items=[[_allActivities]]></d2l-all-assessments-list>
@@ -164,7 +185,10 @@
 				},
 				_closeSimpleOverlayText: {
 					type: String
-				}
+				},
+				_previousPeriodUrl: String,
+				_nextPeriodUrl: String,
+				_currentPeriodText: String
 			},
 
 			behaviors: [
@@ -182,6 +206,8 @@
 				var mql = window.matchMedia('(max-width: 767px)');
 				this._updateCloseSimpleOverlayText(mql.matches);
 				mql.addListener(this._mobileBreakpointListener.bind(this));
+
+				this.$.allAssignmentsProgressBar.finish();
 			},
 
 			_debounceTime: 20,
@@ -197,21 +223,36 @@
 						return self._getUserActivityUsages(userEntity, self.token);
 					})
 					.then(function(activities) {
-						return self._getActivityUsagesInfo(activities, self.token);
-					})
-					.then(function(activities) {
-						return self._getUserActivityUsageInfo(activities, self.token);
-					})
-					.then(function(activities) {
-						self._updateActivitiesInfo(activities, self.token);
-						self._userName = userName;
-						self._showError = false;
+						return self._getActivityInfo(activities);
 					})
 					.catch(function() {
 						self._showError = true;
 					})
 					.then(function() {
+						if (!self._showError) {
+							self._userName = userName;
+						}
 						self._setLoaded(true);
+					});
+			},
+
+			_getActivityInfo: function(activities) {
+				var self = this;
+
+				self._previousPeriodUrl = (activities.getLinkByRel('https://activities.api.brightspace.com/rels/previous-period') || {}).href;
+				self._nextPeriodUrl = (activities.getLinkByRel('https://activities.api.brightspace.com/rels/next-period') || {}).href;
+				self._currentPeriodText = self._getFormattedPeriodText(activities.properties.start, activities.properties.end);
+
+				return self._getActivityUsagesInfo(activities, self.token)
+					.then(function(activities) {
+						return self._getUserActivityUsageInfo(activities, self.token);
+					})
+					.then(function(activities) {
+						self._updateActivitiesInfo(activities, self.token);
+						self._showError = false;
+					})
+					.catch(function() {
+						self._showError = true;
 					});
 			},
 
@@ -261,6 +302,60 @@
 
 			_openAllAssignmentsView: function() {
 				this.$['view-all-assignments-overlay'].open();
+			},
+
+			_goPrev: function() {
+				return this._loadActivitiesForPeriod(this._previousPeriodUrl);
+			},
+
+			_keypressGoPrev: function(e) {
+				if ( e.code === 'Space' || e.code === 'Enter' ) {
+					return this._goPrev(e);
+				}
+			},
+
+			_goNext: function() {
+				return this._loadActivitiesForPeriod(this._nextPeriodUrl);
+			},
+
+			_keypressGoNext: function(e) {
+				if ( e.code === 'Space' || e.code === 'Enter' ) {
+					return this._goNext(e);
+				}
+			},
+
+			_loadActivitiesForPeriod: function(periodUrl) {
+				if (!periodUrl) {
+					return Promise.resolve();
+				}
+
+				var self = this;
+
+				var progress = this.$.allAssignmentsProgressBar;
+				progress.start();
+
+				return this._fetchEntity(periodUrl, this.token)
+					.then(function(activities) {
+						return self._getActivityInfo(activities);
+					})
+					.then(function() {
+						progress.finish();
+					});
+			},
+
+			_getFormattedPeriodText: function(startDate, endDate) {
+				var startDateDate = new Date(startDate);
+				var endDateDate = new Date(endDate);
+
+				var startDateString = new window.d2lIntl.DateTimeFormat(this.locale, { format: 'monthDay' }).format(startDateDate);
+				var endDateString;
+				if (startDateDate && endDateDate && (startDateDate.getMonth() === endDateDate.getMonth())) {
+					endDateString = endDateDate.getDate();
+				} else {
+					endDateString = new window.d2lIntl.DateTimeFormat(this.locale, { format: 'monthDay' }).format(endDateDate);
+				}
+
+				return this.localize('currentPeriod', 'startDate', startDateString, 'endDate', endDateString);
 			},
 
 			_fetchEntity: function(url, token) {

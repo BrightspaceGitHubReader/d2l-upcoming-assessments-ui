@@ -188,7 +188,11 @@
 				},
 				_previousPeriodUrl: String,
 				_nextPeriodUrl: String,
-				_currentPeriodText: String
+				_currentPeriodText: String,
+				getToken: {
+					type: Object,
+					value: null
+				}
 			},
 
 			behaviors: [
@@ -216,14 +220,14 @@
 				var self = this;
 				var userName;
 
-				return this._fetchEntity(this.userUrl, this.token)
+				return this._fetchEntity(this.userUrl, this.getToken)
 					.then(function(userEntity) {
 						userName = (userEntity.getSubEntityByRel(self.HypermediaRels.firstName) || { properties: {} }).properties.name;
 
-						return self._getUserActivityUsages(userEntity, self.token);
+						return self._getUserActivityUsages(userEntity, self.getToken, self.userUrl);
 					})
 					.then(function(activities) {
-						return self._getActivityInfo(activities);
+						return self._getActivityInfo(activities, self.getToken, self.userUrl);
 					})
 					.catch(function() {
 						self._showError = true;
@@ -245,10 +249,10 @@
 
 				return self._getActivityUsagesInfo(activities, self.token)
 					.then(function(activities) {
-						return self._getUserActivityUsageInfo(activities, self.token);
+						return self._getUserActivityUsageInfo(activities, self.getToken, self.userUrl);
 					})
 					.then(function(activities) {
-						self._updateActivitiesInfo(activities, self.token);
+						self._updateActivitiesInfo(activities, self.getToken, self.userUrl);
 						self._showError = false;
 					})
 					.catch(function() {
@@ -356,27 +360,6 @@
 				}
 
 				return this.localize('currentPeriod', 'startDate', startDateString, 'endDate', endDateString);
-			},
-
-			_fetchEntity: function(url, token) {
-
-				return new Promise(function(resolve, reject) {
-					var xhr = new XMLHttpRequest();
-					xhr.open('GET', url);
-					xhr.setRequestHeader('Accept', 'application/vnd.siren+json');
-					xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-					xhr.addEventListener('load', function() {
-						if (xhr.status === 200 || xhr.status === 304) {
-							resolve(window.D2L.Hypermedia.Siren.Parse(xhr.responseText));
-						} else {
-							reject(xhr.error || xhr.status);
-						}
-					});
-					xhr.addEventListener('error', function() {
-						reject(xhr.error || xhr.status);
-					});
-					xhr.send();
-				});
 			},
 
 			_mobileBreakpointListener: function(mqlevent) {

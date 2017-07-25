@@ -14,7 +14,10 @@
 	*/
 	var upcomingAssessmentsBehaviorImpl = {
 
-		_getActivityUsagesInfo: function(activities, token) {
+		_getToken: null,
+
+		_getActivityUsagesInfo: function(activities, getToken, userUrl) {
+			this._getToken = this._getToken || getToken;
 			var requests = [];
 			var overduePromiseMap = {};
 			var self = this;
@@ -28,12 +31,12 @@
 				var activityUsageLink = assignment.getLinkByRel(self.HypermediaRels.Activities.activityUsage).href;
 				var activityIsComplete = !!assignment.getSubEntityByClass('complete');
 
-				var activityUsageRequest = self._fetchEntity(activityUsageLink, token);
+				var activityUsageRequest = self._fetchEntity(activityUsageLink, null, userUrl);
 				var assignmentSelfHref = assignment.getLinkByRel('self').href;
 				var overdueActivitiesRequest = overduePromiseMap[self.HypermediaRels.Activities.overdue];
 
 				if (!overdueActivitiesRequest) {
-					overdueActivitiesRequest = self._getOverdueActivities(activities, token);
+					overdueActivitiesRequest = self._getOverdueActivities(activities, null, userUrl);
 					overduePromiseMap[self.HypermediaRels.Activities.overdue] = overdueActivitiesRequest;
 				}
 
@@ -63,7 +66,8 @@
 			return Promise.all(requests);
 		},
 
-		_getUserActivityUsageInfo: function(responses, token) {
+		_getUserActivityUsageInfo: function(responses, getToken, userUrl) {
+			this._getToken = this._getToken || getToken;
 			var requests = [];
 			var orgPromiseMap = {};
 			var self = this;
@@ -79,11 +83,11 @@
 				var activityIsOverdue = response.activityIsOverdue;
 
 				if (!orgUnitRequest) {
-					orgUnitRequest = self._fetchEntity(response.orgUnitLink, token);
+					orgUnitRequest = self._fetchEntity(response.orgUnitLink, null, userUrl);
 					orgPromiseMap[response.orgUnitLink] = orgUnitRequest;
 				}
 
-				var assignmentRequest = self._fetchEntity(assignmentLink, token);
+				var assignmentRequest = self._fetchEntity(assignmentLink, null, userUrl);
 
 				var request = new Promise(function(resolve) {
 					Promise.all([assignmentRequest, orgUnitRequest])
@@ -109,33 +113,36 @@
 			return Promise.all(requests);
 		},
 
-		_getOverdueActivitiesList: function(userUrl, token) {
+		_getOverdueActivitiesList: function(userUrl, getToken) {
+			this._getToken = this._getToken || getToken;
 			var self = this;
 
-			return this._fetchEntity(userUrl, token)
+			return this._fetchEntity(userUrl)
 				.then(function(userEntity) {
-					return self._getUserActivityUsages(userEntity);
+					return self._getUserActivityUsages(userEntity, null, userUrl);
 				})
 				.then(function(activities) {
-					self._setTotalCount(self._getTotalCount(activities));
+					self._setTotalCount(self._getTotalCount(activities, null, userUrl));
 
-					return self._getOverdueActivities(activities);
+					return self._getOverdueActivities(activities, null, userUrl);
 				});
 		},
 
-		_getUserActivityUsages: function(userEntity, token) {
+		_getUserActivityUsages: function(userEntity, getToken, userUrl) {
+			this._getToken = this._getToken || getToken;
 			var myActivitiesLink = (userEntity.getLinkByRel(this.HypermediaRels.Activities.myActivities) || {}).href;
 
 			if (myActivitiesLink) {
-				return this._fetchEntity(myActivitiesLink, token);
+				return this._fetchEntity(myActivitiesLink, getToken, userUrl);
 			}
 		},
 
-		_getOverdueActivities: function(activities, token) {
+		_getOverdueActivities: function(activities, getToken, userUrl) {
+			this._getToken = this._getToken || getToken;
 			var overdueActivitiesLink = (activities.getLinkByRel(this.HypermediaRels.Activities.overdue) || {}).href;
 
 			if (overdueActivitiesLink) {
-				return this._fetchEntity(overdueActivitiesLink, token);
+				return this._fetchEntity(overdueActivitiesLink, getToken, userUrl);
 			}
 		},
 
@@ -157,24 +164,31 @@
 			return (overdueActivities.getSubEntitiesByClass('user-assignment-activity') || []).length;
 		},
 
-		_fetchEntity: function(url, token) {
-			return new Promise(function(resolve, reject) {
-				var xhr = new XMLHttpRequest();
-				xhr.open('GET', url);
-				xhr.setRequestHeader('Accept', 'application/vnd.siren+json');
-				xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-				xhr.addEventListener('load', function() {
-					if (xhr.status === 200 || xhr.status === 304) {
-						resolve(window.D2L.Hypermedia.Siren.Parse(xhr.responseText));
-					} else {
-						reject(xhr.error || xhr.status);
-					}
-				});
-				xhr.addEventListener('error', function() {
-					reject(xhr.error || xhr.status);
-				});
-				xhr.send();
-			});
+		_fetchEntity: function(url, getToken, userUrl) {
+			this._getToken = this._getToken || getToken;
+			var tokenUrl = userUrl || url;
+			if (url && typeof this._getToken === 'function' && tokenUrl) {
+				return this._getToken(tokenUrl)
+					.then(function(token) {
+						return new Promise(function(resolve, reject) {
+							var xhr = new XMLHttpRequest();
+							xhr.open('GET', url);
+							xhr.setRequestHeader('Accept', 'application/vnd.siren+json');
+							xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+							xhr.addEventListener('load', function() {
+								if (xhr.status === 200 || xhr.status === 304) {
+									resolve(window.D2L.Hypermedia.Siren.Parse(xhr.responseText));
+								} else {
+									reject(xhr.error || xhr.status);
+								}
+							});
+							xhr.addEventListener('error', function() {
+								reject(xhr.error || xhr.status);
+							});
+							xhr.send();
+						});
+					})
+			}
 		}
 	};
 

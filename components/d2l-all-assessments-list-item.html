@@ -40,17 +40,33 @@
 				flex: 0 0 100px;
 			}
 
-			.completion-info {
-				font-size: 0.9rem;
+			.activity-status-badge {
+				@apply --d2l-body-small-text;
 				line-height: 2;
 				align-self: flex-start;
 				margin-right: 30px;
-				color: var(--d2l-color-olivine);
-				border: 1px solid var(--d2l-color-olivine);
+				border: 1px solid;
 				border-radius: 6px;
-				padding: 5px 20px 0 20px;
+				padding: 3px 20px 0 20px;
 				margin-top: -5px;
 				text-transform: uppercase;
+				min-width: 82px;
+				text-align: center;
+			}
+
+			.completion-info {
+				color: var(--d2l-color-olivine);
+				border-color: var(--d2l-color-olivine);
+			}
+
+			.due-today-info {
+				color: var(--d2l-color-celestine);
+				border-color: var(--d2l-color-celestine);
+			}
+
+			.overdue-info {
+				color: var(--d2l-color-cinnabar);
+				border-color: var(--d2l-color-cinnabar);
 			}
 
 			:host-context([dir="rtl"]) .completion-info {
@@ -100,8 +116,14 @@
 					<div class="course-name">[[assessmentItem.courseName]]</div>
 				</div>
 			</div>
-			<div class="completion-info" hidden$="[[!assessmentItem.isCompleted]]">
+			<div class="activity-status-badge completion-info" hidden$="[[!assessmentItem.isCompleted]]">
 				[[localize('activityComplete')]]
+			</div>
+			<div class="activity-status-badge due-today-info" hidden$="[[!assessmentItem.isDueToday]]">
+				[[localize('activityDueToday')]]
+			</div>
+			<div class="activity-status-badge overdue-info" hidden$="[[!assessmentItem.isOverdue]]">
+				[[localize('activityOverdue')]]
 			</div>
 		</div>
 		<div class="row instructions-row">

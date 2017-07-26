@@ -26,7 +26,7 @@ describe('d2l-upcoming-assessments-behavior', function() {
 			component._makeRequest = sandbox.stub();
 			component._getToken = null;
 
-			setTimeout(function(){
+			setTimeout(function() {
 				component._fetchEntity('url', null, null);
 				expect(component._makeRequest.called).to.be.false;
 

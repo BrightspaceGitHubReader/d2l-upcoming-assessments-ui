@@ -165,7 +165,6 @@
 		},
 
 		_fetchEntity: function(url, getToken, userUrl) {
-			var self = this;
 			this._getToken = this._getToken || getToken;
 			var tokenUrl = userUrl || url;
 			if (url && typeof this._getToken === 'function' && tokenUrl) {

@@ -246,7 +246,7 @@
 				self._nextPeriodUrl = (activities.getLinkByRel('https://activities.api.brightspace.com/rels/next-period') || {}).href;
 				self._currentPeriodText = self._getFormattedPeriodText(activities.properties.start, activities.properties.end);
 
-				return self._getActivityUsagesInfo(activities, self.token)
+				return self._getActivityUsagesInfo(activities, self.getToken, self.userUrl)
 					.then(function(activities) {
 						return self._getUserActivityUsageInfo(activities, self.getToken, self.userUrl);
 					})
@@ -337,9 +337,9 @@
 				var progress = this.$.allAssignmentsProgressBar;
 				progress.start();
 
-				return this._fetchEntity(periodUrl, this.token)
+				return this._fetchEntity(periodUrl, this.getToken, this.userUrl)
 					.then(function(activities) {
-						return self._getActivityInfo(activities);
+						return self._getActivityInfo(activities, self.getToken, self.userUrl);
 					})
 					.then(function() {
 						progress.finish();

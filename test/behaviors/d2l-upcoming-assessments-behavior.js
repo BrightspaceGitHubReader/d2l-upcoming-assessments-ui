@@ -3,7 +3,7 @@
 'use strict';
 
 describe('d2l upcoming assessments behavior', function() {
-	var component, sandbox, token, getToken, userUrl;
+	var component, sandbox, token, getToken, userUrl, getRejected, getNoken;
 
 	beforeEach(function() {
 		component = fixture('d2l-upcoming-assessments-behavior-fixture');
@@ -11,6 +11,12 @@ describe('d2l upcoming assessments behavior', function() {
 		token = 'iamatoken';
 		getToken = function() {
 			return Promise.resolve(token);
+		};
+		getRejected = function() {
+			return Promise.reject(new Error('Rejected rejected denied'));
+		};
+		getNoken = function() {
+			return Promise.resolve(null);
 		};
 		userUrl = 'iamauser';
 		component._makeRequest = sandbox.stub().returns(Promise.resolve());
@@ -596,6 +602,62 @@ describe('d2l upcoming assessments behavior', function() {
 						expect(response[0].isDueToday).to.equal(testcase.expected);
 					});
 			});
+		});
+	});
+
+	describe('_fetchEntity', function() {
+
+		[
+			{ parm1: 'url', parm2: null, parm3: null },
+			{ parm1: null, parm2: getToken, parm3: null },
+			{ parm1: null, parm2: null, parm3: 'url'}
+		].forEach(function(testcase) {
+			it('should not make request if getToken or url is not provided', function() {
+				component._fetchEntity(testcase.parm1, testcase.parm2, testcase.parm3);
+				expect(component._makeRequest.called).to.be.false;
+			});
+		});
+
+		it('should make request when getToken and url are provided', function() {
+			return component._fetchEntity('url', getToken, null)
+				.then(function() {
+					expect(component._makeRequest.called).to.be.true;
+				});
+		});
+
+		it('should make request when getToken, url and userUrl are provided', function() {
+			return component._fetchEntity('url', getToken, 'userUrl')
+				.then(function() {
+					expect(component._makeRequest.called).to.be.true;
+				});
+		});
+
+		it('should make request when getToken is previous set and url is provided', function() {
+			component._getToken = getToken;
+			return component._fetchEntity('url', null, null)
+				.then(function() {
+					expect(component._makeRequest.called).to.be.true;
+				});
+		});
+
+		it('should not make request when getToken rejects', function() {
+			component._getToken = getRejected;
+			return component._fetchEntity('url', null, null)
+				.then(function() {
+					expect(component._makeRequest.called).to.be.false;
+				}, function() {
+					expect(component._makeRequest.called).to.be.false;
+				});
+		});
+
+		it('should not make request when token is not a string', function() {
+			component._getToken = getNoken;
+			return component._fetchEntity('url', null, null)
+				.then(function() {
+					expect(component._makeRequest.called).to.be.false;
+				}, function() {
+					expect(component._makeRequest.called).to.be.false;
+				});
 		});
 	});
 });

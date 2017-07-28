@@ -111,7 +111,7 @@ describe('d2l upcoming assessments behavior', function() {
 		});
 
 		it('should make a request to _fetchEntity for the overdue link if the provided activity has a due date', function() {
-			component._fetchEntity.withArgs(overdueHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(overdueHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse({})
 			);
 			var activities = window.D2L.Hypermedia.Siren.Parse({
@@ -132,7 +132,7 @@ describe('d2l upcoming assessments behavior', function() {
 
 		it('should make a request to _fetchEntity for each activity with a due date but only 1 call for overdue activities', function() {
 
-			component._fetchEntity.withArgs(overdueHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(overdueHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse({})
 			);
 
@@ -196,7 +196,7 @@ describe('d2l upcoming assessments behavior', function() {
 			incompleteActivity3.links.find(function(link) { return link.rel[0] === 'self'; }).href = activityUsageHref3 + '/self';
 			incompleteActivity3.links.find(function(link) { return link.rel[0] === 'https://activities.api.brightspace.com/rels/activity-usage'; }).href = activityUsageHref3;
 
-			component._fetchEntity.withArgs(overdueHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(overdueHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse({
 					entities: [incompleteActivity, incompleteActivity3],
 					links: [{
@@ -227,7 +227,7 @@ describe('d2l upcoming assessments behavior', function() {
 				class: ['user-activity-usage']
 			});
 
-			component._fetchEntity.withArgs(activityUsageHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(activityUsageHref, getToken, userUrl).returns(
 				Promise.resolve(activityUsageEntity)
 			);
 
@@ -343,10 +343,10 @@ describe('d2l upcoming assessments behavior', function() {
 				orgUnitLink: organizationHref
 			}];
 
-			component._fetchEntity.withArgs(assignmentHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(organizationHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
 
@@ -366,10 +366,10 @@ describe('d2l upcoming assessments behavior', function() {
 				orgUnitLink: organizationHref
 			}];
 
-			component._fetchEntity.withArgs(assignmentHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(organizationHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
 
@@ -423,22 +423,22 @@ describe('d2l upcoming assessments behavior', function() {
 
 			var responses = [response1, response2, response3, response4];
 
-			component._fetchEntity.withArgs(assignmentHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(assignmentHref2, null, userUrl).returns(
+			component._fetchEntity.withArgs(assignmentHref2, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(assignmentHref3, null, userUrl).returns(
+			component._fetchEntity.withArgs(assignmentHref3, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(assignmentHref4, null, userUrl).returns(
+			component._fetchEntity.withArgs(assignmentHref4, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(organizationHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
-			component._fetchEntity.withArgs(organizationHref2, null, userUrl).returns(
+			component._fetchEntity.withArgs(organizationHref2, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
 
@@ -465,10 +465,10 @@ describe('d2l upcoming assessments behavior', function() {
 				orgUnitLink: organizationHref
 			}];
 
-			component._fetchEntity.withArgs(assignmentHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(organizationHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
 
@@ -494,10 +494,10 @@ describe('d2l upcoming assessments behavior', function() {
 			assignmentEntityWithInstructions.properties.instructionsText = instructionsText;
 			assignmentEntityWithInstructions.properties.instructions = 'some other text';
 
-			component._fetchEntity.withArgs(assignmentHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntityWithInstructions)
 			);
-			component._fetchEntity.withArgs(organizationHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
 
@@ -520,10 +520,10 @@ describe('d2l upcoming assessments behavior', function() {
 			var assignmentEntityWithInstructions = JSON.parse(JSON.stringify(assignmentEntity));
 			assignmentEntityWithInstructions.properties.instructions = instructions;
 
-			component._fetchEntity.withArgs(assignmentHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntityWithInstructions)
 			);
-			component._fetchEntity.withArgs(organizationHref, null, userUrl).returns(
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
 
@@ -551,10 +551,10 @@ describe('d2l upcoming assessments behavior', function() {
 					activityIsOverdue: testcase.isOverdue
 				}];
 
-				component._fetchEntity.withArgs(assignmentHref, null, userUrl).returns(
+				component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 					window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 				);
-				component._fetchEntity.withArgs(organizationHref, null, userUrl).returns(
+				component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 					window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 				);
 
@@ -590,10 +590,10 @@ describe('d2l upcoming assessments behavior', function() {
 
 				component.getDateDiffInCalendarDays = sandbox.stub().returns(testcase.daysDiff);
 
-				component._fetchEntity.withArgs(assignmentHref, null, userUrl).returns(
+				component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 					window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 				);
-				component._fetchEntity.withArgs(organizationHref, null, userUrl).returns(
+				component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 					window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 				);
 
@@ -633,16 +633,14 @@ describe('d2l upcoming assessments behavior', function() {
 		});
 
 		it('should make request when getToken is previous set and url is provided', function() {
-			component._getToken = getToken;
-			return component._fetchEntity('url', null, null)
+			return component._fetchEntity('url', getToken, null)
 				.then(function() {
 					expect(component._makeRequest.called).to.be.true;
 				});
 		});
 
 		it('should not make request when getToken rejects', function() {
-			component._getToken = getRejected;
-			return component._fetchEntity('url', null, null)
+			return component._fetchEntity('url', getRejected, null)
 				.then(function() {
 					expect(component._makeRequest.called).to.be.false;
 				}, function() {
@@ -651,8 +649,7 @@ describe('d2l upcoming assessments behavior', function() {
 		});
 
 		it('should not make request when token is not a string', function() {
-			component._getToken = getNoken;
-			return component._fetchEntity('url', null, null)
+			return component._fetchEntity('url', getNoken, null)
 				.then(function() {
 					expect(component._makeRequest.called).to.be.false;
 				}, function() {

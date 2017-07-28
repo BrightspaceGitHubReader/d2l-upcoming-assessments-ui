@@ -3,12 +3,23 @@
 'use strict';
 
 describe('d2l upcoming assessments behavior', function() {
-	var component, sandbox, token;
+	var component, sandbox, token, getToken, userUrl, getRejected, getNoken;
 
 	beforeEach(function() {
 		component = fixture('d2l-upcoming-assessments-behavior-fixture');
 		sandbox = sinon.sandbox.create();
 		token = 'iamatoken';
+		getToken = function() {
+			return Promise.resolve(token);
+		};
+		getRejected = function() {
+			return Promise.reject(new Error('Rejected rejected denied'));
+		};
+		getNoken = function() {
+			return Promise.resolve(null);
+		};
+		userUrl = 'iamauser';
+		component._makeRequest = sandbox.stub().returns(Promise.resolve());
 	});
 
 	afterEach(function() {
@@ -70,7 +81,7 @@ describe('d2l upcoming assessments behavior', function() {
 
 		it('should make no requests to _fetchEntity if no activities are provided', function() {
 			var activities = window.D2L.Hypermedia.Siren.Parse({});
-			return component._getActivityUsagesInfo(activities, token)
+			return component._getActivityUsagesInfo(activities, getToken, userUrl)
 				.then(function() {
 					expect(component._fetchEntity).to.not.have.been.called;
 				});
@@ -78,7 +89,7 @@ describe('d2l upcoming assessments behavior', function() {
 
 		it('should make no requests to _fetchEntity if none of the provided activities have a due date', function() {
 			var activities = window.D2L.Hypermedia.Siren.Parse(baseUserAssignmentActivity);
-			return component._getActivityUsagesInfo(activities, token)
+			return component._getActivityUsagesInfo(activities, getToken, userUrl)
 				.then(function() {
 					expect(component._fetchEntity).to.not.have.been.called;
 				});
@@ -93,14 +104,14 @@ describe('d2l upcoming assessments behavior', function() {
 				}]
 			});
 
-			return component._getActivityUsagesInfo(activities, token)
+			return component._getActivityUsagesInfo(activities, getToken, userUrl)
 				.then(function() {
 					expect(component._fetchEntity).to.have.been.calledWith(activityUsageHref);
 				});
 		});
 
 		it('should make a request to _fetchEntity for the overdue link if the provided activity has a due date', function() {
-			component._fetchEntity.withArgs(overdueHref, token).returns(
+			component._fetchEntity.withArgs(overdueHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse({})
 			);
 			var activities = window.D2L.Hypermedia.Siren.Parse({
@@ -113,7 +124,7 @@ describe('d2l upcoming assessments behavior', function() {
 					href: overdueHref
 				}]
 			});
-			return component._getActivityUsagesInfo(activities, token)
+			return component._getActivityUsagesInfo(activities, getToken, userUrl)
 				.then(function() {
 					expect(component._fetchEntity).to.have.been.calledWith(overdueHref);
 				});
@@ -121,7 +132,7 @@ describe('d2l upcoming assessments behavior', function() {
 
 		it('should make a request to _fetchEntity for each activity with a due date but only 1 call for overdue activities', function() {
 
-			component._fetchEntity.withArgs(overdueHref, token).returns(
+			component._fetchEntity.withArgs(overdueHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse({})
 			);
 
@@ -138,7 +149,7 @@ describe('d2l upcoming assessments behavior', function() {
 					href: overdueHref
 				}]
 			});
-			return component._getActivityUsagesInfo(activities, token)
+			return component._getActivityUsagesInfo(activities, getToken, userUrl)
 				.then(function() {
 					expect(component._fetchEntity).to.have.been.calledWith(activityUsageHref);
 					expect(component._fetchEntity).to.have.been.calledWith(activityUsageHref2);
@@ -155,7 +166,7 @@ describe('d2l upcoming assessments behavior', function() {
 					href: '/path/to/user-assignment-activities'
 				}]
 			});
-			return component._getActivityUsagesInfo(activities, token)
+			return component._getActivityUsagesInfo(activities, getToken, userUrl)
 				.then(function(activities) {
 					expect(activities[0].activityIsComplete).to.equal(true);
 				});
@@ -169,7 +180,7 @@ describe('d2l upcoming assessments behavior', function() {
 					href: '/path/to/user-assignment-activities'
 				}]
 			});
-			return component._getActivityUsagesInfo(activities, token)
+			return component._getActivityUsagesInfo(activities, getToken, userUrl)
 				.then(function(activities) {
 					expect(activities[0].activityIsComplete).to.equal(false);
 				});
@@ -185,7 +196,7 @@ describe('d2l upcoming assessments behavior', function() {
 			incompleteActivity3.links.find(function(link) { return link.rel[0] === 'self'; }).href = activityUsageHref3 + '/self';
 			incompleteActivity3.links.find(function(link) { return link.rel[0] === 'https://activities.api.brightspace.com/rels/activity-usage'; }).href = activityUsageHref3;
 
-			component._fetchEntity.withArgs(overdueHref, token).returns(
+			component._fetchEntity.withArgs(overdueHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse({
 					entities: [incompleteActivity, incompleteActivity3],
 					links: [{
@@ -204,7 +215,7 @@ describe('d2l upcoming assessments behavior', function() {
 					href: overdueHref
 				}]
 			});
-			return component._getActivityUsagesInfo(activities, token)
+			component._getActivityUsagesInfo(activities, getToken, userUrl)
 				.then(function(activities) {
 					expect(activities[0].activityIsOverdue).to.equal(true);
 					expect(activities[1].activityIsOverdue).to.equal(false);
@@ -216,7 +227,7 @@ describe('d2l upcoming assessments behavior', function() {
 				class: ['user-activity-usage']
 			});
 
-			component._fetchEntity.withArgs(activityUsageHref, token).returns(
+			component._fetchEntity.withArgs(activityUsageHref, getToken, userUrl).returns(
 				Promise.resolve(activityUsageEntity)
 			);
 
@@ -228,7 +239,7 @@ describe('d2l upcoming assessments behavior', function() {
 				}]
 			});
 
-			return component._getActivityUsagesInfo(activities, token)
+			return component._getActivityUsagesInfo(activities, getToken, userUrl)
 				.then(function(activities) {
 					expect(activities[0].activityUsage).to.equal(activityUsageEntity);
 				});
@@ -243,7 +254,7 @@ describe('d2l upcoming assessments behavior', function() {
 				}]
 			});
 
-			return component._getActivityUsagesInfo(activities, token)
+			return component._getActivityUsagesInfo(activities, getToken, userUrl)
 				.then(function(activities) {
 					expect(activities[0].orgUnitLink).to.equal(organizationHref);
 				});
@@ -305,7 +316,7 @@ describe('d2l upcoming assessments behavior', function() {
 
 		it('should make no requests to _fetchEntity if no _getActivityUsagesInfo responses are provided', function() {
 			var responses = [];
-			return component._getUserActivityUsageInfo(responses, token)
+			return component._getUserActivityUsageInfo(responses, getToken, userUrl)
 				.then(function() {
 					expect(component._fetchEntity).to.not.have.been.called;
 				});
@@ -316,7 +327,7 @@ describe('d2l upcoming assessments behavior', function() {
 			var responses = [{
 				activityUsage: activityUsageEntity
 			}];
-			return component._getUserActivityUsageInfo(responses, token)
+			return component._getUserActivityUsageInfo(responses, getToken, userUrl)
 				.then(function() {
 					expect(component._fetchEntity).to.not.have.been.called;
 				});
@@ -332,14 +343,14 @@ describe('d2l upcoming assessments behavior', function() {
 				orgUnitLink: organizationHref
 			}];
 
-			component._fetchEntity.withArgs(assignmentHref, token).returns(
+			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(organizationHref, token).returns(
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
 
-			return component._getUserActivityUsageInfo(responses, token)
+			return component._getUserActivityUsageInfo(responses, getToken, userUrl)
 				.then(function() {
 					expect(component._fetchEntity).to.have.been.calledWith(assignmentHref);
 				});
@@ -355,14 +366,14 @@ describe('d2l upcoming assessments behavior', function() {
 				orgUnitLink: organizationHref
 			}];
 
-			component._fetchEntity.withArgs(assignmentHref, token).returns(
+			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(organizationHref, token).returns(
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
 
-			return component._getUserActivityUsageInfo(responses, token)
+			return component._getUserActivityUsageInfo(responses, getToken, userUrl)
 				.then(function() {
 					expect(component._fetchEntity).to.have.been.calledWith(organizationHref);
 				});
@@ -412,26 +423,26 @@ describe('d2l upcoming assessments behavior', function() {
 
 			var responses = [response1, response2, response3, response4];
 
-			component._fetchEntity.withArgs(assignmentHref, token).returns(
+			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(assignmentHref2, token).returns(
+			component._fetchEntity.withArgs(assignmentHref2, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(assignmentHref3, token).returns(
+			component._fetchEntity.withArgs(assignmentHref3, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(assignmentHref4, token).returns(
+			component._fetchEntity.withArgs(assignmentHref4, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(organizationHref, token).returns(
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
-			component._fetchEntity.withArgs(organizationHref2, token).returns(
+			component._fetchEntity.withArgs(organizationHref2, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
 
-			return component._getUserActivityUsageInfo(responses, token)
+			return component._getUserActivityUsageInfo(responses, getToken, userUrl)
 				.then(function() {
 					expect(component._fetchEntity).to.not.have.been.calledWith(assignmentHref);
 					expect(component._fetchEntity).to.have.been.calledWith(assignmentHref2);
@@ -454,14 +465,14 @@ describe('d2l upcoming assessments behavior', function() {
 				orgUnitLink: organizationHref
 			}];
 
-			component._fetchEntity.withArgs(assignmentHref, token).returns(
+			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 			);
-			component._fetchEntity.withArgs(organizationHref, token).returns(
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
 
-			return component._getUserActivityUsageInfo(responses, token)
+			return component._getUserActivityUsageInfo(responses, getToken, userUrl)
 				.then(function(response) {
 					expect(response[0].name).to.equal(assignmentName);
 					expect(response[0].courseName).to.equal(organizationName);
@@ -483,14 +494,14 @@ describe('d2l upcoming assessments behavior', function() {
 			assignmentEntityWithInstructions.properties.instructionsText = instructionsText;
 			assignmentEntityWithInstructions.properties.instructions = 'some other text';
 
-			component._fetchEntity.withArgs(assignmentHref, token).returns(
+			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntityWithInstructions)
 			);
-			component._fetchEntity.withArgs(organizationHref, token).returns(
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
 
-			return component._getUserActivityUsageInfo(responses, token)
+			return component._getUserActivityUsageInfo(responses, getToken, userUrl)
 				.then(function(response) {
 					expect(response[0].instructions).to.equal(instructionsText);
 				});
@@ -509,14 +520,14 @@ describe('d2l upcoming assessments behavior', function() {
 			var assignmentEntityWithInstructions = JSON.parse(JSON.stringify(assignmentEntity));
 			assignmentEntityWithInstructions.properties.instructions = instructions;
 
-			component._fetchEntity.withArgs(assignmentHref, token).returns(
+			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntityWithInstructions)
 			);
-			component._fetchEntity.withArgs(organizationHref, token).returns(
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 			);
 
-			return component._getUserActivityUsageInfo(responses, token)
+			return component._getUserActivityUsageInfo(responses, getToken, userUrl)
 				.then(function(response) {
 					expect(response[0].instructions).to.equal(instructions);
 				});
@@ -540,14 +551,14 @@ describe('d2l upcoming assessments behavior', function() {
 					activityIsOverdue: testcase.isOverdue
 				}];
 
-				component._fetchEntity.withArgs(assignmentHref, token).returns(
+				component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 					window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 				);
-				component._fetchEntity.withArgs(organizationHref, token).returns(
+				component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 					window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 				);
 
-				return component._getUserActivityUsageInfo(responses, token)
+				return component._getUserActivityUsageInfo(responses, getToken, userUrl)
 					.then(function(response) {
 						expect(response[0].isCompleted).to.equal(testcase.isComplete);
 						expect(response[0].isOverdue).to.equal(testcase.isOverdue);
@@ -579,18 +590,71 @@ describe('d2l upcoming assessments behavior', function() {
 
 				component.getDateDiffInCalendarDays = sandbox.stub().returns(testcase.daysDiff);
 
-				component._fetchEntity.withArgs(assignmentHref, token).returns(
+				component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 					window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
 				);
-				component._fetchEntity.withArgs(organizationHref, token).returns(
+				component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 					window.D2L.Hypermedia.Siren.Parse(organizationEntity)
 				);
 
-				return component._getUserActivityUsageInfo(responses, token)
+				return component._getUserActivityUsageInfo(responses, getToken, userUrl)
 					.then(function(response) {
 						expect(response[0].isDueToday).to.equal(testcase.expected);
 					});
 			});
+		});
+	});
+
+	describe('_fetchEntity', function() {
+
+		[
+			{ parm1: 'url', parm2: null, parm3: null },
+			{ parm1: null, parm2: getToken, parm3: null },
+			{ parm1: null, parm2: null, parm3: 'url'}
+		].forEach(function(testcase) {
+			it('should not make request if getToken or url is not provided', function() {
+				component._fetchEntity(testcase.parm1, testcase.parm2, testcase.parm3);
+				expect(component._makeRequest.called).to.be.false;
+			});
+		});
+
+		it('should make request when getToken and url are provided', function() {
+			return component._fetchEntity('url', getToken, null)
+				.then(function() {
+					expect(component._makeRequest.called).to.be.true;
+				});
+		});
+
+		it('should make request when getToken, url and userUrl are provided', function() {
+			return component._fetchEntity('url', getToken, 'userUrl')
+				.then(function() {
+					expect(component._makeRequest.called).to.be.true;
+				});
+		});
+
+		it('should make request when getToken is previous set and url is provided', function() {
+			return component._fetchEntity('url', getToken, null)
+				.then(function() {
+					expect(component._makeRequest.called).to.be.true;
+				});
+		});
+
+		it('should not make request when getToken rejects', function() {
+			return component._fetchEntity('url', getRejected, null)
+				.then(function() {
+					expect(component._makeRequest.called).to.be.false;
+				}, function() {
+					expect(component._makeRequest.called).to.be.false;
+				});
+		});
+
+		it('should not make request when token is not a string', function() {
+			return component._fetchEntity('url', getNoken, null)
+				.then(function() {
+					expect(component._makeRequest.called).to.be.false;
+				}, function() {
+					expect(component._makeRequest.called).to.be.false;
+				});
 		});
 	});
 });

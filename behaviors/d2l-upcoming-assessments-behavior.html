@@ -14,7 +14,7 @@
 	*/
 	var upcomingAssessmentsBehaviorImpl = {
 
-		_getActivityUsagesInfo: function(activities, token) {
+		_getActivityUsagesInfo: function(activities, getToken, userUrl) {
 			var requests = [];
 			var overduePromiseMap = {};
 			var self = this;
@@ -28,12 +28,12 @@
 				var activityUsageLink = assignment.getLinkByRel(self.HypermediaRels.Activities.activityUsage).href;
 				var activityIsComplete = !!assignment.getSubEntityByClass('complete');
 
-				var activityUsageRequest = self._fetchEntity(activityUsageLink, token);
+				var activityUsageRequest = self._fetchEntity(activityUsageLink, getToken, userUrl);
 				var assignmentSelfHref = assignment.getLinkByRel('self').href;
 				var overdueActivitiesRequest = overduePromiseMap[self.HypermediaRels.Activities.overdue];
 
 				if (!overdueActivitiesRequest) {
-					overdueActivitiesRequest = self._getOverdueActivities(activities, token);
+					overdueActivitiesRequest = self._getOverdueActivities(activities, getToken, userUrl);
 					overduePromiseMap[self.HypermediaRels.Activities.overdue] = overdueActivitiesRequest;
 				}
 
@@ -63,7 +63,7 @@
 			return Promise.all(requests);
 		},
 
-		_getUserActivityUsageInfo: function(responses, token) {
+		_getUserActivityUsageInfo: function(responses, getToken, userUrl) {
 			var requests = [];
 			var orgPromiseMap = {};
 			var self = this;
@@ -79,11 +79,11 @@
 				var activityIsOverdue = response.activityIsOverdue;
 
 				if (!orgUnitRequest) {
-					orgUnitRequest = self._fetchEntity(response.orgUnitLink, token);
+					orgUnitRequest = self._fetchEntity(response.orgUnitLink, getToken, userUrl);
 					orgPromiseMap[response.orgUnitLink] = orgUnitRequest;
 				}
 
-				var assignmentRequest = self._fetchEntity(assignmentLink, token);
+				var assignmentRequest = self._fetchEntity(assignmentLink, getToken, userUrl);
 
 				var request = new Promise(function(resolve) {
 					Promise.all([assignmentRequest, orgUnitRequest])
@@ -109,33 +109,33 @@
 			return Promise.all(requests);
 		},
 
-		_getOverdueActivitiesList: function(userUrl, token) {
+		_getOverdueActivitiesList: function(userUrl, getToken) {
 			var self = this;
 
-			return this._fetchEntity(userUrl, token)
+			return this._fetchEntity(userUrl)
 				.then(function(userEntity) {
-					return self._getUserActivityUsages(userEntity);
+					return self._getUserActivityUsages(userEntity, getToken, userUrl);
 				})
 				.then(function(activities) {
-					self._setTotalCount(self._getTotalCount(activities));
+					self._setTotalCount(self._getTotalCount(activities, getToken, userUrl));
 
-					return self._getOverdueActivities(activities);
+					return self._getOverdueActivities(activities, getToken, userUrl);
 				});
 		},
 
-		_getUserActivityUsages: function(userEntity, token) {
+		_getUserActivityUsages: function(userEntity, getToken, userUrl) {
 			var myActivitiesLink = (userEntity.getLinkByRel(this.HypermediaRels.Activities.myActivities) || {}).href;
 
 			if (myActivitiesLink) {
-				return this._fetchEntity(myActivitiesLink, token);
+				return this._fetchEntity(myActivitiesLink, getToken, userUrl);
 			}
 		},
 
-		_getOverdueActivities: function(activities, token) {
+		_getOverdueActivities: function(activities, getToken, userUrl) {
 			var overdueActivitiesLink = (activities.getLinkByRel(this.HypermediaRels.Activities.overdue) || {}).href;
 
 			if (overdueActivitiesLink) {
-				return this._fetchEntity(overdueActivitiesLink, token);
+				return this._fetchEntity(overdueActivitiesLink, getToken, userUrl);
 			}
 		},
 
@@ -157,7 +157,21 @@
 			return (overdueActivities.getSubEntitiesByClass('user-assignment-activity') || []).length;
 		},
 
-		_fetchEntity: function(url, token) {
+		_fetchEntity: function(url, getToken, userUrl) {
+			var tokenUrl = userUrl || url;
+			if (url && typeof getToken === 'function' && tokenUrl) {
+				return getToken(tokenUrl)
+					.then(function(token) {
+						if (typeof token === 'string') {
+							return this._makeRequest(token, url);
+						} else {
+							throw new Error('token expected to be a string');
+						}
+					}.bind(this));
+			}
+		},
+
+		_makeRequest: function(token, url) {
 			return new Promise(function(resolve, reject) {
 				var xhr = new XMLHttpRequest();
 				xhr.open('GET', url);

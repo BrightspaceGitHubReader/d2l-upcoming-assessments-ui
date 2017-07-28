@@ -143,7 +143,6 @@
 
 			properties: {
 				userUrl: String,
-				token: String,
 				loaded: {
 					type: Boolean,
 					notify: true,
@@ -188,7 +187,11 @@
 				},
 				_previousPeriodUrl: String,
 				_nextPeriodUrl: String,
-				_currentPeriodText: String
+				_currentPeriodText: String,
+				getToken: {
+					type: Object,
+					value: null
+				}
 			},
 
 			behaviors: [
@@ -199,7 +202,7 @@
 			],
 
 			observers: [
-				'_onApiConfigChanged(userUrl, token)'
+				'_onApiConfigChanged(userUrl, getToken)'
 			],
 
 			ready: function() {
@@ -216,14 +219,14 @@
 				var self = this;
 				var userName;
 
-				return this._fetchEntity(this.userUrl, this.token)
+				return this._fetchEntity(this.userUrl, this.getToken)
 					.then(function(userEntity) {
 						userName = (userEntity.getSubEntityByRel(self.HypermediaRels.firstName) || { properties: {} }).properties.name;
 
-						return self._getUserActivityUsages(userEntity, self.token);
+						return self._getUserActivityUsages(userEntity, self.getToken, self.userUrl);
 					})
 					.then(function(activities) {
-						return self._getActivityInfo(activities);
+						return self._getActivityInfo(activities, self.getToken, self.userUrl);
 					})
 					.catch(function() {
 						self._showError = true;
@@ -243,12 +246,12 @@
 				self._nextPeriodUrl = (activities.getLinkByRel('https://activities.api.brightspace.com/rels/next-period') || {}).href;
 				self._currentPeriodText = self._getFormattedPeriodText(activities.properties.start, activities.properties.end);
 
-				return self._getActivityUsagesInfo(activities, self.token)
+				return self._getActivityUsagesInfo(activities, self.getToken, self.userUrl)
 					.then(function(activities) {
-						return self._getUserActivityUsageInfo(activities, self.token);
+						return self._getUserActivityUsageInfo(activities, self.getToken, self.userUrl);
 					})
 					.then(function(activities) {
-						self._updateActivitiesInfo(activities, self.token);
+						self._updateActivitiesInfo(activities, self.getToken, self.userUrl);
 						self._showError = false;
 					})
 					.catch(function() {
@@ -334,9 +337,9 @@
 				var progress = this.$.allAssignmentsProgressBar;
 				progress.start();
 
-				return this._fetchEntity(periodUrl, this.token)
+				return this._fetchEntity(periodUrl, this.getToken, this.userUrl)
 					.then(function(activities) {
-						return self._getActivityInfo(activities);
+						return self._getActivityInfo(activities, self.getToken, self.userUrl);
 					})
 					.then(function() {
 						progress.finish();

@@ -21,6 +21,7 @@
 			.assessment-title {
 				@apply --d2l-heading-3;
 				margin: 0;
+				margin-bottom: -5px;
 			}
 
 			.row {
@@ -34,6 +35,8 @@
 				display: flex;
 				flex-direction: row;
 				align-items: center;
+				word-wrap: break-word;
+				word-break: break-word;
 			}
 
 			.activity-icon, .spacer {
@@ -41,40 +44,40 @@
 			}
 
 			.activity-status-badge {
-				@apply --d2l-body-small-text;
-				line-height: 2;
-				align-self: flex-start;
-				margin-right: 30px;
-				border: 1px solid;
-				border-radius: 6px;
-				padding: 3px 20px 0 20px;
-				margin-top: -5px;
+				color: white;
+				font-size: 0.6rem;
+				font-weight: bold;
+				line-height: 1;
+				margin-right: 10px;
+				padding: 4px 10px 3px 10px;
 				text-transform: uppercase;
-				min-width: 82px;
-				text-align: center;
+				border-radius: 12px;
+			}
+
+			:host-context([dir="rtl"]) .activity-status-badge {
+				margin-left: 10px;
+				margin-right: 0px;
 			}
 
 			.completion-info {
-				color: var(--d2l-color-olivine);
-				border-color: var(--d2l-color-olivine);
+				background-color: var(--d2l-color-olivine-minus-1);
 			}
 
 			.due-today-info {
-				color: var(--d2l-color-celestine);
-				border-color: var(--d2l-color-celestine);
+				background-color: var(--d2l-color-celestine);
 			}
 
 			.overdue-info {
-				color: var(--d2l-color-cinnabar);
-				border-color: var(--d2l-color-cinnabar);
-			}
-
-			:host-context([dir="rtl"]) .completion-info {
-				margin-right: 0px;
-				margin-left: 30px;
+				background-color: var(--d2l-color-cinnabar);
 			}
 
 			.activity-info {
+				display: inline-flex;
+				flex: 1;
+				align-items: center;
+			}
+
+			.meta-info {
 				display: inline-flex;
 				flex: 1;
 				align-items: center;
@@ -87,12 +90,12 @@
 				margin-top: 12px;
 				max-height: 2.4rem;
 				overflow: hidden;
-				padding-right: 100px;
+				padding-right: 30px;
 			}
 
 			:host-context([dir="rtl"]) .instructions {
 				padding-right: 0px;
-				padding-left: 100px;
+				padding-left: 30px;
 			}
 
 			@media (max-width: 767px) {
@@ -113,17 +116,19 @@
 				<d2l-icon class="activity-icon" icon="d2l-tier3:assignments"></d2l-icon>
 				<div class="info-container">
 					<h3 class="assessment-title">[[assessmentItem.name]]</h3>
-					<div class="course-name">[[assessmentItem.courseName]]</div>
+					<div class="meta-info">
+						<div class="activity-status-badge completion-info" hidden$="[[!assessmentItem.isCompleted]]">
+							[[localize('activityComplete')]]
+						</div>
+						<div class="activity-status-badge due-today-info" hidden$="[[!assessmentItem.isDueToday]]">
+							[[localize('activityDueToday')]]
+						</div>
+						<div class="activity-status-badge overdue-info" hidden$="[[!assessmentItem.isOverdue]]">
+							[[localize('activityOverdue')]]
+						</div>
+						<div class="course-name">[[assessmentItem.courseName]]</div>
+					</div>
 				</div>
-			</div>
-			<div class="activity-status-badge completion-info" hidden$="[[!assessmentItem.isCompleted]]">
-				[[localize('activityComplete')]]
-			</div>
-			<div class="activity-status-badge due-today-info" hidden$="[[!assessmentItem.isDueToday]]">
-				[[localize('activityDueToday')]]
-			</div>
-			<div class="activity-status-badge overdue-info" hidden$="[[!assessmentItem.isOverdue]]">
-				[[localize('activityOverdue')]]
 			</div>
 		</div>
 		<div class="row instructions-row">

@@ -36,11 +36,17 @@
 			d2l-simple-overlay-close-button span {
 				@apply --d2l-body-small-text;
 				text-transform: uppercase;
+				padding-left: 7px;
 			}
 
 			:host-context([dir="rtl"]) h2 {
 				margin-left: 0px;
 				margin-right: 15px;
+			}
+
+			:host-context([dir="rtl"]) d2l-simple-overlay-close-button span {
+				padding-left: 0px;
+				padding-right: 7px;
 			}
 
 			.error-message,

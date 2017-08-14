@@ -116,7 +116,8 @@
 			locale="[[locale]]"
 			close-simple-overlay-alt-text="[[localize('closeSimpleOverlayText')]]"
 			no-cancel-on-outside-click
-			with-backdrop>
+			with-backdrop
+			restore-focus-on-close>
 			<div slot="header">
 				<d2l-page-load-progress id="allAssignmentsProgressBar" autostart color="#003b71"></d2l-page-load-progress>
 				<div class="view-all-container">
@@ -128,10 +129,10 @@
 					</d2l-simple-overlay-close-button>
 				</div>
 			</div>
-			<div class="period-selection-container">
-				<a is="d2l-link" on-tap="_goPrev" on-keypress="_keypressGoPrev">[[localize('goPreviousText')]]</a>
+			 <div class="period-selection-container">
+				<a is="d2l-link" href="" on-tap="_goPrev" on-keypress="_keypressGoPrev">[[localize('goPreviousText')]]</a>
 				<div>[[_currentPeriodText]]</div>
-				<a is="d2l-link" on-tap="_goNext" on-keypress="_keypressGoNext">[[localize('goNextText')]]</a>
+				<a is="d2l-link" href="" on-tap="_goNext" on-keypress="_keypressGoNext">[[localize('goNextText')]]</a>
 			</div>
 			<template is="dom-if" if="[[_hasActivities(_allActivities)]]">
 				<d2l-all-assessments-list assessment-items=[[_allActivities]]></d2l-all-assessments-list>

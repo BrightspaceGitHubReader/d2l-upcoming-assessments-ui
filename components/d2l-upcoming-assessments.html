@@ -26,6 +26,10 @@
 
 			d2l-simple-overlay {
 				border-top: 0;
+				user-select: text;
+				-webkit-user-select: text;
+				-moz-user-select: text;
+				-ms-user-select: text;
 			}
 
 			d2l-simple-overlay-close-button {
@@ -111,6 +115,7 @@
 		</a>
 
 		<d2l-simple-overlay
+			role="dialog" aria-label$="[[localize('viewAllAssignments')]]"
 			id="view-all-assignments-overlay"
 			title-name="[[localize('viewAllAssignments')]]"
 			locale="[[locale]]"

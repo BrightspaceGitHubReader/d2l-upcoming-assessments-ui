@@ -9,6 +9,7 @@
 <link rel="import" href="../behaviors/d2l-upcoming-assessments-behavior.html">
 <link rel="import" href="../behaviors/date-behavior.html">
 <link rel="import" href="../behaviors/localize-behavior.html">
+<link rel="import" href="../../d2l-colors/d2l-colors.html">
 <link rel="import" href="d2l-all-assessments-list.html">
 <link rel="import" href="d2l-assessments-list.html">
 
@@ -107,6 +108,7 @@
 
 		<a class="view-all-assignments-link"
 			is="d2l-link"
+			href="javascript:void(0);"
 			on-tap="_openAllAssignmentsView"
 			on-keypress="_keypressOpenAllAssignmentsView"
 			hidden$=[[_showError]]
@@ -134,9 +136,9 @@
 				</div>
 			</div>
 			 <div class="period-selection-container">
-				<a is="d2l-link" href="" on-tap="_goPrev" on-keypress="_keypressGoPrev">[[localize('goPreviousText')]]</a>
+				<a is="d2l-link" href="javascript:void(0);" on-tap="_goPrev" on-keypress="_keypressGoPrev">[[localize('goPreviousText')]]</a>
 				<div>[[_currentPeriodText]]</div>
-				<a is="d2l-link" href="" on-tap="_goNext" on-keypress="_keypressGoNext">[[localize('goNextText')]]</a>
+				<a is="d2l-link" href="javascript:void(0);" on-tap="_goNext" on-keypress="_keypressGoNext">[[localize('goNextText')]]</a>
 			</div>
 			<template is="dom-if" if="[[_hasActivities(_allActivities)]]">
 				<d2l-all-assessments-list assessment-items=[[_allActivities]]></d2l-all-assessments-list>

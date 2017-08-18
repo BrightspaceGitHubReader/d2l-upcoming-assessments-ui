@@ -84,6 +84,20 @@
 				display: inline-flex;
 				align-items: center;
 				vertical-align: middle;
+				border: 1px solid transparent;
+				padding: 8px;
+				outline: 0;
+			}
+
+			.overlay-close-button-content-wrapper:focus, .overlay-close-button-content-wrapper:hover {
+				border-radius: 0.3rem;
+				border-color: var(--d2l-color-celestuba);
+				outline: 0;
+			}
+
+			.overlay-close-button-content-wrapper:hover span, .overlay-close-button-content-wrapper:focus span,
+			.overlay-close-button-content-wrapper:hover d2l-icon, .overlay-close-button-content-wrapper:focus d2l-icon {
+				color: var(--d2l-color-celestuba);
 			}
 
 			.period-selection-container {

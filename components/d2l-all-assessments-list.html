@@ -38,9 +38,12 @@
 		</style>
 			<template is="dom-repeat" items="[[_assessmentItemBuckets]]">
 				<div class="date-header">[[_getDueDateString(item.1)]]</div>
-				<template is="dom-repeat" items="[[item.1]]">
-					<d2l-all-assessments-list-item assessment-item="[[item]]"></d2l-assessments-list-item>
-				</template>
+					<div role="list">
+						<template is="dom-repeat" items="[[item.1]]">
+							<d2l-all-assessments-list-item assessment-item="[[item]]"></d2l-assessments-list-item>
+						</template>
+					</div>
+				</div>
 			</template>
 	</template>
 	<script>

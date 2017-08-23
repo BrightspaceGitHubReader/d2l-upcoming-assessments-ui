@@ -111,29 +111,31 @@
 			}
 
 		</style>
-		<div class="row">
-			<div class="activity-info">
-				<d2l-icon class="activity-icon" icon="d2l-tier3:assignments"></d2l-icon>
-				<div class="info-container">
-					<h3 class="assessment-title">[[assessmentItem.name]]</h3>
-					<div class="meta-info">
-						<div class="activity-status-badge completion-info" hidden$="[[!assessmentItem.isCompleted]]">
-							[[localize('activityComplete')]]
+		<div role="listitem">
+			<div class="row">
+				<div class="activity-info">
+					<d2l-icon class="activity-icon" icon="d2l-tier3:assignments"></d2l-icon>
+					<div class="info-container">
+						<h3 class="assessment-title">[[assessmentItem.name]]</h3>
+						<div class="meta-info">
+							<div class="activity-status-badge completion-info" hidden$="[[!assessmentItem.isCompleted]]">
+								[[localize('activityComplete')]]
+							</div>
+							<div class="activity-status-badge due-today-info" hidden$="[[!assessmentItem.isDueToday]]">
+								[[localize('activityDueToday')]]
+							</div>
+							<div class="activity-status-badge overdue-info" hidden$="[[!assessmentItem.isOverdue]]">
+								[[localize('activityOverdue')]]
+							</div>
+							<div class="course-name">[[assessmentItem.courseName]]</div>
 						</div>
-						<div class="activity-status-badge due-today-info" hidden$="[[!assessmentItem.isDueToday]]">
-							[[localize('activityDueToday')]]
-						</div>
-						<div class="activity-status-badge overdue-info" hidden$="[[!assessmentItem.isOverdue]]">
-							[[localize('activityOverdue')]]
-						</div>
-						<div class="course-name">[[assessmentItem.courseName]]</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="row instructions-row">
-			<div class="spacer"></div>
-			<div class="instructions">[[assessmentItem.instructions]]</div>
+			<div class="row instructions-row">
+				<div class="spacer"></div>
+				<div class="instructions">[[assessmentItem.instructions]]</div>
+			</div>
 		</div>
 	</template>
 

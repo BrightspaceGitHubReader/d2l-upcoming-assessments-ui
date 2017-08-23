@@ -19,17 +19,20 @@
 			var overduePromiseMap = {};
 			var self = this;
 
-			activities.getSubEntitiesByClass('user-assignment-activity').forEach(function(assignment) {
-				if (!assignment.getSubEntityByClass('due-date')) {
+			var assignmentEntities = activities.getSubEntitiesByClass('user-assignment-activity');
+			var quizEntities = activities.getSubEntitiesByClass('user-quiz-activity');
+			var allEntities = assignmentEntities.concat(quizEntities);
+			allEntities.forEach(function(assessment) {
+				if (!assessment.getSubEntityByClass('due-date')) {
 					return;
 				}
 
-				var orgUnitLink = (assignment.getLinkByRel(self.HypermediaRels.organization) || {}).href;
-				var activityUsageLink = assignment.getLinkByRel(self.HypermediaRels.Activities.activityUsage).href;
-				var activityIsComplete = !!assignment.getSubEntityByClass('complete');
+				var orgUnitLink = (assessment.getLinkByRel(self.HypermediaRels.organization) || {}).href;
+				var activityUsageLink = assessment.getLinkByRel(self.HypermediaRels.Activities.activityUsage).href;
+				var activityIsComplete = !!assessment.getSubEntityByClass('complete');
 
 				var activityUsageRequest = self._fetchEntity(activityUsageLink, getToken, userUrl);
-				var assignmentSelfHref = assignment.getLinkByRel('self').href;
+				var assessmentSelfHref = assessment.getLinkByRel('self').href;
 				var overdueActivitiesRequest = overduePromiseMap[self.HypermediaRels.Activities.overdue];
 
 				if (!overdueActivitiesRequest) {
@@ -42,12 +45,15 @@
 						.then(function(response) {
 							var activityUsageEntity = response[0];
 							var overdueActivitiesEntity = response[1];
-							var isOverdue = overdueActivitiesEntity && overdueActivitiesEntity
-								.getSubEntitiesByClass('user-assignment-activity')
-								.some(function(usage) {
-									return usage.getLinkByRel('self').href === assignmentSelfHref;
-								});
-
+							var isOverdue = false;
+							if (overdueActivitiesEntity) {
+								var overdueActivities = [];
+								overdueActivities = overdueActivities.concat(overdueActivitiesEntity.getSubEntitiesByClass('user-quiz-activity'));
+								overdueActivities = overdueActivities.concat(overdueActivitiesEntity.getSubEntitiesByClass('user-assignment-activity'));
+								overdueActivities.some(function(usage) {
+										isOverdue = usage.getLinkByRel('self').href === assessmentSelfHref;
+									});
+							}
 							resolve({
 								activityIsComplete: activityIsComplete,
 								activityIsOverdue: isOverdue,
@@ -73,7 +79,8 @@
 					return;
 				}
 
-				var assignmentLink = response.activityUsage.getLinkByRel(self.HypermediaRels.assignment).href;
+				var assessmentLink = (response.activityUsage.getLinkByRel(self.HypermediaRels.assignment)
+					|| response.activityUsage.getLinkByRel('https://api.brightspace.com/rels/quiz')).href;;
 				var orgUnitRequest = orgPromiseMap[response.orgUnitLink];
 				var activityIsComplete = response.activityIsComplete;
 				var activityIsOverdue = response.activityIsOverdue;
@@ -83,10 +90,10 @@
 					orgPromiseMap[response.orgUnitLink] = orgUnitRequest;
 				}
 
-				var assignmentRequest = self._fetchEntity(assignmentLink, getToken, userUrl);
+				var assessmentRequest = self._fetchEntity(assessmentLink, getToken, userUrl);
 
 				var request = new Promise(function(resolve) {
-					Promise.all([assignmentRequest, orgUnitRequest])
+					Promise.all([assessmentRequest, orgUnitRequest])
 						.then(function(response) {
 							var activity = response[0];
 							var organization = response[1];

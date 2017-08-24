@@ -101,12 +101,10 @@
 							if (activity.class.includes('assignment')) type = 'assignment';
 							else if (activity.class.includes('quiz')) type = 'quiz';
 
-							if (type === 'quiz') var dueDate = '2017-08-26T21:01:00.000Z';
-
 							resolve({
 								name: activity.properties.name,
 								courseName: organization.properties.name,
-								dueDate: activity.properties.dueDate || dueDate,
+								dueDate: activity.properties.dueDate,
 								instructions: activity.properties.instructionsText || activity.properties.instructions,
 								isCompleted: activityIsComplete,
 								isDueToday: !activityIsComplete && !activityIsOverdue && self.getDateDiffInCalendarDays(activity.properties.dueDate) === 0,

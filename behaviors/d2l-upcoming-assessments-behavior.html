@@ -80,7 +80,7 @@
 				}
 
 				var assessmentLink = (response.activityUsage.getLinkByRel(self.HypermediaRels.assignment)
-					|| response.activityUsage.getLinkByRel('https://api.brightspace.com/rels/quiz')).href;;
+					|| response.activityUsage.getLinkByRel(self.HypermediaRels.quiz)).href;
 				var orgUnitRequest = orgPromiseMap[response.orgUnitLink];
 				var activityIsComplete = response.activityIsComplete;
 				var activityIsOverdue = response.activityIsOverdue;
@@ -152,7 +152,10 @@
 
 		_getTotalCount: function(activities) {
 			var self = this;
-			return (activities.getSubEntitiesByClass('user-assignment-activity') || [])
+			var activityEntities = [];
+			activityEntities = activityEntities.concat(activities.getSubEntitiesByClass('user-assignment-activity'));
+			activityEntities = activityEntities.concat(activities.getSubEntitiesByClass('user-quiz-activity'));
+			return (activityEntities)
 				.map(function(assignment) {
 					return {
 						dueDate: ((assignment.getSubEntityByClass('due-date') || {}).properties || {}).date
@@ -165,7 +168,10 @@
 		},
 
 		_getOverdueCount: function(overdueActivities) {
-			return (overdueActivities.getSubEntitiesByClass('user-assignment-activity') || []).length;
+			var activityEntities = [];
+			activityEntities = activityEntities.concat(overdueActivities.getSubEntitiesByClass('user-assignment-activity'));
+			activityEntities = activityEntities.concat(overdueActivities.getSubEntitiesByClass('user-quiz-activity'));
+			return (activityEntities).length;
 		},
 
 		_fetchEntity: function(url, getToken, userUrl) {

@@ -21,8 +21,7 @@
 
 			var assignmentEntities = activities.getSubEntitiesByClass('user-assignment-activity');
 			var quizEntities = activities.getSubEntitiesByClass('user-quiz-activity');
-			var allEntities = assignmentEntities.concat(quizEntities);
-			allEntities.forEach(function(assessment) {
+			[].concat(assignmentEntities).concat(quizEntities).forEach(function(assessment) {
 				if (!assessment.getSubEntityByClass('due-date')) {
 					return;
 				}
@@ -51,8 +50,8 @@
 								overdueActivities = overdueActivities.concat(overdueActivitiesEntity.getSubEntitiesByClass('user-quiz-activity'));
 								overdueActivities = overdueActivities.concat(overdueActivitiesEntity.getSubEntitiesByClass('user-assignment-activity'));
 								overdueActivities.some(function(usage) {
-										isOverdue = usage.getLinkByRel('self').href === assessmentSelfHref;
-									});
+									isOverdue = usage.getLinkByRel('self').href === assessmentSelfHref;
+								});
 							}
 							resolve({
 								activityIsComplete: activityIsComplete,
@@ -98,13 +97,16 @@
 							var activity = response[0];
 							var organization = response[1];
 
-							if (activity.class.includes('assignment')) var type = 'assignment';
-							else if (activity.class.includes('quiz')) var type = 'quiz';
+							var type;
+							if (activity.class.includes('assignment')) type = 'assignment';
+							else if (activity.class.includes('quiz')) type = 'quiz';
+
+							if (type === 'quiz') var dueDate = '2017-08-26T21:01:00.000Z';
 
 							resolve({
 								name: activity.properties.name,
 								courseName: organization.properties.name,
-								dueDate: activity.properties.dueDate,
+								dueDate: activity.properties.dueDate || dueDate,
 								instructions: activity.properties.instructionsText || activity.properties.instructions,
 								isCompleted: activityIsComplete,
 								isDueToday: !activityIsComplete && !activityIsOverdue && self.getDateDiffInCalendarDays(activity.properties.dueDate) === 0,

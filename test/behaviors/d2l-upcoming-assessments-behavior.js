@@ -297,6 +297,7 @@ describe('d2l upcoming assessments behavior', function() {
 				rel: ['self'],
 				href: assignmentHref
 			}],
+			class: ['assignment'],
 			rel: ['https://assignments.api.brightspace.com/rels/assignment']
 		};
 

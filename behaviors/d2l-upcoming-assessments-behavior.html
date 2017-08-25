@@ -25,7 +25,6 @@
 				if (!assessment.getSubEntityByClass('due-date')) {
 					return;
 				}
-
 				var orgUnitLink = (assessment.getLinkByRel(self.HypermediaRels.organization) || {}).href;
 				var activityUsageLink = assessment.getLinkByRel(self.HypermediaRels.Activities.activityUsage).href;
 				var activityIsComplete = !!assessment.getSubEntityByClass('complete');

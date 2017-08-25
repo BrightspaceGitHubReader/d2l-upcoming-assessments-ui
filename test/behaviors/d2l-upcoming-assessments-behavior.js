@@ -273,6 +273,7 @@ describe('d2l upcoming assessments behavior', function() {
 		var organizationHref = '/path/to/org';
 		var organizationHref2 = '/path/to/org/2';
 		var organizationHref3 = '/path/to/org/3';
+		var quizHref = '/path/to/quiz';
 
 		var baseActivityUsage = {
 			class: ['activity', 'assignment-activity'],
@@ -288,6 +289,20 @@ describe('d2l upcoming assessments behavior', function() {
 			}]
 		};
 
+		var baseActivityQuizUsage = {
+			class: ['activity', 'quiz-activity'],
+			links: [{
+				rel: ['self'],
+				href: '/path/to/quiz/usage'
+			}, {
+				rel: ['https://api.brightspace.com/rels/organization'],
+				href: organizationHref
+			}, {
+				rel: ['https://api.brightspace.com/rels/assignment'],
+				href: quizHref
+			}]
+		};
+
 		var assignmentEntity = {
 			properties: {
 				name: assignmentName,
@@ -299,6 +314,19 @@ describe('d2l upcoming assessments behavior', function() {
 			}],
 			class: ['assignment'],
 			rel: ['https://assignments.api.brightspace.com/rels/assignment']
+		};
+
+		var quizEntity = {
+			properties: {
+				name: assignmentName,
+				dueDate: assignmentDueDate
+			},
+			links: [{
+				rel: ['self'],
+				href: quizHref
+			}],
+			class: ['quiz'],
+			rel: ['https://quizzes.api.brightspace.com/rels/quiz']
 		};
 
 		var organizationEntity = {
@@ -468,6 +496,30 @@ describe('d2l upcoming assessments behavior', function() {
 
 			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
+			);
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
+				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
+			);
+
+			return component._getUserActivityUsageInfo(responses, getToken, userUrl)
+				.then(function(response) {
+					expect(response[0].name).to.equal(assignmentName);
+					expect(response[0].courseName).to.equal(organizationName);
+					expect(response[0].dueDate).to.equal(assignmentDueDate);
+				});
+		});
+		it('should set the response name, courseName, and dueDate property values correctly with a quiz', function() {
+			var publishedActivityUsage = JSON.parse(JSON.stringify(baseActivityQuizUsage));
+			publishedActivityUsage.class.push('published');
+			var activityUsageEntity = window.D2L.Hypermedia.Siren.Parse(publishedActivityUsage);
+
+			var responses = [{
+				activityUsage: activityUsageEntity,
+				orgUnitLink: organizationHref
+			}];
+
+			component._fetchEntity.withArgs(quizHref, getToken, userUrl).returns(
+				window.D2L.Hypermedia.Siren.Parse(quizEntity)
 			);
 			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse(organizationEntity)

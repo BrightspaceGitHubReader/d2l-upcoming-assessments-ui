@@ -98,8 +98,8 @@
 							var organization = response[1];
 
 							var type;
-							if (activity.class.includes('assignment')) type = 'assignment';
-							else if (activity.class.includes('quiz')) type = 'quiz';
+							if (activity.hasClass('assignment')) type = 'assignment';
+							else if (activity.hasClass('quiz')) type = 'quiz';
 
 							resolve({
 								name: activity.properties.name,

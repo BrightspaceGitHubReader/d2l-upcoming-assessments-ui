@@ -121,7 +121,7 @@
 		<div role="listitem">
 			<div class="row">
 				<div class="activity-info">
-					<d2l-icon class="activity-icon" icon$="[[assessmentIcon]]"></d2l-icon>
+					<d2l-icon class="activity-icon" icon="[[assessmentIcon]]"></d2l-icon>
 					<div class="info-container">
 						<h3 class="assessment-title">[[assessmentItem.name]]</h3>
 						<div class="meta-info">
@@ -185,10 +185,8 @@
 
 		_updateAssessmentIcon: function(assessmentItem) {
 			var icon = 'd2l-tier3:';
-			if (assessmentItem.type === 'assignment') icon += 'assignments';
-			else if (assessmentItem.type === 'quiz') icon += 'quizzing';
-			else this.assessmentIcon = '';
-			this.assessmentIcon = icon;
+			if (assessmentItem.type === 'assignment') this.assessmentIcon = icon + 'assignments';
+			else if (assessmentItem.type === 'quiz') this.assessmentIcon = icon + 'quizzing';
 		},
 
 		_updateAssessmentType: function(assessmentItem) {

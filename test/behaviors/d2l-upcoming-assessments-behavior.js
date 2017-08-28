@@ -131,7 +131,6 @@ describe('d2l upcoming assessments behavior', function() {
 		});
 
 		it('should make a request to _fetchEntity for each activity with a due date but only 1 call for overdue activities', function() {
-
 			component._fetchEntity.withArgs(overdueHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse({})
 			);
@@ -187,7 +186,6 @@ describe('d2l upcoming assessments behavior', function() {
 		});
 
 		it('should set activityIsOverdue to true or false depending if the activity is found in the overdue activity results', function() {
-
 			var incompleteActivity2 = JSON.parse(JSON.stringify(incompleteActivity));
 			incompleteActivity2.links.find(function(link) { return link.rel[0] === 'self'; }).href = activityUsageHref2 + '/self';
 			incompleteActivity2.links.find(function(link) { return link.rel[0] === 'https://activities.api.brightspace.com/rels/activity-usage'; }).href = activityUsageHref2;
@@ -277,6 +275,13 @@ describe('d2l upcoming assessments behavior', function() {
 
 		var baseActivityUsage = {
 			class: ['activity', 'assignment-activity'],
+			entities: [{
+				class: ['due-date'],
+				properties: {
+					date: assignmentDueDate
+				},
+				rel: ['https://api.brightspace.com/rels/date']
+			}],
 			links: [{
 				rel: ['self'],
 				href: assignmentUsageHref
@@ -291,6 +296,13 @@ describe('d2l upcoming assessments behavior', function() {
 
 		var baseActivityQuizUsage = {
 			class: ['activity', 'quiz-activity'],
+			entities: [{
+				class: ['due-date'],
+				properties: {
+					date: assignmentDueDate
+				},
+				rel: ['https://api.brightspace.com/rels/date']
+			}],
 			links: [{
 				rel: ['self'],
 				href: '/path/to/quiz/usage'
@@ -305,8 +317,7 @@ describe('d2l upcoming assessments behavior', function() {
 
 		var assignmentEntity = {
 			properties: {
-				name: assignmentName,
-				dueDate: assignmentDueDate
+				name: assignmentName
 			},
 			links: [{
 				rel: ['self'],
@@ -318,8 +329,7 @@ describe('d2l upcoming assessments behavior', function() {
 
 		var quizEntity = {
 			properties: {
-				name: assignmentName,
-				dueDate: assignmentDueDate
+				name: assignmentName
 			},
 			links: [{
 				rel: ['self'],
@@ -409,7 +419,6 @@ describe('d2l upcoming assessments behavior', function() {
 		});
 
 		it('should make a request to _fetchEntity for each published assignment but only 1 call for each organization of published assignments', function() {
-
 			// href1, unpublished, org3
 			var unpublishedActivityUsage = JSON.parse(JSON.stringify(baseActivityUsage));
 			var response1 = {
@@ -508,6 +517,7 @@ describe('d2l upcoming assessments behavior', function() {
 					expect(response[0].dueDate).to.equal(assignmentDueDate);
 				});
 		});
+
 		it('should set the response name, courseName, and dueDate property values correctly with a quiz', function() {
 			var publishedActivityUsage = JSON.parse(JSON.stringify(baseActivityQuizUsage));
 			publishedActivityUsage.class.push('published');
@@ -532,6 +542,7 @@ describe('d2l upcoming assessments behavior', function() {
 					expect(response[0].dueDate).to.equal(assignmentDueDate);
 				});
 		});
+
 		it('should set the response instructions value to the assignment instructionsText if provided', function() {
 			var publishedActivityUsage = JSON.parse(JSON.stringify(baseActivityUsage));
 			publishedActivityUsage.class.push('published');
@@ -559,6 +570,7 @@ describe('d2l upcoming assessments behavior', function() {
 					expect(response[0].instructions).to.equal(instructionsText);
 				});
 		});
+
 		it('should set the response instructions value to the assignment instructions if instructionsText is not provided', function() {
 			var publishedActivityUsage = JSON.parse(JSON.stringify(baseActivityUsage));
 			publishedActivityUsage.class.push('published');

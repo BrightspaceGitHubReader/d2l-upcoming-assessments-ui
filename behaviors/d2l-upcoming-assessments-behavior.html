@@ -80,8 +80,20 @@
 				var assessmentLink = (response.activityUsage.getLinkByRel(self.HypermediaRels.assignment)
 					|| response.activityUsage.getLinkByRel(self.HypermediaRels.quiz)).href;
 				var orgUnitRequest = orgPromiseMap[response.orgUnitLink];
+
 				var activityIsComplete = response.activityIsComplete;
 				var activityIsOverdue = response.activityIsOverdue;
+				var activityIsDueToday = false;
+
+				var dueDate;
+				var dueDateEntity = response.activityUsage.getSubEntityByClass('due-date');
+				if (dueDateEntity) {
+					dueDate = dueDateEntity.properties.date;
+					// If there is no due date, the default value of false is correct
+					activityIsDueToday = !activityIsComplete
+						&& !activityIsOverdue
+						&& self.getDateDiffInCalendarDays(dueDate) === 0;
+				}
 
 				if (!orgUnitRequest) {
 					orgUnitRequest = self._fetchEntity(response.orgUnitLink, getToken, userUrl);
@@ -97,16 +109,19 @@
 							var organization = response[1];
 
 							var type;
-							if (activity.hasClass('assignment')) type = 'assignment';
-							else if (activity.hasClass('quiz')) type = 'quiz';
+							if (activity.hasClass('assignment')) {
+								type = 'assignment';
+							} else if (activity.hasClass('quiz')) {
+								type = 'quiz';
+							}
 
 							resolve({
 								name: activity.properties.name,
 								courseName: organization.properties.name,
-								dueDate: activity.properties.dueDate,
+								dueDate: dueDate,
 								instructions: activity.properties.instructionsText || activity.properties.instructions,
 								isCompleted: activityIsComplete,
-								isDueToday: !activityIsComplete && !activityIsOverdue && self.getDateDiffInCalendarDays(activity.properties.dueDate) === 0,
+								isDueToday: activityIsDueToday,
 								isOverdue: activityIsOverdue,
 								type: type
 							});

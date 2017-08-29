@@ -131,7 +131,6 @@ describe('d2l upcoming assessments behavior', function() {
 		});
 
 		it('should make a request to _fetchEntity for each activity with a due date but only 1 call for overdue activities', function() {
-
 			component._fetchEntity.withArgs(overdueHref, getToken, userUrl).returns(
 				window.D2L.Hypermedia.Siren.Parse({})
 			);
@@ -187,7 +186,6 @@ describe('d2l upcoming assessments behavior', function() {
 		});
 
 		it('should set activityIsOverdue to true or false depending if the activity is found in the overdue activity results', function() {
-
 			var incompleteActivity2 = JSON.parse(JSON.stringify(incompleteActivity));
 			incompleteActivity2.links.find(function(link) { return link.rel[0] === 'self'; }).href = activityUsageHref2 + '/self';
 			incompleteActivity2.links.find(function(link) { return link.rel[0] === 'https://activities.api.brightspace.com/rels/activity-usage'; }).href = activityUsageHref2;
@@ -273,9 +271,17 @@ describe('d2l upcoming assessments behavior', function() {
 		var organizationHref = '/path/to/org';
 		var organizationHref2 = '/path/to/org/2';
 		var organizationHref3 = '/path/to/org/3';
+		var quizHref = '/path/to/quiz';
 
 		var baseActivityUsage = {
 			class: ['activity', 'assignment-activity'],
+			entities: [{
+				class: ['due-date'],
+				properties: {
+					date: assignmentDueDate
+				},
+				rel: ['https://api.brightspace.com/rels/date']
+			}],
 			links: [{
 				rel: ['self'],
 				href: assignmentUsageHref
@@ -288,16 +294,49 @@ describe('d2l upcoming assessments behavior', function() {
 			}]
 		};
 
+		var baseActivityQuizUsage = {
+			class: ['activity', 'quiz-activity'],
+			entities: [{
+				class: ['due-date'],
+				properties: {
+					date: assignmentDueDate
+				},
+				rel: ['https://api.brightspace.com/rels/date']
+			}],
+			links: [{
+				rel: ['self'],
+				href: '/path/to/quiz/usage'
+			}, {
+				rel: ['https://api.brightspace.com/rels/organization'],
+				href: organizationHref
+			}, {
+				rel: ['https://api.brightspace.com/rels/assignment'],
+				href: quizHref
+			}]
+		};
+
 		var assignmentEntity = {
 			properties: {
-				name: assignmentName,
-				dueDate: assignmentDueDate
+				name: assignmentName
 			},
 			links: [{
 				rel: ['self'],
 				href: assignmentHref
 			}],
+			class: ['assignment'],
 			rel: ['https://assignments.api.brightspace.com/rels/assignment']
+		};
+
+		var quizEntity = {
+			properties: {
+				name: assignmentName
+			},
+			links: [{
+				rel: ['self'],
+				href: quizHref
+			}],
+			class: ['quiz'],
+			rel: ['https://quizzes.api.brightspace.com/rels/quiz']
 		};
 
 		var organizationEntity = {
@@ -380,7 +419,6 @@ describe('d2l upcoming assessments behavior', function() {
 		});
 
 		it('should make a request to _fetchEntity for each published assignment but only 1 call for each organization of published assignments', function() {
-
 			// href1, unpublished, org3
 			var unpublishedActivityUsage = JSON.parse(JSON.stringify(baseActivityUsage));
 			var response1 = {
@@ -479,6 +517,32 @@ describe('d2l upcoming assessments behavior', function() {
 					expect(response[0].dueDate).to.equal(assignmentDueDate);
 				});
 		});
+
+		it('should set the response name, courseName, and dueDate property values correctly with a quiz', function() {
+			var publishedActivityUsage = JSON.parse(JSON.stringify(baseActivityQuizUsage));
+			publishedActivityUsage.class.push('published');
+			var activityUsageEntity = window.D2L.Hypermedia.Siren.Parse(publishedActivityUsage);
+
+			var responses = [{
+				activityUsage: activityUsageEntity,
+				orgUnitLink: organizationHref
+			}];
+
+			component._fetchEntity.withArgs(quizHref, getToken, userUrl).returns(
+				window.D2L.Hypermedia.Siren.Parse(quizEntity)
+			);
+			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
+				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
+			);
+
+			return component._getUserActivityUsageInfo(responses, getToken, userUrl)
+				.then(function(response) {
+					expect(response[0].name).to.equal(assignmentName);
+					expect(response[0].courseName).to.equal(organizationName);
+					expect(response[0].dueDate).to.equal(assignmentDueDate);
+				});
+		});
+
 		it('should set the response instructions value to the assignment instructionsText if provided', function() {
 			var publishedActivityUsage = JSON.parse(JSON.stringify(baseActivityUsage));
 			publishedActivityUsage.class.push('published');
@@ -506,6 +570,7 @@ describe('d2l upcoming assessments behavior', function() {
 					expect(response[0].instructions).to.equal(instructionsText);
 				});
 		});
+
 		it('should set the response instructions value to the assignment instructions if instructionsText is not provided', function() {
 			var publishedActivityUsage = JSON.parse(JSON.stringify(baseActivityUsage));
 			publishedActivityUsage.class.push('published');

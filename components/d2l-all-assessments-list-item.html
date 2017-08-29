@@ -3,6 +3,7 @@
 <link rel="import" href="../../d2l-icons/d2l-icon.html">
 <link rel="import" href="../../d2l-icons/tier3-icons.html">
 <link rel="import" href="../../d2l-typography/d2l-typography-shared-styles.html">
+<link rel="import" href="../../iron-icon/iron-icon.html">
 <link rel="import" href="../behaviors/date-behavior.html">
 <link rel="import" href="../behaviors/localize-behavior.html">
 
@@ -29,7 +30,7 @@
 				align-items: center;
 			}
 
-			.course-name {
+			.course-meta-text {
 				@apply --d2l-body-standard-text;
 				font-size: 0.7rem;
 				display: flex;
@@ -93,6 +94,12 @@
 				padding-right: 30px;
 			}
 
+			iron-icon.separator-icon {
+				opacity: 0.8;
+				width: 18px;
+				height: 18px;
+			}
+
 			:host-context([dir="rtl"]) .instructions {
 				padding-right: 0px;
 				padding-left: 30px;
@@ -114,7 +121,7 @@
 		<div role="listitem">
 			<div class="row">
 				<div class="activity-info">
-					<d2l-icon class="activity-icon" icon="d2l-tier3:assignments"></d2l-icon>
+					<d2l-icon class="activity-icon" icon="[[assessmentIcon]]"></d2l-icon>
 					<div class="info-container">
 						<h3 class="assessment-title">[[assessmentItem.name]]</h3>
 						<div class="meta-info">
@@ -127,7 +134,9 @@
 							<div class="activity-status-badge overdue-info" hidden$="[[!assessmentItem.isOverdue]]">
 								[[localize('activityOverdue')]]
 							</div>
-							<div class="course-name">[[assessmentItem.courseName]]</div>
+							<div class="course-meta-text">[[assessmentItem.courseName]]</div>
+							<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+							<div class="course-meta-text">[[assessmentType]]</div>
 						</div>
 					</div>
 				</div>
@@ -147,13 +156,44 @@
 		is: 'd2l-all-assessments-list-item',
 
 		properties: {
-			assessmentItem: Object
+			assessmentItem: {
+				type: Object,
+				value: function() {
+					return {};
+				},
+				observer: '_onAssessmentItemChanged'
+			},
+			assessmentIcon: {
+				type: String,
+				value: ''
+			},
+			assessmentType: {
+				type: String,
+				value: ''
+			}
 		},
 
 		behaviors: [
 			window.D2L.UpcomingAssessments.DateBehavior,
 			window.D2L.UpcomingAssessments.LocalizeBehavior
-		]
+		],
+
+		_onAssessmentItemChanged: function(assessmentItem) {
+			this._updateAssessmentIcon(assessmentItem);
+			this._updateAssessmentType(assessmentItem);
+		},
+
+		_updateAssessmentIcon: function(assessmentItem) {
+			var icon = 'd2l-tier3:';
+			if (assessmentItem.type === 'assignment') this.assessmentIcon = icon + 'assignments';
+			else if (assessmentItem.type === 'quiz') this.assessmentIcon = icon + 'quizzing';
+		},
+
+		_updateAssessmentType: function(assessmentItem) {
+			if (assessmentItem.type === 'assignment') this.assessmentType = 'Assignments';
+			else if (assessmentItem.type === 'quiz') this.assessmentType = 'Quiz';
+			else this.assessmentType = '';
+		}
 
 	});
 	</script>

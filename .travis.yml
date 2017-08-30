@@ -4,6 +4,7 @@ dist: trusty
 sudo: required
 before_script:
 - npm run test:lint:js
+- npm run test:lint:wc
 - export CHROME_BIN=/usr/bin/google-chrome
 - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 - sudo gdebi --non-interactive google-chrome*.deb

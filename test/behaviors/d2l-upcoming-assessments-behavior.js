@@ -281,6 +281,12 @@ describe('d2l upcoming assessments behavior', function() {
 					date: assignmentDueDate
 				},
 				rel: ['https://api.brightspace.com/rels/date']
+			}, {
+				class: ['end-date'],
+				properties: {
+					date: assignmentDueDate
+				},
+				rel: ['https://api.brightspace.com/rels/date']
 			}],
 			links: [{
 				rel: ['self'],
@@ -298,6 +304,12 @@ describe('d2l upcoming assessments behavior', function() {
 			class: ['activity', 'quiz-activity'],
 			entities: [{
 				class: ['due-date'],
+				properties: {
+					date: assignmentDueDate
+				},
+				rel: ['https://api.brightspace.com/rels/date']
+			}, {
+				class: ['end-date'],
 				properties: {
 					date: assignmentDueDate
 				},
@@ -493,7 +505,7 @@ describe('d2l upcoming assessments behavior', function() {
 				});
 		});
 
-		it('should set the response name, courseName, and dueDate property values correctly', function() {
+		it('should set the response name, courseName, dueDate, and endDate property values correctly with an assignment', function() {
 			var publishedActivityUsage = JSON.parse(JSON.stringify(baseActivityUsage));
 			publishedActivityUsage.class.push('published');
 			var activityUsageEntity = window.D2L.Hypermedia.Siren.Parse(publishedActivityUsage);
@@ -515,10 +527,11 @@ describe('d2l upcoming assessments behavior', function() {
 					expect(response[0].name).to.equal(assignmentName);
 					expect(response[0].courseName).to.equal(organizationName);
 					expect(response[0].dueDate).to.equal(assignmentDueDate);
+					expect(response[0].endDate).to.equal(assignmentDueDate);
 				});
 		});
 
-		it('should set the response name, courseName, and dueDate property values correctly with a quiz', function() {
+		it('should set the response name, courseName, dueDate, and endDate property values correctly with a quiz', function() {
 			var publishedActivityUsage = JSON.parse(JSON.stringify(baseActivityQuizUsage));
 			publishedActivityUsage.class.push('published');
 			var activityUsageEntity = window.D2L.Hypermedia.Siren.Parse(publishedActivityUsage);
@@ -540,6 +553,7 @@ describe('d2l upcoming assessments behavior', function() {
 					expect(response[0].name).to.equal(assignmentName);
 					expect(response[0].courseName).to.equal(organizationName);
 					expect(response[0].dueDate).to.equal(assignmentDueDate);
+					expect(response[0].endDate).to.equal(assignmentDueDate);
 				});
 		});
 

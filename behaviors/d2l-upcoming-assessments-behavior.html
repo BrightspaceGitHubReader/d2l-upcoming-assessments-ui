@@ -89,6 +89,12 @@
 						&& self.getDateDiffInCalendarDays(dueDate) === 0;
 				}
 
+				var endDate;
+				var endDateEntity = response.activityUsage.getSubEntityByClass(self.HypermediaClasses.dates.endDate);
+				if (endDateEntity) {
+					endDate = endDateEntity.properties.date;
+				}
+
 				if (!orgUnitRequest) {
 					orgUnitRequest = self._fetchEntity(response.orgUnitLink, getToken, userUrl);
 					orgPromiseMap[response.orgUnitLink] = orgUnitRequest;
@@ -113,6 +119,7 @@
 								name: activity.properties.name,
 								courseName: organization.properties.name,
 								dueDate: dueDate,
+								endDate: endDate,
 								instructions: activity.properties.instructionsText || activity.properties.instructions,
 								isCompleted: activityIsComplete,
 								isDueToday: activityIsDueToday,

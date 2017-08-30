@@ -22,7 +22,9 @@
 			var assignmentEntities = activities.getSubEntitiesByClass('user-assignment-activity');
 			var quizEntities = activities.getSubEntitiesByClass('user-quiz-activity');
 			[].concat(assignmentEntities).concat(quizEntities).forEach(function(assessment) {
-				if (!assessment.getSubEntityByClass(self.HypermediaClasses.dates.dueDate)) {
+				if (!assessment.getSubEntityByClass(self.HypermediaClasses.dates.dueDate)
+					&& !assessment.getSubEntityByClass(self.HypermediaClasses.dates.endDate)
+				) {
 					return;
 				}
 				var orgUnitLink = (assessment.getLinkByRel(self.HypermediaRels.organization) || {}).href;
@@ -173,7 +175,8 @@
 			return (activityEntities)
 				.map(function(assignment) {
 					return {
-						dueDate: ((assignment.getSubEntityByClass(self.HypermediaClasses.dates.dueDate) || {}).properties || {}).date
+						dueDate: ((assignment.getSubEntityByClass(self.HypermediaClasses.dates.dueDate) || {}).properties || {}).date,
+						endDate: ((assignment.getSubEntityByClass(self.HypermediaClasses.dates.endDate) || {}).properties || {}).date
 					};
 				})
 				.filter(function(item) {

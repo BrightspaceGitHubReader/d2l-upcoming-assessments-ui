@@ -313,10 +313,10 @@
 
 				activities = activities
 					.filter(function(activity) {
-						return activity.dueDate;
+						return activity.dueDate || activity.endDate;
 					})
 					.sort(function(a, b) {
-						return a.dueDate > b.dueDate;
+						return (a.dueDate || a.endDate) > (b.dueDate || b.endDate);
 					});
 
 				var upcomingActivities = activities

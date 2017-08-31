@@ -72,6 +72,10 @@
 				background-color: var(--d2l-color-cinnabar);
 			}
 
+			.ended-info {
+				background-color: var(--d2l-color-ferrite);
+			}
+
 			.activity-info {
 				display: inline-flex;
 				flex: 1;
@@ -133,6 +137,9 @@
 							</div>
 							<div class="activity-status-badge overdue-info" hidden$="[[!assessmentItem.isOverdue]]">
 								[[localize('activityOverdue')]]
+							</div>
+							<div class="activity-status-badge ended-info" hidden$="[[!assessmentItem.isEnded]]">
+								[[localize('activityEnded')]]
 							</div>
 							<div class="course-meta-text">[[assessmentItem.courseName]]</div>
 							<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>

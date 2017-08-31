@@ -82,6 +82,7 @@
 				var activityIsComplete = response.activityIsComplete;
 				var activityIsOverdue = response.activityIsOverdue;
 				var activityIsDueToday = false;
+				var activityIsEnded = false;
 
 				var dueDate;
 				var dueDateEntity = response.activityUsage.getSubEntityByClass(self.HypermediaClasses.dates.dueDate);
@@ -97,6 +98,8 @@
 				var endDateEntity = response.activityUsage.getSubEntityByClass(self.HypermediaClasses.dates.endDate);
 				if (endDateEntity) {
 					endDate = endDateEntity.properties.date;
+					activityIsEnded = !activityIsComplete
+						&& self.getDateDiffInCalendarDays(endDate) < 0;
 				}
 
 				if (!orgUnitRequest) {
@@ -128,6 +131,7 @@
 								isCompleted: activityIsComplete,
 								isDueToday: activityIsDueToday,
 								isOverdue: activityIsOverdue,
+								isEnded: activityIsEnded,
 								type: type
 							});
 						});

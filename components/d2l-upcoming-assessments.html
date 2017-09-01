@@ -249,45 +249,12 @@
 
 			_getInfo: function() {
 				var self = this;
-				var userName;
 
 				return this._fetchEntity(this.userUrl, this.getToken)
 					.then(function(userEntity) {
-						userName = (userEntity.getSubEntityByRel(self.HypermediaRels.firstName) || { properties: {} }).properties.name;
-
-						return self._getUserActivityUsages(userEntity, self.getToken, self.userUrl);
-					})
-					.then(function(activities) {
-						return self._getActivityInfo(activities, self.getToken, self.userUrl);
-					})
-					.catch(function() {
-						self._showError = true;
-					})
-					.then(function() {
-						if (!self._showError) {
-							self._userName = userName;
-						}
-						self._setLoaded(true);
-					});
-			},
-
-			_getActivityInfo: function(activities) {
-				var self = this;
-
-				self._previousPeriodUrl = (activities.getLinkByRel('https://activities.api.brightspace.com/rels/previous-period') || {}).href;
-				self._nextPeriodUrl = (activities.getLinkByRel('https://activities.api.brightspace.com/rels/next-period') || {}).href;
-				self._currentPeriodText = self._getFormattedPeriodText(activities.properties.start, activities.properties.end);
-
-				return self._getActivityUsagesInfo(activities, self.getToken, self.userUrl)
-					.then(function(activities) {
-						return self._getUserActivityUsageInfo(activities, self.getToken, self.userUrl);
-					})
-					.then(function(activities) {
-						self._updateActivitiesInfo(activities, self.getToken, self.userUrl);
-						self._showError = false;
-					})
-					.catch(function() {
-						self._showError = true;
+						self._userName = (userEntity.getSubEntityByRel(self.HypermediaRels.firstName) || { properties: {} }).properties.name;
+						var myActivitiesLink = (userEntity.getLinkByRel(self.HypermediaRels.Activities.myActivities) || {}).href;
+						return self._loadActivitiesForPeriod(myActivitiesLink);
 					});
 			},
 
@@ -365,16 +332,32 @@
 				}
 
 				var self = this;
+				var userActivityUsages;
 
 				var progress = this.$.allAssignmentsProgressBar;
 				progress.start();
 
 				return this._fetchEntity(periodUrl, this.getToken, this.userUrl)
-					.then(function(activities) {
-						return self._getActivityInfo(activities, self.getToken, self.userUrl);
+					.then(function(userUsages) {
+						userActivityUsages = userUsages;
+						self._previousPeriodUrl = (userActivityUsages.getLinkByRel('https://activities.api.brightspace.com/rels/previous-period') || {}).href;
+						self._nextPeriodUrl = (userActivityUsages.getLinkByRel('https://activities.api.brightspace.com/rels/next-period') || {}).href;
+						self._currentPeriodText = self._getFormattedPeriodText(userActivityUsages.properties.start, userActivityUsages.properties.end);
+
+						return self._getOverdueActivities(userActivityUsages, self.getToken, self.userUrl);
+					})
+					.then(function(overdueUserActivityUsages) {
+						return self._getUserActivityUsagesInfos(userActivityUsages, overdueUserActivityUsages, self.getToken, self.userUrl);
+					})
+					.then(function(userActivityUsagesInfos) {
+						return self._updateActivitiesInfo(userActivityUsagesInfos, self.getToken, self.userUrl);
+					})
+					.catch(function() {
+						self._showError = true;
+						self._userName = null;
 					})
 					.then(function() {
-						progress.finish();
+						self._setLoaded(true);
 					});
 			},
 

@@ -3,6 +3,7 @@
 'use strict';
 
 describe('<d2l-all-assessments-list-item>', function() {
+	var element;
 
 	var assessmentItem = {
 		'name': 'Math Quiz',
@@ -21,10 +22,13 @@ describe('<d2l-all-assessments-list-item>', function() {
 		'isCompleted': true
 	};
 
+	beforeEach(function() {
+		element = fixture('basic');
+	});
+
 	describe('smoke test', function() {
 
 		it('can be instantiated', function() {
-			var element = fixture('basic');
 			expect(element.is).to.equal('d2l-all-assessments-list-item');
 		});
 
@@ -40,8 +44,6 @@ describe('<d2l-all-assessments-list-item>', function() {
 		});
 
 		it('has a completion indicator when completed', function() {
-			var element = fixture('basic');
-
 			element.set('assessmentItem', completedAssessmentItem);
 			Polymer.dom.flush();
 
@@ -50,8 +52,6 @@ describe('<d2l-all-assessments-list-item>', function() {
 		});
 
 		it('doesn\'t have a completion indicator when not completed', function() {
-			var element = fixture('basic');
-
 			element.set('assessmentItem', assessmentItem);
 			Polymer.dom.flush();
 
@@ -59,8 +59,6 @@ describe('<d2l-all-assessments-list-item>', function() {
 		});
 
 		it('has a due today indicator when isDueToday is true', function() {
-			var element = fixture('basic');
-
 			assessmentItem.isDueToday = true;
 
 			element.set('assessmentItem', assessmentItem);
@@ -71,8 +69,6 @@ describe('<d2l-all-assessments-list-item>', function() {
 		});
 
 		it('does not have a due today indicator when isDueToday is false', function() {
-			var element = fixture('basic');
-
 			element.set('assessmentItem', completedAssessmentItem);
 			Polymer.dom.flush();
 
@@ -80,24 +76,41 @@ describe('<d2l-all-assessments-list-item>', function() {
 		});
 
 		it('has an overdue indicator when isOverdue is true', function() {
-			var element = fixture('basic');
-
 			assessmentItem.isOverdue = true;
 
 			element.set('assessmentItem', assessmentItem);
 			Polymer.dom.flush();
 
-			expect(element.$$('.overdue-info')).to.exist;
-			expect(element.$$('.overdue-info').getAttribute('hidden')).to.be.null;
+			expect(element.$$('.overdue-info').parentElement).to.exist;
+			expect(element.$$('.overdue-info').parentElement.getAttribute('hidden')).to.be.null;
 		});
 
 		it('does not have an overdue indicator when isOverdue is false', function() {
-			var element = fixture('basic');
-
 			element.set('assessmentItem', completedAssessmentItem);
 			Polymer.dom.flush();
 
-			expect(element.$$('.overdue-info').getAttribute('hidden')).to.not.be.null;
+			expect(element.$$('.overdue-info').parentElement.getAttribute('hidden')).to.not.be.null;
+		});
+	});
+
+	function nowish(modifierDays) {
+		var date = new Date();
+		date.setDate(date.getDate() + modifierDays);
+		return date;
+	}
+
+	describe('getRelativeDateString', function() {
+		[
+			{ date: nowish(0), dateStr: 'today', result: /^Today$/ },
+			{ date: nowish(1), dateStr: 'tomorrow', result: /^Tomorrow$/ },
+			{ date: nowish(10), dateStr: 'future date', result: /^(Sun|Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day, [A-Z](.*) \d{1,2}$/ },
+			{ date: nowish(-1), dateStr: 'yesterday', result: /^(Sun|Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day, [A-Z](.*) \d{1,2}$/ },
+			{ date: nowish(-10), dateStr: 'past date', result: /^(Sun|Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day, [A-Z](.*) \d{1,2}$/ }
+		].forEach(function(testCase) {
+			it('returns correct date string for ' + testCase.dateStr, function() {
+				var relativeDateString = element._getRelativeDateString(testCase.date);
+				expect(relativeDateString).to.match(testCase.result);
+			});
 		});
 	});
 

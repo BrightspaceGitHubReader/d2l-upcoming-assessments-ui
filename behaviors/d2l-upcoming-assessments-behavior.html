@@ -16,101 +16,54 @@
 	*/
 	var upcomingAssessmentsBehaviorImpl = {
 
-		_getActivityUsagesInfo: function(activities, getToken, userUrl) {
-			var requests = [];
-			var self = this;
-			var overdueActivitiesRequest = self._getOverdueActivities(activities, getToken, userUrl);
-
-			var assignmentEntities = activities.getSubEntitiesByClass('user-assignment-activity');
-			var quizEntities = activities.getSubEntitiesByClass('user-quiz-activity');
-			[].concat(assignmentEntities).concat(quizEntities).forEach(function(assessment) {
-				if (!assessment.getSubEntityByClass(self.HypermediaClasses.dates.dueDate)
-					&& !assessment.getSubEntityByClass(self.HypermediaClasses.dates.endDate)
-				) {
-					return;
-				}
-				var orgUnitLink = (assessment.getLinkByRel(self.HypermediaRels.organization) || {}).href;
-				var activityUsageLink = assessment.getLinkByRel(self.HypermediaRels.Activities.activityUsage).href;
-				var activityIsComplete = !!assessment.getSubEntityByClass('complete');
-
-				var activityUsageRequest = self._fetchEntity(activityUsageLink, getToken, userUrl);
-				var assessmentSelfHref = assessment.getLinkByRel('self').href;
-
-				var request = new Promise(function(resolve) {
-					Promise.all([activityUsageRequest, overdueActivitiesRequest])
-						.then(function(response) {
-							var activityUsageEntity = response[0];
-							var overdueActivitiesEntity = response[1];
-							var isOverdue = false;
-							if (overdueActivitiesEntity) {
-								var overdueActivities = [];
-								overdueActivities = overdueActivities.concat(overdueActivitiesEntity.getSubEntitiesByClass('user-quiz-activity'));
-								overdueActivities = overdueActivities.concat(overdueActivitiesEntity.getSubEntitiesByClass('user-assignment-activity'));
-								isOverdue = overdueActivities.some(function(usage) {
-									return usage.getLinkByRel('self').href === assessmentSelfHref;
-								});
-							}
-							resolve({
-								activityIsComplete: activityIsComplete,
-								activityIsOverdue: isOverdue,
-								activityUsage: activityUsageEntity,
-								orgUnitLink: orgUnitLink
-							});
-						});
-				});
-
-				requests.push(request);
-			});
-
-			return Promise.all(requests);
-		},
-
-		_getUserActivityUsageInfo: function(responses, getToken, userUrl) {
+		/*
+		* Returns an object that contains the information required to populate an assessment list item
+		*/
+		_getUserActivityUsagesInfos: function(userActivityUsages, overdueUserActivityUsages, getToken, userUrl) {
 			var requests = [];
 			var orgPromiseMap = {};
 			var self = this;
 
-			responses.forEach(function(response) {
-				if (!response.activityUsage.hasClass('published')) {
-					return;
+			var overdueUserUsages = [];
+			overdueUserUsages = overdueUserUsages.concat(overdueUserActivityUsages.getSubEntitiesByClass('user-quiz-activity'));
+			overdueUserUsages = overdueUserUsages.concat(overdueUserActivityUsages.getSubEntitiesByClass('user-assignment-activity'));
+
+			userActivityUsages.entities.forEach(function(userActivityUsage) {
+				var orgUnitLink = (userActivityUsage.getLinkByRel(self.HypermediaRels.organization) || {} ).href;
+				var orgUnitRequest = orgPromiseMap[orgUnitLink];
+				if (!orgUnitRequest) {
+					orgUnitRequest = self._fetchEntity(orgUnitLink, getToken, userUrl);
+					orgPromiseMap[orgUnitLink] = orgUnitRequest;
 				}
 
-				var assessmentLink = (response.activityUsage.getLinkByRel(self.HypermediaRels.assignment)
-					|| response.activityUsage.getLinkByRel(self.HypermediaRels.quiz)).href;
-				var orgUnitRequest = orgPromiseMap[response.orgUnitLink];
-
-				var activityIsComplete = response.activityIsComplete;
-				var activityIsOverdue = response.activityIsOverdue;
+				var activityIsComplete = !!userActivityUsage.getSubEntityByClass('complete');
+				var activityIsOverdue = false;
 				var activityIsDueToday = false;
 				var activityIsEnded = false;
 
 				var dueDate;
-				var dueDateEntity = response.activityUsage.getSubEntityByClass(self.HypermediaClasses.dates.dueDate);
+				var dueDateEntity = userActivityUsage.getSubEntityByClass(self.HypermediaClasses.dates.dueDate);
 				if (dueDateEntity) {
 					dueDate = dueDateEntity.properties.date;
-					// If there is no due date, the default value of false is correct
-					activityIsDueToday = !activityIsComplete
-						&& !activityIsOverdue
-						&& self.getDateDiffInCalendarDays(dueDate) === 0;
+					activityIsDueToday = self.getDateDiffInCalendarDays(dueDate) === 0;
+					activityIsOverdue = overdueUserUsages.some(function(overdueUserUsage) {
+						return overdueUserUsage.getLinkByRel('self').href === userActivityUsage.getLinkByRel('self').href;
+					});
 				}
 
 				var endDate;
-				var endDateEntity = response.activityUsage.getSubEntityByClass(self.HypermediaClasses.dates.endDate);
+				var endDateEntity = userActivityUsage.getSubEntityByClass(self.HypermediaClasses.dates.endDate);
 				if (endDateEntity) {
 					endDate = endDateEntity.properties.date;
-					activityIsEnded = !activityIsComplete
-						&& self.getDateDiffInCalendarDays(endDate) < 0;
+					activityIsEnded = self.getDateDiffInCalendarDays(endDate) < 0;
 				}
 
-				if (!orgUnitRequest) {
-					orgUnitRequest = self._fetchEntity(response.orgUnitLink, getToken, userUrl);
-					orgPromiseMap[response.orgUnitLink] = orgUnitRequest;
-				}
-
-				var assessmentRequest = self._fetchEntity(assessmentLink, getToken, userUrl);
+				var activityLink = (userActivityUsage.getLinkByRel(self.HypermediaRels.assignment)
+					|| userActivityUsage.getLinkByRel(self.HypermediaRels.quiz)).href;
+				var activityRequest = self._fetchEntity(activityLink, getToken, userUrl);
 
 				var request = new Promise(function(resolve) {
-					Promise.all([assessmentRequest, orgUnitRequest])
+					Promise.all([activityRequest, orgUnitRequest])
 						.then(function(response) {
 							var activity = response[0];
 							var organization = response[1];
@@ -143,20 +96,7 @@
 			return Promise.all(requests);
 		},
 
-		_getOverdueActivitiesList: function(userUrl, getToken) {
-			var self = this;
-
-			return this._fetchEntity(userUrl)
-				.then(function(userEntity) {
-					return self._getUserActivityUsages(userEntity, getToken, userUrl);
-				})
-				.then(function(activities) {
-					self._setTotalCount(self._getTotalCount(activities, getToken, userUrl));
-
-					return self._getOverdueActivities(activities, getToken, userUrl);
-				});
-		},
-
+		// TODO: Used in the overdue widget in Parent Portal, should be moved there
 		_getUserActivityUsages: function(userEntity, getToken, userUrl) {
 			var myActivitiesLink = (userEntity.getLinkByRel(this.HypermediaRels.Activities.myActivities) || {}).href;
 
@@ -171,31 +111,6 @@
 			if (overdueActivitiesLink) {
 				return this._fetchEntity(overdueActivitiesLink, getToken, userUrl);
 			}
-		},
-
-		_getTotalCount: function(activities) {
-			var self = this;
-			var activityEntities = [];
-			activityEntities = activityEntities.concat(activities.getSubEntitiesByClass('user-assignment-activity'));
-			activityEntities = activityEntities.concat(activities.getSubEntitiesByClass('user-quiz-activity'));
-			return (activityEntities)
-				.map(function(assignment) {
-					return {
-						dueDate: ((assignment.getSubEntityByClass(self.HypermediaClasses.dates.dueDate) || {}).properties || {}).date,
-						endDate: ((assignment.getSubEntityByClass(self.HypermediaClasses.dates.endDate) || {}).properties || {}).date
-					};
-				})
-				.filter(function(item) {
-					return self.isActivityUpcoming(item);
-				})
-				.length;
-		},
-
-		_getOverdueCount: function(overdueActivities) {
-			var activityEntities = [];
-			activityEntities = activityEntities.concat(overdueActivities.getSubEntitiesByClass('user-assignment-activity'));
-			activityEntities = activityEntities.concat(overdueActivities.getSubEntitiesByClass('user-quiz-activity'));
-			return (activityEntities).length;
 		},
 
 		_fetchEntity: function(url, getToken, userUrl) {

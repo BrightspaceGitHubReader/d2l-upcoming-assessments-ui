@@ -62,33 +62,31 @@
 					|| userActivityUsage.getLinkByRel(self.HypermediaRels.quiz)).href;
 				var activityRequest = self._fetchEntity(activityLink, getToken, userUrl);
 
-				var request = new Promise(function(resolve) {
-					Promise.all([activityRequest, orgUnitRequest])
-						.then(function(response) {
-							var activity = response[0];
-							var organization = response[1];
+				var request = Promise.all([activityRequest, orgUnitRequest])
+					.then(function(response) {
+						var activity = response[0];
+						var organization = response[1];
 
-							var type;
-							if (activity.hasClass('assignment')) {
-								type = 'assignment';
-							} else if (activity.hasClass('quiz')) {
-								type = 'quiz';
-							}
+						var type;
+						if (activity.hasClass('assignment')) {
+							type = 'assignment';
+						} else if (activity.hasClass('quiz')) {
+							type = 'quiz';
+						}
 
-							resolve({
-								name: activity.properties.name,
-								courseName: organization.properties.name,
-								dueDate: dueDate,
-								endDate: endDate,
-								instructions: activity.properties.instructionsText || activity.properties.instructions,
-								isCompleted: activityIsComplete,
-								isDueToday: activityIsDueToday,
-								isOverdue: activityIsOverdue,
-								isEnded: activityIsEnded,
-								type: type
-							});
-						});
-				});
+						return {
+							name: activity.properties.name,
+							courseName: organization.properties.name,
+							dueDate: dueDate,
+							endDate: endDate,
+							instructions: activity.properties.instructionsText || activity.properties.instructions,
+							isCompleted: activityIsComplete,
+							isDueToday: activityIsDueToday,
+							isOverdue: activityIsOverdue,
+							isEnded: activityIsEnded,
+							type: type
+						};
+					});
 
 				requests.push(request);
 			});

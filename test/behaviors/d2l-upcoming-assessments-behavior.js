@@ -3,23 +3,27 @@
 'use strict';
 
 describe('d2l upcoming assessments behavior', function() {
-	var component, sandbox, token, getToken, userUrl, getRejected, getNoken;
+	var component, sandbox, token, getToken, userUrl;
+
+	function nowish(modifierDays) {
+		var date = new Date();
+		date.setDate(date.getDate() + modifierDays);
+		return date;
+	}
+
+	function parse(entity) {
+		return window.D2L.Hypermedia.Siren.Parse(entity);
+	}
 
 	beforeEach(function() {
-		component = fixture('d2l-upcoming-assessments-behavior-fixture');
 		sandbox = sinon.sandbox.create();
+		component = fixture('d2l-upcoming-assessments-behavior-fixture');
+		component._makeRequest = sandbox.stub().returns(Promise.resolve());
+		userUrl = 'iamauser';
 		token = 'iamatoken';
 		getToken = function() {
 			return Promise.resolve(token);
 		};
-		getRejected = function() {
-			return Promise.reject(new Error('Rejected rejected denied'));
-		};
-		getNoken = function() {
-			return Promise.resolve(null);
-		};
-		userUrl = 'iamauser';
-		component._makeRequest = sandbox.stub().returns(Promise.resolve());
 	});
 
 	afterEach(function() {
@@ -27,231 +31,247 @@ describe('d2l upcoming assessments behavior', function() {
 	});
 
 	describe('_getUserActivityUsagesInfos', function() {
-		var assignmentName = 'this is the assignment name';
-		var assignmentDueDate = '2017-07-27T18:54:00.000Z';
-		var assignmentHref = '/path/to/assignment';
-		var organizationName = 'this is the organization name';
+		var completionDate, dueDate, endDate, overdueUserUsages;
+		var activityHref = '/path/to/activity';
+		var activityName = 'Activity Name';
 		var organizationHref = '/path/to/org';
-		var quizHref = '/path/to/quiz';
-		var overdueUserActivityUsages;
-		var baseUserActivityUsage = {
-			class: ['activity', 'user-assignment-activity'],
-			entities: [{
-				class: ['due-date'],
-				properties: {
-					date: assignmentDueDate
-				},
-				rel: ['https://api.brightspace.com/rels/date']
-			}, {
-				class: ['end-date'],
-				properties: {
-					date: assignmentDueDate
-				},
-				rel: ['https://api.brightspace.com/rels/date']
-			}],
-			links: [{
-				rel: ['self'],
-				href: '/path/to/user/assignment/usage'
-			}, {
-				rel: ['https://api.brightspace.com/rels/organization'],
-				href: organizationHref
-			}, {
-				rel: ['https://api.brightspace.com/rels/assignment'],
-				href: assignmentHref
-			}],
-			rel: ['https://activities.api.brightspace.com/rels/user-activity-usage']
-		};
-		var baseQuizUserActivityUsage = {
-			class: ['activity', 'user-quiz-activity'],
-			entities: [{
-				class: ['due-date'],
-				properties: {
-					date: assignmentDueDate
-				},
-				rel: ['https://api.brightspace.com/rels/date']
-			}, {
-				class: ['end-date'],
-				properties: {
-					date: assignmentDueDate
-				},
-				rel: ['https://api.brightspace.com/rels/date']
-			}],
-			links: [{
-				rel: ['self'],
-				href: '/path/to/user/quiz/usage'
-			}, {
-				rel: ['https://api.brightspace.com/rels/organization'],
-				href: organizationHref
-			}, {
-				rel: ['https://api.brightspace.com/rels/assignment'],
-				href: quizHref
-			}],
-			rel: ['https://activities.api.brightspace.com/rels/user-activity-usage']
-		};
-		var assignmentEntity = {
-			properties: {
-				name: assignmentName
-			},
-			links: [{
-				rel: ['self'],
-				href: assignmentHref
-			}],
-			class: ['assignment'],
-			rel: ['https://assignments.api.brightspace.com/rels/assignment']
-		};
-		var quizEntity = {
-			properties: {
-				name: assignmentName
-			},
-			links: [{
-				rel: ['self'],
-				href: quizHref
-			}],
-			class: ['quiz'],
-			rel: ['https://quizzes.api.brightspace.com/rels/quiz']
-		};
+		var organizationName = 'this is the organization name';
 		var organizationEntity = {
-			properties: {
-				name: organizationName
-			},
+			properties: { name: organizationName },
 			links: [{
 				rel: ['self'],
 				href: organizationHref
 			}]
 		};
 
-		function makeUserActivityUsagesEntity(userActivityUsages) {
-			return window.D2L.Hypermedia.Siren.Parse({
-				entities: userActivityUsages
-			});
+		function getUserActivityUsage(type, isComplete) {
+			var activityRel;
+			if (type === 'quiz') {
+				activityRel = 'https://api.brightspace.com/rels/quiz';
+			} else if (type === 'assignment') {
+				activityRel = 'https://api.brightspace.com/rels/assignment';
+			}
+
+			var entity = {
+				class: ['activity', 'user-' + type + '-activity'],
+				entities: [{
+					class: ['due-date'],
+					properties: { date: dueDate },
+					rel: ['https://api.brightspace.com/rels/date']
+				}, {
+					class: ['end-date'],
+					properties: { date: endDate },
+					rel: ['https://api.brightspace.com/rels/date']
+				}, {
+					class: ['completion', isComplete ? 'complete' : 'incomplete'],
+					rel: ['item'],
+					entities: isComplete ? [{
+						class: ['date', 'completion-date'],
+						properties: {
+							date: completionDate
+						},
+						rel: ['https://api.brightspace.com/date']
+					}] : []
+				}],
+				links: [{
+					rel: ['self'],
+					href: '/href/to/userAssignmentUsage'
+				}, {
+					rel: ['https://api.brightspace.com/rels/organization'],
+					href: organizationHref
+				}, {
+					rel: [activityRel],
+					href: activityHref
+				}],
+				rel: ['https://activities.api.brightspace.com/rels/user-activity-usage']
+			};
+
+			return parse(entity);
+		}
+
+		function getActivity(type) {
+			var entity = {
+				class: [type],
+				properties: { name: activityName },
+				links: [{
+					rel: ['self'],
+					href: activityHref
+				}],
+				rel: [type === 'assignment' ? 'https://assignments.api.brightspace.com/rels/assignment' : null]
+			};
+
+			return parse(entity);
 		}
 
 		beforeEach(function() {
+			completionDate = nowish(-1);
+			dueDate = nowish(5);
+			endDate = nowish(10);
+
 			component._fetchEntity = sandbox.stub().returns(Promise.resolve({}));
-			overdueUserActivityUsages = makeUserActivityUsagesEntity([]);
+			overdueUserUsages = parse({ entities: [] });
 		});
 
 		it('should make no requests to _fetchEntity if there are no user activity usage entities', function() {
-			var userActivityUsages = makeUserActivityUsagesEntity([]);
-			return component._getUserActivityUsagesInfos(userActivityUsages, overdueUserActivityUsages, getToken, userUrl)
+			var userActivityUsages = parse({ entities: [] });
+			return component._getUserActivityUsagesInfos(userActivityUsages, overdueUserUsages, getToken, userUrl)
 				.then(function() {
 					expect(component._fetchEntity).to.not.have.been.called;
 				});
 		});
 
-		it('should make a request to _fetchEntity for the assignment link', function() {
-			var userActivityUsages = makeUserActivityUsagesEntity([baseUserActivityUsage]);
-
-			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
-				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
-			);
-			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
-				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
-			);
-
-			return component._getUserActivityUsagesInfos(userActivityUsages, overdueUserActivityUsages, getToken, userUrl)
-				.then(function() {
-					expect(component._fetchEntity).to.have.been.calledWith(assignmentHref);
-				});
-		});
-
 		it('should make a request to _fetchEntity for the organization link', function() {
-			var userActivityUsages = makeUserActivityUsagesEntity([baseUserActivityUsage]);
+			var userActivityUsages = parse({ entities: [getUserActivityUsage('assignment')] });
 
-			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
-				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
+			component._fetchEntity.withArgs(activityHref, getToken, userUrl).returns(
+				getActivity('assignment')
 			);
 			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
-				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
+				parse(organizationEntity)
 			);
 
-			return component._getUserActivityUsagesInfos(userActivityUsages, overdueUserActivityUsages, getToken, userUrl)
+			return component._getUserActivityUsagesInfos(userActivityUsages, overdueUserUsages, getToken, userUrl)
 				.then(function() {
 					expect(component._fetchEntity).to.have.been.calledWith(organizationHref);
 				});
 		});
 
-		it('should set the response name, courseName, dueDate, and endDate property values correctly with an assignment', function() {
-			var userActivityUsages = makeUserActivityUsagesEntity([baseUserActivityUsage]);
+		['quiz', 'assignment'].forEach(function(type) {
+			var userUsage, activity, userUsages;
 
-			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
-				window.D2L.Hypermedia.Siren.Parse(assignmentEntity)
-			);
-			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
-				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
-			);
+			describe(type, function() {
+				beforeEach(function() {
+					userUsage = getUserActivityUsage(type);
+					activity = getActivity(type);
+					userUsages = parse({ entities: [userUsage] });
 
-			return component._getUserActivityUsagesInfos(userActivityUsages, overdueUserActivityUsages, getToken, userUrl)
-				.then(function(response) {
-					expect(response[0].name).to.equal(assignmentName);
-					expect(response[0].courseName).to.equal(organizationName);
-					expect(response[0].dueDate).to.equal(assignmentDueDate);
-					expect(response[0].endDate).to.equal(assignmentDueDate);
+					component._fetchEntity.withArgs(activityHref, getToken, userUrl).returns(
+						parse(activity)
+					);
+					component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
+						parse(organizationEntity)
+					);
 				});
-		});
 
-		it('should set the response name, courseName, dueDate, and endDate property values correctly with a quiz', function() {
-			var userActivityUsages = makeUserActivityUsagesEntity([baseQuizUserActivityUsage]);
-
-			component._fetchEntity.withArgs(quizHref, getToken, userUrl).returns(
-				window.D2L.Hypermedia.Siren.Parse(quizEntity)
-			);
-			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
-				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
-			);
-
-			return component._getUserActivityUsagesInfos(userActivityUsages, overdueUserActivityUsages, getToken, userUrl)
-				.then(function(response) {
-					expect(response[0].name).to.equal(assignmentName);
-					expect(response[0].courseName).to.equal(organizationName);
-					expect(response[0].dueDate).to.equal(assignmentDueDate);
-					expect(response[0].endDate).to.equal(assignmentDueDate);
+				it('should make a request to _fetchEntity for the activity link', function() {
+					return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+						.then(function() {
+							expect(component._fetchEntity).to.have.been.calledWith(activityHref);
+						});
 				});
-		});
 
-		it('should set the response instructions value to the assignment instructionsText if provided', function() {
-			var userActivityUsages = makeUserActivityUsagesEntity([baseUserActivityUsage]);
-
-			var instructionsText = 'this is the instructions text';
-			var assignmentEntityWithInstructions = JSON.parse(JSON.stringify(assignmentEntity));
-			assignmentEntityWithInstructions.properties.instructionsText = instructionsText;
-			assignmentEntityWithInstructions.properties.instructions = 'some other text';
-
-			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
-				window.D2L.Hypermedia.Siren.Parse(assignmentEntityWithInstructions)
-			);
-			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
-				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
-			);
-
-			return component._getUserActivityUsagesInfos(userActivityUsages, overdueUserActivityUsages, getToken, userUrl)
-				.then(function(response) {
-					expect(response[0].instructions).to.equal(instructionsText);
+				it('should set the name, courseName, and type correctly', function() {
+					return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+						.then(function(response) {
+							expect(response[0].name).to.equal(activityName);
+							expect(response[0].courseName).to.equal(organizationName);
+							expect(response[0].type).to.equal(type);
+						});
 				});
-		});
 
-		it('should set the response instructions value to the assignment instructions if instructionsText is not provided', function() {
-			var userActivityUsages = makeUserActivityUsagesEntity([baseUserActivityUsage]);
+				it('should set the instructions from the instructionsText property if available', function() {
+					var activityWithInstructions = JSON.parse(JSON.stringify(activity));
+					activityWithInstructions.properties.instructionsText = 'some text';
+					activityWithInstructions.properties.instructions = 'some other text';
 
-			var instructions = 'these are the instructions';
-			var assignmentEntityWithInstructions = JSON.parse(JSON.stringify(assignmentEntity));
-			assignmentEntityWithInstructions.properties.instructions = instructions;
+					component._fetchEntity.withArgs(activityHref, getToken, userUrl).returns(
+						parse(activityWithInstructions)
+					);
 
-			component._fetchEntity.withArgs(assignmentHref, getToken, userUrl).returns(
-				window.D2L.Hypermedia.Siren.Parse(assignmentEntityWithInstructions)
-			);
-			component._fetchEntity.withArgs(organizationHref, getToken, userUrl).returns(
-				window.D2L.Hypermedia.Siren.Parse(organizationEntity)
-			);
-
-			return component._getUserActivityUsagesInfos(userActivityUsages, overdueUserActivityUsages, getToken, userUrl)
-				.then(function(response) {
-					expect(response[0].instructions).to.equal(instructions);
+					return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+						.then(function(response) {
+							expect(response[0].instructions).to.equal('some text');
+						});
 				});
+
+				it('should set the instructions from the instructions property', function() {
+					var activityWithInstructions = JSON.parse(JSON.stringify(activity));
+					activityWithInstructions.properties.instructionsText = null;
+					activityWithInstructions.properties.instructions = 'some other text';
+
+					component._fetchEntity.withArgs(activityHref, getToken, userUrl).returns(
+						parse(activityWithInstructions)
+					);
+
+					return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+						.then(function(response) {
+							expect(response[0].instructions).to.equal('some other text');
+						});
+				});
+
+				it('should set due date correctly', function() {
+					return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+						.then(function(response) {
+							expect(response[0].dueDate).to.equal(dueDate);
+						});
+				});
+
+				it('should set end date correctly', function() {
+					return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+						.then(function(response) {
+							expect(response[0].endDate).to.equal(endDate);
+						});
+				});
+
+				[true, false].forEach(function(isCompleted) {
+					it('should set isCompleted correctly when activity is ' + (isCompleted ? 'complete' : 'incomplete'), function() {
+						userUsage = getUserActivityUsage(type, isCompleted);
+						userUsages = parse({ entities: [userUsage] });
+						return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+							.then(function(response) {
+								expect(response[0].isCompleted).to.equal(isCompleted);
+							});
+					});
+				});
+
+				[true, false].forEach(function(isDueToday) {
+					it('should set isDueToday correctly when activity is ' + (isDueToday ? '' : 'not') + ' due today', function() {
+						dueDate = nowish(isDueToday ? 0 : 1);
+						userUsage = getUserActivityUsage(type);
+						userUsages = parse({ entities: [userUsage] });
+						return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+							.then(function(response) {
+								expect(response[0].isDueToday).to.equal(isDueToday);
+							});
+					});
+				});
+
+				[true, false].forEach(function(isOverdue) {
+					it('should set isOverdue correctly when activity is ' + (isOverdue ? '' : 'not') + ' overdue', function() {
+						overdueUserUsages = parse({ entities: isOverdue ? [userUsage] : []});
+						return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+							.then(function(response) {
+								expect(response[0].isOverdue).to.equal(isOverdue);
+							});
+					});
+				});
+
+				[true, false].forEach(function(isEnded) {
+					it('should set isEnded correctly when activity does ' + (isEnded ? '' : 'not') + ' end today', function() {
+						endDate = nowish(isEnded ? -1 : 1);
+						userUsage = getUserActivityUsage(type);
+						userUsages = parse({ entities: [userUsage] });
+						return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+							.then(function(response) {
+								expect(response[0].isEnded).to.equal(isEnded);
+							});
+					});
+				});
+			});
 		});
 	});
 
 	describe('_fetchEntity', function() {
+		var getRejected, getNoken;
+
+		beforeEach(function() {
+			getRejected = function() {
+				return Promise.reject(new Error('Rejected rejected denied'));
+			};
+			getNoken = function() {
+				return Promise.resolve(null);
+			};
+		});
 
 		[
 			{ parm1: 'url', parm2: null, parm3: null },

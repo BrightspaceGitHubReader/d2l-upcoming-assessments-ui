@@ -103,9 +103,10 @@ describe('<d2l-all-assessments-list-item>', function() {
 		[
 			{ date: nowish(0), dateStr: 'today', result: /^Today$/ },
 			{ date: nowish(1), dateStr: 'tomorrow', result: /^Tomorrow$/ },
-			{ date: nowish(10), dateStr: 'future date', result: /^(Sun|Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day, [A-Z](.*) \d{1,2}$/ },
-			{ date: nowish(-1), dateStr: 'yesterday', result: /^(Sun|Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day, [A-Z](.*) \d{1,2}$/ },
-			{ date: nowish(-10), dateStr: 'past date', result: /^(Sun|Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day, [A-Z](.*) \d{1,2}$/ }
+			// The seemingly-extra characters are to fix weird behavior with Sauce and Microsoft Edge
+			{ date: nowish(10), dateStr: 'future date', result: /^.*(Sun|Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day.*, .*[A-Z].* .*\d{1,2}$/ },
+			{ date: nowish(-1), dateStr: 'yesterday', result: /^.*(Sun|Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day.*, .*[A-Z].* .*\d{1,2}$/ },
+			{ date: nowish(-10), dateStr: 'past date', result: /^.*(Sun|Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day.*, .*[A-Z].* .*\d{1,2}$/ }
 		].forEach(function(testCase) {
 			it('returns correct date string for ' + testCase.dateStr, function() {
 				var relativeDateString = element._getRelativeDateString(testCase.date);

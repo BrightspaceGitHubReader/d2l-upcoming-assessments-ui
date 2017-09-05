@@ -20,13 +20,19 @@
 		* Returns an object that contains the information required to populate an assessment list item
 		*/
 		_getUserActivityUsagesInfos: function(userActivityUsages, overdueUserActivityUsages, getToken, userUrl) {
+			if (!userActivityUsages.entities) {
+				return;
+			}
+
 			var requests = [];
 			var orgPromiseMap = {};
 			var self = this;
 
+			var overdueAssignments = overdueUserActivityUsages.getSubEntitiesByClass(self.HypermediaClasses.activities.userAssignmentActivity);
+			var overdueQuizzes = overdueUserActivityUsages.getSubEntitiesByClass(self.HypermediaClasses.activities.userQuizActivity);
 			var overdueUserUsages = [];
-			overdueUserUsages = overdueUserUsages.concat(overdueUserActivityUsages.getSubEntitiesByClass('user-quiz-activity'));
-			overdueUserUsages = overdueUserUsages.concat(overdueUserActivityUsages.getSubEntitiesByClass('user-assignment-activity'));
+			overdueUserUsages = overdueUserUsages.concat(overdueAssignments);
+			overdueUserUsages = overdueUserUsages.concat(overdueQuizzes);
 
 			userActivityUsages.entities.forEach(function(userActivityUsage) {
 				var orgUnitLink = (userActivityUsage.getLinkByRel(self.HypermediaRels.organization) || {} ).href;
@@ -36,7 +42,7 @@
 					orgPromiseMap[orgUnitLink] = orgUnitRequest;
 				}
 
-				var activityIsComplete = !!userActivityUsage.getSubEntityByClass('complete');
+				var activityIsComplete = !!userActivityUsage.getSubEntityByClass(self.HypermediaClasses.activities.complete);
 				var activityIsOverdue = false;
 				var activityIsDueToday = false;
 				var activityIsEnded = false;
@@ -59,7 +65,7 @@
 				}
 
 				var activityLink = (userActivityUsage.getLinkByRel(self.HypermediaRels.assignment)
-					|| userActivityUsage.getLinkByRel(self.HypermediaRels.quiz)).href;
+					|| userActivityUsage.getLinkByRel(self.HypermediaRels.quiz) || {}).href;
 				var activityRequest = self._fetchEntity(activityLink, getToken, userUrl);
 
 				var request = Promise.all([activityRequest, orgUnitRequest])
@@ -68,9 +74,9 @@
 						var organization = response[1];
 
 						var type;
-						if (activity.hasClass('assignment')) {
+						if (activity.hasClass(self.HypermediaClasses.assignments.assignment)) {
 							type = 'assignment';
-						} else if (activity.hasClass('quiz')) {
+						} else if (activity.hasClass(self.HypermediaClasses.quizzes.quiz)) {
 							type = 'quiz';
 						}
 

@@ -340,8 +340,8 @@
 				return this._fetchEntity(periodUrl, this.getToken, this.userUrl)
 					.then(function(userUsages) {
 						userActivityUsages = userUsages;
-						self._previousPeriodUrl = (userActivityUsages.getLinkByRel('https://activities.api.brightspace.com/rels/previous-period') || {}).href;
-						self._nextPeriodUrl = (userActivityUsages.getLinkByRel('https://activities.api.brightspace.com/rels/next-period') || {}).href;
+						self._previousPeriodUrl = (userActivityUsages.getLinkByRel(self.HypermediaRels.Activities.previousPeriod) || {}).href;
+						self._nextPeriodUrl = (userActivityUsages.getLinkByRel(self.HypermediaRels.Activities.nextPeriod) || {}).href;
 						self._currentPeriodText = self._getFormattedPeriodText(userActivityUsages.properties.start, userActivityUsages.properties.end);
 
 						return self._getOverdueActivities(userActivityUsages, self.getToken, self.userUrl);

@@ -32,6 +32,8 @@
 				display: flex;
 				flex-direction: row;
 				align-items: center;
+				margin-top: 5px;
+				line-height: 1;
 			}
 
 			.info-container {
@@ -52,13 +54,28 @@
 				font-weight: bolder;
 			}
 
+			.activity-icon, .spacer {
+				margin-right: 20px;
+			}
+
+			.activity-info {
+				display: inline-flex;
+				flex: 1;
+				align-items: center;
+			}
+
 		</style>
-			<div class="info-container">
-				<h3 class="assessment-title">{{assessmentItem.name}}</h3>
-				<div class="assessment-info">
-					<div class="course-name">{{assessmentItem.courseName}}</div>
-					<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
-					<div class="due-date">[[_getDateString(assessmentItem.dueDate)]]</div>
+			<div class="activity-info">
+				<d2l-icon class="activity-icon" icon="[[_getAssessmentIcon(assessmentItem)]]"></d2l-icon>
+				<div class="info-container">
+					<h3 class="assessment-title">{{assessmentItem.name}}</h3>
+					<div class="assessment-info">
+						<div class="course-name">{{assessmentItem.courseName}}</div>
+						<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+						<div>[[_getAssessmentType(assessmentItem)]]</div>
+						<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+						<div class="due-date">[[_getDateString(assessmentItem.dueDate)]]</div>
+					</div>
 				</div>
 			</div>
 			<template is="dom-if" if="{{_isCompleted(assessmentItem)}}">
@@ -99,6 +116,19 @@
 			}
 
 			return this.localize('dueDateShort', 'dueDate', dueDateString);
+		},
+
+		_getAssessmentIcon: function(assessmentItem) {
+			var icon = 'd2l-tier2:';
+			if (assessmentItem.type === 'assignment') return icon + 'assignments';
+			else if (assessmentItem.type === 'quiz') return icon + 'quizzing';
+			else return '';
+		},
+
+		_getAssessmentType: function(assessmentItem) {
+			if (assessmentItem.type === 'assignment') return this.localize('assignment');
+			else if (assessmentItem.type === 'quiz') return this.localize('quiz');
+			else return '';
 		}
 
 	});

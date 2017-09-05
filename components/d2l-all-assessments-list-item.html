@@ -190,8 +190,8 @@
 		},
 
 		_updateAssessmentType: function(assessmentItem) {
-			if (assessmentItem.type === 'assignment') this.assessmentType = 'Assignments';
-			else if (assessmentItem.type === 'quiz') this.assessmentType = 'Quiz';
+			if (assessmentItem.type === 'assignment') this.assessmentType = this.localize('assignment');
+			else if (assessmentItem.type === 'quiz') this.assessmentType = this.localize('quiz');
 			else this.assessmentType = '';
 		}
 

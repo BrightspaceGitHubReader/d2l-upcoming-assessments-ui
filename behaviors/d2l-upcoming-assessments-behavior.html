@@ -22,7 +22,9 @@
 			var assignmentEntities = activities.getSubEntitiesByClass('user-assignment-activity');
 			var quizEntities = activities.getSubEntitiesByClass('user-quiz-activity');
 			[].concat(assignmentEntities).concat(quizEntities).forEach(function(assessment) {
-				if (!assessment.getSubEntityByClass('due-date')) {
+				if (!assessment.getSubEntityByClass(self.HypermediaClasses.dates.dueDate)
+					&& !assessment.getSubEntityByClass(self.HypermediaClasses.dates.endDate)
+				) {
 					return;
 				}
 				var orgUnitLink = (assessment.getLinkByRel(self.HypermediaRels.organization) || {}).href;
@@ -80,13 +82,19 @@
 				var activityIsDueToday = false;
 
 				var dueDate;
-				var dueDateEntity = response.activityUsage.getSubEntityByClass('due-date');
+				var dueDateEntity = response.activityUsage.getSubEntityByClass(self.HypermediaClasses.dates.dueDate);
 				if (dueDateEntity) {
 					dueDate = dueDateEntity.properties.date;
 					// If there is no due date, the default value of false is correct
 					activityIsDueToday = !activityIsComplete
 						&& !activityIsOverdue
 						&& self.getDateDiffInCalendarDays(dueDate) === 0;
+				}
+
+				var endDate;
+				var endDateEntity = response.activityUsage.getSubEntityByClass(self.HypermediaClasses.dates.endDate);
+				if (endDateEntity) {
+					endDate = endDateEntity.properties.date;
 				}
 
 				if (!orgUnitRequest) {
@@ -113,6 +121,7 @@
 								name: activity.properties.name,
 								courseName: organization.properties.name,
 								dueDate: dueDate,
+								endDate: endDate,
 								instructions: activity.properties.instructionsText || activity.properties.instructions,
 								isCompleted: activityIsComplete,
 								isDueToday: activityIsDueToday,
@@ -166,7 +175,8 @@
 			return (activityEntities)
 				.map(function(assignment) {
 					return {
-						dueDate: ((assignment.getSubEntityByClass('due-date') || {}).properties || {}).date
+						dueDate: ((assignment.getSubEntityByClass(self.HypermediaClasses.dates.dueDate) || {}).properties || {}).date,
+						endDate: ((assignment.getSubEntityByClass(self.HypermediaClasses.dates.endDate) || {}).properties || {}).date
 					};
 				})
 				.filter(function(item) {

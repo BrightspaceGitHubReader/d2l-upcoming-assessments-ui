@@ -37,7 +37,7 @@
 			}
 		</style>
 			<template is="dom-repeat" items="[[_assessmentItemBuckets]]">
-				<div class="date-header">[[_getDueDateString(item.1)]]</div>
+				<div class="date-header">[[_getDateString(item.1)]]</div>
 					<div role="list">
 						<template is="dom-repeat" items="[[item.1]]">
 							<d2l-all-assessments-list-item assessment-item="[[item]]"></d2l-assessments-list-item>
@@ -83,7 +83,7 @@
 				var dates = new Map();
 
 				for (var i = 0; i < assessmentItems.length; i++) {
-					var dateString = new Date(assessmentItems[i].dueDate).toDateString();
+					var dateString = new Date(assessmentItems[i].dueDate || assessmentItems[i].endDate).toDateString();
 
 					if (!dates.get(dateString)) {
 						dates.set(dateString, []);
@@ -95,12 +95,12 @@
 				this._assessmentItemBuckets = Array.from(dates);
 			},
 
-			_getDueDateString: function(activity) {
-				var dueDateString;
+			_getDateString: function(activity) {
+				var dateString;
 				var dateStringPrefix;
-				var calendarDateDiff = this.getDateDiffInCalendarDays(activity[0].dueDate);
+				var calendarDateDiff = this.getDateDiffInCalendarDays(activity[0].dueDate || activity[0].endDate);
 
-				dueDateString = new Intl.DateTimeFormat(this.locale, { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date(activity[0].dueDate));
+				dateString = new Intl.DateTimeFormat(this.locale, { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date(activity[0].dueDate || activity[0].endDate));
 
 				if (calendarDateDiff === 0) {
 					dateStringPrefix = this.localize('today');
@@ -109,11 +109,10 @@
 				}
 
 				if (dateStringPrefix) {
-					return this.localize('dueDateLongImminent', 'prefix', dateStringPrefix, 'dueDate', dueDateString);
+					return this.localize('dueDateLongImminent', 'prefix', dateStringPrefix, 'dueDate', dateString);
 				}
 
-				return dueDateString;
-
+				return dateString;
 			}
 
 		});

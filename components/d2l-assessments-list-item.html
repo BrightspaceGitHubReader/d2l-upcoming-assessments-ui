@@ -50,7 +50,7 @@
 				height: 18px;
 			}
 
-			.due-date {
+			.date {
 				font-weight: bolder;
 			}
 
@@ -73,12 +73,18 @@
 						<div class="course-name">{{assessmentItem.courseName}}</div>
 						<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
 						<div>[[_getAssessmentType(assessmentItem)]]</div>
-						<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
-						<div class="due-date">[[_getDateString(assessmentItem.dueDate)]]</div>
+						<template is="dom-if" if="[[_hasDueDate(assessmentItem)]]">
+							<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+							<div class="date">[[_getDueDateString(assessmentItem.dueDate)]]</div>
+						</template>
+						<template is="dom-if" if="[[_hasEndDate(assessmentItem)]]">
+							<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+							<div class="date">[[_getEndDateString(assessmentItem.endDate)]]</div>
+						</template>
 					</div>
 				</div>
 			</div>
-			<template is="dom-if" if="{{_isCompleted(assessmentItem)}}">
+			<template is="dom-if" if="[[_isCompleted(assessmentItem)]]">
 				<iron-icon class="completion-icon" icon="d2l-tier1:check"></iron-icon>
 			</template>
 	</template>
@@ -99,23 +105,39 @@
 			window.D2L.UpcomingAssessments.LocalizeBehavior
 		],
 
+		_hasDueDate: function(item) {
+			return !!item.dueDate;
+		},
+
+		_hasEndDate: function(item) {
+			return !!item.endDate;
+		},
+
 		_isCompleted: function(item) {
 			return item.isCompleted;
 		},
 
-		_getDateString: function(dueDateUTC) {
-			var dueDateString;
-			var calendarDateDiff = this.getDateDiffInCalendarDays(dueDateUTC);
+		_getDueDateString: function(dueDateUTC) {
+			return this._getDateString(dueDateUTC, 'dueDateShort', 'dueDate');
+		},
+
+		_getEndDateString: function(endDateUTC) {
+			return this._getDateString(endDateUTC, 'endDateShort', 'endDate');
+		},
+
+		_getDateString: function(dateUTC, langTerm, key) {
+			var dateString;
+			var calendarDateDiff = this.getDateDiffInCalendarDays(dateUTC);
 
 			if (calendarDateDiff === 0) {
-				dueDateString = this.localize('today');
+				dateString = this.localize('today');
 			} else if (calendarDateDiff === 1) {
-				dueDateString = this.localize('tomorrow');
+				dateString = this.localize('tomorrow');
 			} else {
-				dueDateString = new Intl.DateTimeFormat(this.locale, { month: 'long', day: 'numeric' }).format(new Date(dueDateUTC));
+				dateString = new Intl.DateTimeFormat(this.locale, { month: 'long', day: 'numeric' }).format(new Date(dateUTC));
 			}
 
-			return this.localize('dueDateShort', 'dueDate', dueDateString);
+			return this.localize(langTerm, key, dateString);
 		},
 
 		_getAssessmentIcon: function(assessmentItem) {

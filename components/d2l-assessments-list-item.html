@@ -74,7 +74,7 @@
 					<div class="assessment-info">
 						<div class="course-name">{{assessmentItem.courseName}}</div>
 						<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
-						<div>[[_getAssessmentType(assessmentItem)]]</div>
+						<div class="assessment-type">[[_getAssessmentType(assessmentItem)]]</div>
 						<template is="dom-if" if="[[_hasDueDate(assessmentItem)]]">
 							<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
 							<div class="date">[[_getDueDateString(assessmentItem.dueDate)]]</div>

@@ -145,14 +145,14 @@
 		_getAssessmentIcon: function(assessmentItem) {
 			var icon = 'd2l-tier2:';
 			if (assessmentItem.type === 'assignment') return icon + 'assignments';
-			else if (assessmentItem.type === 'quiz') return icon + 'quizzing';
-			else return '';
+			if (assessmentItem.type === 'quiz') return icon + 'quizzing';
+			return '';
 		},
 
 		_getAssessmentType: function(assessmentItem) {
 			if (assessmentItem.type === 'assignment') return this.localize('assignment');
-			else if (assessmentItem.type === 'quiz') return this.localize('quiz');
-			else return '';
+			if (assessmentItem.type === 'quiz') return this.localize('quiz');
+			return '';
 		}
 
 	});

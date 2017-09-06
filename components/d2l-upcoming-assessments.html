@@ -159,7 +159,11 @@
 				<a is="d2l-link" href="javascript:void(0);" on-tap="_goNext" on-keypress="_keypressGoNext">[[localize('goNextText')]]</a>
 			</div>
 			<template is="dom-if" if="[[_hasActivities(_allActivities)]]">
-				<d2l-all-assessments-list assessment-items=[[_allActivities]]></d2l-all-assessments-list>
+				<d2l-all-assessments-list
+					assessment-items="[[_allActivities]]"
+					period-start="[[_periodStart]]"
+					period-end="[[_periodEnd]]">
+				</d2l-all-assessments-list>
 			</template>
 			<div hidden$="[[_hasActivities(_allActivities)]]" class="no-assessments-in-time-frame">[[_noAssessmentsInThisTimeFrame]]</div>
 
@@ -223,7 +227,9 @@
 				getToken: {
 					type: Object,
 					value: null
-				}
+				},
+				_periodStart: String,
+				_periodEnd: String
 			},
 
 			behaviors: [
@@ -277,6 +283,7 @@
 			_updateActivitiesInfo: function(activities) {
 				var self = this;
 
+				activities = activities || [];
 				activities = activities
 					.filter(function(activity) {
 						return activity.dueDate || activity.endDate;
@@ -343,6 +350,8 @@
 						self._previousPeriodUrl = (userActivityUsages.getLinkByRel(self.HypermediaRels.Activities.previousPeriod) || {}).href;
 						self._nextPeriodUrl = (userActivityUsages.getLinkByRel(self.HypermediaRels.Activities.nextPeriod) || {}).href;
 						self._currentPeriodText = self._getFormattedPeriodText(userActivityUsages.properties.start, userActivityUsages.properties.end);
+						self._periodStart = userActivityUsages.properties.start;
+						self._periodEnd = userActivityUsages.properties.end;
 
 						return self._getOverdueActivities(userActivityUsages, self.getToken, self.userUrl);
 					})
@@ -357,6 +366,7 @@
 						self._userName = null;
 					})
 					.then(function() {
+						progress.finish();
 						self._setLoaded(true);
 					});
 			},

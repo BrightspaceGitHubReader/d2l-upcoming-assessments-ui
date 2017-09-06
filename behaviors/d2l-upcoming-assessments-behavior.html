@@ -100,7 +100,6 @@
 			return Promise.all(requests);
 		},
 
-		// TODO: Used in the overdue widget in Parent Portal, should be moved there
 		_getUserActivityUsages: function(userEntity, getToken, userUrl) {
 			var myActivitiesLink = (userEntity.getLinkByRel(this.HypermediaRels.Activities.myActivities) || {}).href;
 

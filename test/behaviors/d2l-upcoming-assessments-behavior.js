@@ -163,46 +163,24 @@ describe('d2l upcoming assessments behavior', function() {
 	});
 
 	describe('_getOrganizationRequest', function() {
-		it('should make a request if the organization has not already been fetched', function() {
+		it('should make a request for the organization', function() {
 			var usage = getUserActivityUsage('assignment');
-			component._organizationRequests = {};
 			component._fetchEntity = sandbox.stub();
 
 			component._getOrganizationRequest(usage, getToken, userUrl);
 
 			expect(component._fetchEntity).to.have.been.called;
-		});
-
-		it('should not make a request if the organization has already been fetched', function() {
-			var usage = getUserActivityUsage('assignment');
-			component._organizationRequests[organizationHref] = Promise.resolve(organization);
-			component._fetchEntity = sandbox.stub();
-
-			component._getOrganizationRequest(usage, getToken, userUrl);
-
-			expect(component._fetchEntity).to.have.not.been.called;
 		});
 	});
 
 	describe('_getActivityRequest', function() {
-		it('should make a request if the activity has not already been fetched', function() {
+		it('should make a request for the activity', function() {
 			var usage = getUserActivityUsage('assignment');
-			component._activityRequests = {};
 			component._fetchEntity = sandbox.stub();
 
 			component._getActivityRequest(usage, getToken, userUrl);
 
 			expect(component._fetchEntity).to.have.been.called;
-		});
-
-		it('should not make a request if the activity has already been fetched', function() {
-			var usage = getUserActivityUsage('assignment');
-			component._activityRequests[activityHref] = Promise.resolve(getActivity('assignment'));
-			component._fetchEntity = sandbox.stub();
-
-			component._getActivityRequest(usage, getToken, userUrl);
-
-			expect(component._fetchEntity).to.have.not.been.called;
 		});
 	});
 

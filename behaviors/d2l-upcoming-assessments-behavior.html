@@ -67,27 +67,15 @@
 			return type;
 		},
 
-		_organizationRequests: {},
-
 		_getOrganizationRequest: function(userActivityUsage, getToken, userUrl) {
 			var organizationLink = (userActivityUsage.getLinkByRel(this.HypermediaRels.organization) || {} ).href;
-			var organizationRequest = this._organizationRequests[organizationLink] || this._fetchEntity(organizationLink, getToken, userUrl);
-
-			this._organizationRequests[organizationLink] = organizationRequest;
-
-			return organizationRequest;
+			return this._fetchEntity(organizationLink, getToken, userUrl);
 		},
-
-		_activityRequests: {},
 
 		_getActivityRequest: function(userActivityUsage, getToken, userUrl) {
 			var activityLink = (userActivityUsage.getLinkByRel(this.HypermediaRels.assignment)
 					|| userActivityUsage.getLinkByRel(this.HypermediaRels.quiz) || {}).href;
-			var activityRequest = this._activityRequests[activityLink] || this._fetchEntity(activityLink, getToken, userUrl);
-
-			this._activityRequests[activityLink] = activityRequest;
-
-			return activityRequest;
+			return this._fetchEntity(activityLink, getToken, userUrl);
 		},
 
 		/*

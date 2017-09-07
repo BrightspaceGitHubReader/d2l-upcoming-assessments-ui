@@ -56,8 +56,19 @@
 				font-weight: bolder;
 			}
 
-			.activity-icon, .spacer {
+			.activity-icon-container {
+				width: 24px;
 				margin-right: 20px;
+			}
+
+			:host-context([dir="rtl"]) .activity-icon-container {
+				margin-right: 0px;
+				margin-left: 20px;
+			}
+
+			:host-context([dir="rtl"]) .activity-icon[icon="d2l-tier2:assignments"] {
+				width: 26px;
+				margin-right: -25px;
 			}
 
 			.activity-info {
@@ -68,7 +79,9 @@
 
 		</style>
 			<div class="activity-info">
-				<d2l-icon class="activity-icon" icon="[[_getAssessmentIcon(assessmentItem)]]"></d2l-icon>
+				<div class="activity-icon-container">
+					<d2l-icon class="activity-icon" icon="[[_getAssessmentIcon(assessmentItem)]]"></d2l-icon>
+				</div>
 				<div class="info-container">
 					<h3 class="assessment-title">{{assessmentItem.name}}</h3>
 					<div class="assessment-info">

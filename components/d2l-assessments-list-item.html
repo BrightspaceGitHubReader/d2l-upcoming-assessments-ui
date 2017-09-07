@@ -2,7 +2,9 @@
 <link rel="import" href="../../iron-icon/iron-icon.html">
 <link rel="import" href="../../d2l-typography/d2l-typography-shared-styles.html">
 <link rel="import" href="../../d2l-colors/d2l-colors.html">
+<link rel="import" href="../../d2l-icons/d2l-icon.html">
 <link rel="import" href="../../d2l-icons/tier1-icons.html">
+<link rel="import" href="../../d2l-icons/tier2-icons.html">
 <link rel="import" href="../behaviors/date-behavior.html">
 <link rel="import" href="../behaviors/localize-behavior.html">
 
@@ -32,6 +34,8 @@
 				display: flex;
 				flex-direction: row;
 				align-items: center;
+				margin-top: 5px;
+				line-height: 1;
 			}
 
 			.info-container {
@@ -52,19 +56,47 @@
 				font-weight: bolder;
 			}
 
+			.activity-icon-container {
+				width: 24px;
+				margin-right: 20px;
+			}
+
+			:host-context([dir="rtl"]) .activity-icon-container {
+				margin-right: 0px;
+				margin-left: 20px;
+			}
+
+			:host-context([dir="rtl"]) .activity-icon[icon="d2l-tier2:assignments"] {
+				width: 26px;
+				margin-right: -25px;
+			}
+
+			.activity-info {
+				display: inline-flex;
+				flex: 1;
+				align-items: center;
+			}
+
 		</style>
-			<div class="info-container">
-				<h3 class="assessment-title">{{assessmentItem.name}}</h3>
-				<div class="assessment-info">
-					<div class="course-name">{{assessmentItem.courseName}}</div>
-					<template is="dom-if" if="[[_hasDueDate(assessmentItem)]]">
+			<div class="activity-info">
+				<div class="activity-icon-container">
+					<d2l-icon class="activity-icon" icon="[[_getAssessmentIcon(assessmentItem)]]"></d2l-icon>
+				</div>
+				<div class="info-container">
+					<h3 class="assessment-title">{{assessmentItem.name}}</h3>
+					<div class="assessment-info">
+						<div class="course-name">{{assessmentItem.courseName}}</div>
 						<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
-						<div class="date">[[_getDueDateString(assessmentItem.dueDate)]]</div>
-					</template>
-					<template is="dom-if" if="[[_hasEndDate(assessmentItem)]]">
-						<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
-						<div class="date">[[_getEndDateString(assessmentItem.endDate)]]</div>
-					</template>
+						<div class="assessment-type">[[_getAssessmentType(assessmentItem)]]</div>
+						<template is="dom-if" if="[[_hasDueDate(assessmentItem)]]">
+							<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+							<div class="date">[[_getDueDateString(assessmentItem.dueDate)]]</div>
+						</template>
+						<template is="dom-if" if="[[_hasEndDate(assessmentItem)]]">
+							<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+							<div class="date">[[_getEndDateString(assessmentItem.endDate)]]</div>
+						</template>
+					</div>
 				</div>
 			</div>
 			<template is="dom-if" if="[[_isCompleted(assessmentItem)]]">
@@ -121,6 +153,19 @@
 			}
 
 			return this.localize(langTerm, key, dateString);
+		},
+
+		_getAssessmentIcon: function(assessmentItem) {
+			var icon = 'd2l-tier2:';
+			if (assessmentItem.type === 'assignment') return icon + 'assignments';
+			if (assessmentItem.type === 'quiz') return icon + 'quizzing';
+			return '';
+		},
+
+		_getAssessmentType: function(assessmentItem) {
+			if (assessmentItem.type === 'assignment') return this.localize('assignment');
+			if (assessmentItem.type === 'quiz') return this.localize('quiz');
+			return '';
 		}
 
 	});

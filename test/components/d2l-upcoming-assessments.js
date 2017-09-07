@@ -86,7 +86,8 @@ describe('<d2l-upcoming-assessments>', function() {
 		describe('_getActivityInfo', function() {
 
 			it('sets the nextPeriodUrl if the link exists on the provided activities object', function() {
-				activities.getLinkByRel = sandbox.stub().withArgs('https://activities.api.brightspace.com/rels/next-period').returns({ href: nextPeriodUrl });
+				activities.getLinkByRel = sandbox.stub();
+				activities.getLinkByRel.withArgs('https://activities.api.brightspace.com/rels/next-period').returns({ href: nextPeriodUrl });
 				activities.getSubEntitiesByClass = sandbox.stub().returns([]);
 				return element._getActivityInfo(activities)
 					.then(function() {
@@ -95,7 +96,8 @@ describe('<d2l-upcoming-assessments>', function() {
 			});
 
 			it('sets the previousPeriodUrl if the link exists on the provided activities object', function() {
-				activities.getLinkByRel = sandbox.stub().withArgs('https://activities.api.brightspace.com/rels/previous-period').returns({ href: previousPeriodUrl });
+				activities.getLinkByRel = sandbox.stub();
+				activities.getLinkByRel.withArgs('https://activities.api.brightspace.com/rels/previous-period').returns({ href: previousPeriodUrl });
 				activities.getSubEntitiesByClass = sandbox.stub().returns([]);
 				return element._getActivityInfo(activities)
 					.then(function() {

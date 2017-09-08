@@ -146,6 +146,8 @@
 							</div>
 							<div class="meta-info" hidden$="[[!_showOverdue]]">
 								<div class="activity-status-badge overdue-info">[[localize('activityOverdue')]]</div>
+							</div>
+							<div class="meta-text" hidden$="[[!_showEndsText]]">
 								<div class="meta-text emphasis">[[_endsText]]</div>
 								<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
 							</div>
@@ -205,6 +207,10 @@
 			_showEnded: {
 				type: Boolean,
 				value: false
+			},
+			_showEndsText: {
+				type: Boolean,
+				value: false
 			}
 		},
 
@@ -222,8 +228,11 @@
 			this._showOverdue = !assessmentItem.isCompleted && !assessmentItem.isEnded && assessmentItem.isOverdue;
 			this._showEnded = !assessmentItem.isCompleted && assessmentItem.isEnded;
 
-			var relativeDateString = this._getRelativeDateString(assessmentItem.endDate);
-			this._endsText = this.localize('endDateShort', 'endDate', relativeDateString);
+			if (assessmentItem.endDate) {
+				var relativeDateString = this._getRelativeDateString(assessmentItem.endDate);
+				this._endsText = this.localize('endDateShort', 'endDate', relativeDateString);
+				this._showEndsText = this._showOverdue;
+			}
 		},
 
 		_getRelativeDateString: function(dateUTC) {

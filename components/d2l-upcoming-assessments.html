@@ -260,7 +260,17 @@
 					.then(function(userEntity) {
 						self._userName = (userEntity.getSubEntityByRel(self.HypermediaRels.firstName) || { properties: {} }).properties.name;
 						var myActivitiesLink = (userEntity.getLinkByRel(self.HypermediaRels.Activities.myActivities) || {}).href;
-						return self._loadActivitiesForPeriod(myActivitiesLink);
+						return self._loadActivitiesForPeriod(myActivitiesLink)
+							.then(function(activities) {
+								var upcomingActivities = activities
+									.filter(function(activity) {
+										return self.isActivityUpcoming(activity);
+									});
+								self._setTotalCount(upcomingActivities.length);
+
+								var basicListActivities = upcomingActivities.slice(0, 4);
+								self.set('_assessments', basicListActivities);
+							});
 					});
 			},
 
@@ -281,26 +291,14 @@
 			},
 
 			_updateActivitiesInfo: function(activities) {
-				var self = this;
-
 				activities = activities || [];
-				activities = activities
+				return activities
 					.filter(function(activity) {
 						return activity.dueDate || activity.endDate;
 					})
 					.sort(function(a, b) {
 						return (a.dueDate || a.endDate) > (b.dueDate || b.endDate);
 					});
-
-				var upcomingActivities = activities
-					.filter(function(activity) {
-						return self.isActivityUpcoming(activity);
-					});
-				this._setTotalCount(upcomingActivities.length);
-
-				var basicListActivities = upcomingActivities.slice(0, 4);
-				this.set('_assessments', basicListActivities);
-				this.set('_allActivities', activities);
 			},
 
 			_keypressOpenAllAssignmentsView: function(e) {
@@ -365,9 +363,11 @@
 						self._showError = true;
 						self._userName = null;
 					})
-					.then(function() {
+					.then(function(activities) {
+						self.set('_allActivities', activities);
 						progress.finish();
 						self._setLoaded(true);
+						return activities;
 					});
 			},
 

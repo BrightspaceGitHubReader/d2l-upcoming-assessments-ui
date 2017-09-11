@@ -5,91 +5,13 @@
 describe('<d2l-all-assessments-list-item>', function() {
 	var element;
 
-	var assessmentItem = {
-		'name': 'Math Quiz',
-		'courseName': 'Math',
-		'instructionsText': 'Do the math quiz pls, k thx.',
-		'itemType': 'Quiz',
-		'dueDate': '2017-04-06'
-	};
-
-	var completedAssessmentItem = {
-		'name': 'Math Quiz',
-		'courseName': 'Math',
-		'instructionsText': 'Do the math quiz pls, k thx.',
-		'itemType': 'Quiz',
-		'dueDate': '2017-04-06',
-		'isCompleted': true
-	};
-
 	beforeEach(function() {
 		element = fixture('basic');
 	});
 
 	describe('smoke test', function() {
-
 		it('can be instantiated', function() {
 			expect(element.is).to.equal('d2l-all-assessments-list-item');
-		});
-
-	});
-
-	describe('item rendering', function() {
-
-		beforeEach(function() {
-			assessmentItem.isDueToday = false;
-			assessmentItem.isOverdue = false;
-			completedAssessmentItem.isDueToday = false;
-			completedAssessmentItem.isOverdue = false;
-		});
-
-		it('has a completion indicator when completed', function() {
-			element.set('assessmentItem', completedAssessmentItem);
-			Polymer.dom.flush();
-
-			expect(element.$$('.completion-info')).to.exist;
-			expect(element.$$('.completion-info').getAttribute('hidden')).to.be.null;
-		});
-
-		it('doesn\'t have a completion indicator when not completed', function() {
-			element.set('assessmentItem', assessmentItem);
-			Polymer.dom.flush();
-
-			expect(element.$$('.completion-info').getAttribute('hidden')).to.not.be.null;
-		});
-
-		it('has a due today indicator when isDueToday is true', function() {
-			assessmentItem.isDueToday = true;
-
-			element.set('assessmentItem', assessmentItem);
-			Polymer.dom.flush();
-
-			expect(element.$$('.due-today-info')).to.exist;
-			expect(element.$$('.due-today-info').getAttribute('hidden')).to.be.null;
-		});
-
-		it('does not have a due today indicator when isDueToday is false', function() {
-			element.set('assessmentItem', completedAssessmentItem);
-			Polymer.dom.flush();
-
-			expect(element.$$('.due-today-info').getAttribute('hidden')).to.not.be.null;
-		});
-
-		it('has an overdue indicator when isOverdue is true', function() {
-			assessmentItem.isOverdue = true;
-
-			element.set('assessmentItem', assessmentItem);
-			Polymer.dom.flush();
-
-			expect(element.$$('.overdue-info').parentElement).to.exist;
-			expect(element.$$('.overdue-info').parentElement.getAttribute('hidden')).to.be.null;
-		});
-
-		it('does not have an overdue indicator when isOverdue is false', function() {
-			element.set('assessmentItem', completedAssessmentItem);
-			Polymer.dom.flush();
-
-			expect(element.$$('.overdue-info').parentElement.getAttribute('hidden')).to.not.be.null;
 		});
 	});
 
@@ -98,6 +20,86 @@ describe('<d2l-all-assessments-list-item>', function() {
 		date.setDate(date.getDate() + modifierDays);
 		return date;
 	}
+
+	function setAssessmentItem(isCompleted, isDueToday, isOverdue, isEnded) {
+		// If due today, 0; if overdue, negative; otherwise, positive
+		var dueDateModifier = isDueToday ? 0 : isOverdue ? -3 : 3;
+		var endDateModifier = isEnded ? -1 : 5;
+
+		var item = {
+			name: 'Name',
+			courseName: 'Course',
+			instructionsText: 'Instructions',
+			dueDate: nowish(dueDateModifier),
+			endDate: nowish(endDateModifier),
+			isCompleted: isCompleted,
+			isDueToday: isDueToday,
+			isOverdue: isOverdue,
+			isEnded: isEnded,
+			type: 'assignment'
+		};
+
+		element.set('assessmentItem', item);
+		Polymer.dom.flush();
+	}
+
+	[true, false].forEach(function(isCompleted) {
+		var completeString = ' is ' + (isCompleted ? '' : 'not') + ' completed';
+
+		[true, false].forEach(function(isDueToday) {
+			var dueTodayString = completeString + ' and is ' + (isDueToday ? '' : 'not') + ' due today';
+
+			[true, false].forEach(function(isOverdue) {
+				var overdueString = dueTodayString + ' and is ' + (isOverdue ? '' : 'not') + ' overdue';
+
+				[true, false].forEach(function(isEnded) {
+					var testName = overdueString + ' and is ' + (isEnded ? '' : 'not') + ' ended';
+
+					describe('when activity' + testName, function() {
+						beforeEach(function() {
+							setAssessmentItem(isCompleted, isDueToday, isOverdue, isEnded);
+						});
+
+						it('should show Complete activity badge correctly', function() {
+							var completionInfo = element.$$('.completion-info');
+							expect(completionInfo).to.exist;
+
+							isCompleted
+								? expect(completionInfo.getAttribute('hidden')).to.be.null
+								: expect(completionInfo.getAttribute('hidden')).to.not.be.null;
+						});
+
+						it('should show Due Today badge correctly', function() {
+							var dueTodayInfo = element.$$('.due-today-info');
+							expect(dueTodayInfo).to.exist;
+
+							!isCompleted && isDueToday
+								? expect(dueTodayInfo.getAttribute('hidden')).to.be.null
+								: expect(dueTodayInfo.getAttribute('hidden')).to.not.be.null;
+						});
+
+						it('should show Overdue badge correctly', function() {
+							var overdueInfo = element.$$('.overdue-info');
+							expect(overdueInfo.parentElement).to.exist;
+
+							!isCompleted && isOverdue && !isEnded
+								? expect(overdueInfo.parentElement.getAttribute('hidden')).to.be.null
+								: expect(overdueInfo.parentElement.getAttribute('hidden')).to.not.be.null;
+						});
+
+						it('should show Closed badge correctly', function() {
+							var endedInfo = element.$$('.ended-info');
+							expect(endedInfo).to.exist;
+
+							!isCompleted && isEnded
+								? expect(endedInfo.getAttribute('hidden')).to.be.null
+								: expect(endedInfo.getAttribute('hidden')).to.not.be.null;
+						});
+					});
+				});
+			});
+		});
+	});
 
 	describe('getRelativeDateString', function() {
 		[

@@ -262,6 +262,8 @@
 						var myActivitiesLink = (userEntity.getLinkByRel(self.HypermediaRels.Activities.myActivities) || {}).href;
 						return self._loadActivitiesForPeriod(myActivitiesLink)
 							.then(function(activities) {
+								activities = activities || [];
+
 								var upcomingActivities = activities
 									.filter(function(activity) {
 										return self.isActivityUpcoming(activity);

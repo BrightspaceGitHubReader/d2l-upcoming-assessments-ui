@@ -111,18 +111,46 @@ describe('<d2l-upcoming-assessments>', function() {
 				element._fetchEntity = sandbox.stub();
 				return element._loadActivitiesForPeriod()
 					.then(function() {
+						return Promise.reject('Expected _loadActivitiesForPeriod to reject');
+					})
+					.catch(function() {
 						expect(element._fetchEntity).to.not.have.been.called;
 					});
 			});
 
 			it('calls _fetchEntity for the provided url', function() {
-				element._fetchEntity = sandbox.stub().returns(Promise.resolve(activities));
+				element._fetchEntity = sandbox.stub().returns(Promise.resolve(
+					window.D2L.Hypermedia.Siren.Parse(activities)
+				));
 				return element._loadActivitiesForPeriod(nextPeriodUrl)
 					.then(function() {
 						expect(element._fetchEntity).to.have.been.calledWith(nextPeriodUrl);
 					});
 			});
 
+		});
+
+		describe('_getCustomRangeAction', function() {
+			it('does nothing if the provided url was not set', function() {
+				element._fetchEntity = sandbox.stub();
+				return element._getCustomRangeAction()
+					.then(function() {
+						return Promise.reject('Expected _getCustomRangeAction to reject');
+					})
+					.catch(function() {
+						expect(element._fetchEntity).to.not.have.been.called;
+					});
+			});
+
+			it('calls _fetchEntity for the provided url', function() {
+				element._fetchEntity = sandbox.stub().returns(Promise.resolve(
+					window.D2L.Hypermedia.Siren.Parse(activities)
+				));
+				return element._getCustomRangeAction(nextPeriodUrl)
+					.then(function() {
+						expect(element._fetchEntity).to.have.been.calledWith(nextPeriodUrl);
+					});
+			});
 		});
 
 	});

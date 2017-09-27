@@ -165,6 +165,99 @@ describe('<d2l-upcoming-assessments>', function() {
 					});
 			});
 
+			it('should update the allActivies with the activities in the period', function() {
+				var userUsage = {};
+				userUsage.getLinkByRel = sandbox.stub().returns();
+				userUsage.properties = {
+					start: 'start',
+					end: 'end'
+				};
+
+				element._getFormattedPeriodText = sandbox.stub().returns('dateText');
+
+				element._fetchEntity = sandbox.stub().returns(Promise.resolve(userUsage));
+				element._getOverdueActivities = sandbox.stub().returns(activities);
+				element._getUserActivityUsagesInfos = sandbox.stub().returns(activities);
+				element._updateActivitiesInfo = sandbox.stub().returns(activities);
+				return element._loadActivitiesForPeriod(nextPeriodUrl)
+					.then(function() {
+						expect(element._allActivities).to.equal(activities);
+					});
+			});
+
+			it('should not update the assessments with the activities in the period', function() {
+				var userUsage = {};
+				userUsage.getLinkByRel = sandbox.stub().returns();
+				userUsage.properties = {
+					start: 'start',
+					end: 'end'
+				};
+
+				element._getFormattedPeriodText = sandbox.stub().returns('dateText');
+
+				element._fetchEntity = sandbox.stub().returns(Promise.resolve(userUsage));
+				element._getOverdueActivities = sandbox.stub().returns(activities);
+				element._getUserActivityUsagesInfos = sandbox.stub().returns(activities);
+				element._updateActivitiesInfo = sandbox.stub().returns(activities);
+				return element._loadActivitiesForPeriod(nextPeriodUrl)
+					.then(function() {
+						expect(element._assessments).to.not.equal(activities);
+					});
+			});
+
+		});
+
+		describe('_getInfo', function() {
+			it('should set the assessments', function() {
+				var userUsage = {};
+				userUsage.getSubEntityByRel = sandbox.stub().returns();
+				userUsage.getLinkByRel = sandbox.stub().returns();
+
+				element._fetchEntity = sandbox.stub().returns(Promise.resolve(userUsage));
+
+				element._loadActivitiesForPeriod = sandbox.stub().returns(Promise.resolve([1, 2, 3]));
+
+				element.isActivityUpcoming = sandbox.stub().returns(true);
+
+				return element._getInfo()
+				.then(function() {
+					expect(element._assessments.toString()).to.equal([1, 2, 3].toString());
+				});
+			});
+
+			it('should set the assessments count', function() {
+				var userUsage = {};
+				userUsage.getSubEntityByRel = sandbox.stub().returns();
+				userUsage.getLinkByRel = sandbox.stub().returns();
+
+				element._fetchEntity = sandbox.stub().returns(Promise.resolve(userUsage));
+
+				element._loadActivitiesForPeriod = sandbox.stub().returns(Promise.resolve([1, 2, 3]));
+
+				element.isActivityUpcoming = sandbox.stub().returns(true);
+
+				return element._getInfo()
+				.then(function() {
+					expect(element.totalCount).to.equal(3);
+				});
+			});
+
+			it('should truncate the assessments at 4', function() {
+				var userUsage = {};
+				userUsage.getSubEntityByRel = sandbox.stub().returns();
+				userUsage.getLinkByRel = sandbox.stub().returns();
+
+				element._fetchEntity = sandbox.stub().returns(Promise.resolve(userUsage));
+
+				element._loadActivitiesForPeriod = sandbox.stub().returns(Promise.resolve([1, 2, 3, 4, 5, 6]));
+
+				element.isActivityUpcoming = sandbox.stub().returns(true);
+
+				return element._getInfo()
+				.then(function() {
+					expect(element._assessments.toString()).to.equal([1, 2, 3, 4].toString());
+				});
+			});
 		});
 
 		describe('_getCustomRangeAction', function() {

@@ -214,6 +214,7 @@ describe('<d2l-upcoming-assessments>', function() {
 				userUsage.getLinkByRel = sandbox.stub().returns();
 
 				element._fetchEntity = sandbox.stub().returns(Promise.resolve(userUsage));
+				element._getCustomRangeAction = sandbox.stub().returns(Promise.resolve(userUsage));
 
 				element._loadActivitiesForPeriod = sandbox.stub().returns(Promise.resolve([1, 2, 3]));
 
@@ -231,6 +232,7 @@ describe('<d2l-upcoming-assessments>', function() {
 				userUsage.getLinkByRel = sandbox.stub().returns();
 
 				element._fetchEntity = sandbox.stub().returns(Promise.resolve(userUsage));
+				element._getCustomRangeAction = sandbox.stub().returns(Promise.resolve(userUsage));
 
 				element._loadActivitiesForPeriod = sandbox.stub().returns(Promise.resolve([1, 2, 3]));
 
@@ -248,6 +250,7 @@ describe('<d2l-upcoming-assessments>', function() {
 				userUsage.getLinkByRel = sandbox.stub().returns();
 
 				element._fetchEntity = sandbox.stub().returns(Promise.resolve(userUsage));
+				element._getCustomRangeAction = sandbox.stub().returns(Promise.resolve(userUsage));
 
 				element._loadActivitiesForPeriod = sandbox.stub().returns(Promise.resolve([1, 2, 3, 4, 5, 6]));
 

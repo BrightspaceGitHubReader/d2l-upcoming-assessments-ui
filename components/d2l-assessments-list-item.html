@@ -31,14 +31,13 @@
 			.assessment-info {
 				@apply --d2l-body-standard-text;
 				font-size: 12px;
-				display: flex;
-				flex-direction: row;
-				align-items: center;
 				line-height: 1;
+				display: block;
 			}
 
 			.info-container {
 				display: block;
+				width: calc(100% - 44px);
 			}
 
 			iron-icon.completion-icon {
@@ -74,8 +73,18 @@
 				display: inline-flex;
 				flex: 1;
 				align-items: center;
+				max-width: 100%;
 			}
 
+			.course-name {
+				display: inline;
+				word-wrap: break-word;
+				overflow-wrap: break-word;
+			}
+
+			.date, .assessment-type {
+				display: inline;
+			}
 		</style>
 			<div class="activity-info">
 				<div class="activity-icon-container">

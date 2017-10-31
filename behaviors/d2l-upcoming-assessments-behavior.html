@@ -75,8 +75,12 @@
 			var activityLink = (userActivityUsage.getLinkByRel(this.HypermediaRels.assignment)
 					|| userActivityUsage.getLinkByRel(this.HypermediaRels.quiz) || {}).href;
 			return Promise.resolve(this._fetchEntityWithToken(activityLink, getToken, userUrl))
-				.catch(function() {
-					return null;
+				.catch(function(err) {
+					var status = typeof err === 'number' ? err : err && err.status;
+					if (typeof status === 'number' && status >= 400 && status < 500) {
+						return null;
+					}
+					throw err;
 				});
 		},
 

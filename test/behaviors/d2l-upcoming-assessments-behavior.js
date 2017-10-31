@@ -271,13 +271,36 @@ describe('d2l upcoming assessments behavior', function() {
 			expect(component._fetchEntityWithToken).to.have.been.called;
 		});
 
-		it('should resolve null when the request fails', function() {
+		it('should resolve null when the request fails with 4xx', function() {
 			var usage = getUserActivityUsage('assignment');
-			component._fetchEntityWithToken = sandbox.stub().returns(Promise.reject(new Error('Horrible error')));
+			component._fetchEntityWithToken = sandbox.stub().returns(Promise.reject(404));
 
 			return component._getActivityRequest(usage, getToken, userUrl)
 				.then(function(result) {
 					expect(result).to.be.null;
+				});
+		});
+
+		it('should resolve null when the request fails with 4xx', function() {
+			var usage = getUserActivityUsage('assignment');
+			component._fetchEntityWithToken = sandbox.stub().returns(Promise.reject({ status: 400 }));
+
+			return component._getActivityRequest(usage, getToken, userUrl)
+				.then(function(result) {
+					expect(result).to.be.null;
+				});
+		});
+
+		it('should reject when the request fails with server error', function() {
+			var usage = getUserActivityUsage('assignment');
+			component._fetchEntityWithToken = sandbox.stub().returns(Promise.reject(500));
+
+			return component._getActivityRequest(usage, getToken, userUrl)
+				.then(function() {
+					return Promise.reject();
+				})
+				.catch(function(err) {
+					expect(err).to.equal(500);
 				});
 		});
 	});

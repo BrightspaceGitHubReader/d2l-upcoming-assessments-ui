@@ -51,6 +51,12 @@
 					lms-url="http://localhost:8080/components/d2l-upcoming-assessments/demo/data"
 					token="foozleberries">
 				</d2l-upcoming-assessments>
+
+				<script>
+					document.querySelectorAll('d2l-upcoming-assessments').forEach(function(assessment) {
+						assessment.getToken = function() { return Promise.resolve('foozleberries'); };
+					});
+				</script>
 			</div>
 		</d2l-demo-template>
 	</body>

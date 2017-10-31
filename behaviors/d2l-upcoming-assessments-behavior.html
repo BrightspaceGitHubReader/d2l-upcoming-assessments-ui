@@ -74,7 +74,10 @@
 		_getActivityRequest: function(userActivityUsage, getToken, userUrl) {
 			var activityLink = (userActivityUsage.getLinkByRel(this.HypermediaRels.assignment)
 					|| userActivityUsage.getLinkByRel(this.HypermediaRels.quiz) || {}).href;
-			return this._fetchEntityWithToken(activityLink, getToken, userUrl);
+			return Promise.resolve(this._fetchEntityWithToken(activityLink, getToken, userUrl))
+				.catch(function() {
+					return null;
+				});
 		},
 
 		_getAssignmentInstructions: function(activity) {
@@ -124,6 +127,10 @@
 						var activity = response[0];
 						var organization = response[1];
 
+						if (!activity) {
+							return null;
+						}
+
 						var type = self._getActivityType.call(self, activity);
 						var info;
 						if (type === 'quiz') {
@@ -149,7 +156,16 @@
 				requests.push(request);
 			});
 
-			return Promise.all(requests);
+			return Promise.all(requests)
+				.then(function(responses) {
+					var successResponses = responses.filter(function(response) {
+						return !!response;
+					});
+					if (responses.length && !successResponses.length) {
+						return Promise.reject(new Error('All activity requests failed'));
+					}
+					return successResponses;
+				});
 		},
 
 		_getUserActivityUsages: function(userEntity, getToken, userUrl) {

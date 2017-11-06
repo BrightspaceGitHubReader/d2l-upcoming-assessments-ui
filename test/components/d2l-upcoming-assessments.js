@@ -119,60 +119,6 @@ describe('<d2l-upcoming-assessments>', function() {
 			});
 		});
 
-		describe('_getCustomDateRangeParameters', function() {
-			it('gets the correct range when selected date is a Tuesday', function() {
-				var date = new Date('Tue Sep 12 2017 00:00:00');
-				var expected = {
-					start: 'Sept 10 2017 00:00:00',
-					end: 'Sept 23 2017 23:59:59'
-				};
-				var range = element._getCustomDateRangeParameters(date);
-
-				var start = new Date(expected.start).toISOString();
-				var endDate = new Date(expected.end);
-				endDate.setMilliseconds(999);
-				var end = endDate.toISOString();
-
-				expect(range.start).to.equal(start);
-				expect(range.end).to.equal(end);
-			});
-
-			it('gets the correct range when selected date is a Sunday', function() {
-				var date = new Date('Sun Sep 03 2017 00:00:00');
-				var expected = {
-					'start':'Sept 3 2017 00:00:00',
-					'end':'Sept 16 2017 23:59:59'
-				};
-				var range = element._getCustomDateRangeParameters(date);
-
-				var start = new Date(expected.start).toISOString();
-				var endDate = new Date(expected.end);
-				endDate.setMilliseconds(999);
-				var end = endDate.toISOString();
-
-				expect(range.start).to.equal(start);
-				expect(range.end).to.equal(end);
-			});
-
-			it('gets the correct range when selected date is a Saturday', function() {
-				var date = new Date('Sat Aug 26 2017 00:00:00');
-				var expected = {
-					'start':'Aug 20 2017 00:00:00',
-					'end':'Sept 2 2017 23:59:59'
-				};
-
-				var range = element._getCustomDateRangeParameters(date);
-
-				var start = new Date(expected.start).toISOString();
-				var endDate = new Date(expected.end);
-				endDate.setMilliseconds(999);
-				var end = endDate.toISOString();
-
-				expect(range.start).to.equal(start);
-				expect(range.end).to.equal(end);
-			});
-		});
-
 		describe('_onDateValueChanged', function() {
 			it('invokes _loadActivitiesForPeriod with the correct url', function() {
 				element._loadActivitiesForPeriod = sandbox.stub().returns(Promise.resolve());
@@ -331,29 +277,6 @@ describe('<d2l-upcoming-assessments>', function() {
 				.then(function() {
 					expect(element._assessments.toString()).to.equal([1, 2, 3, 4].toString());
 				});
-			});
-		});
-
-		describe('_getCustomRangeAction', function() {
-			it('does nothing if the provided url was not set', function() {
-				element._fetchEntityWithToken = sandbox.stub();
-				return element._getCustomRangeAction()
-					.then(function() {
-						return Promise.reject('Expected _getCustomRangeAction to reject');
-					})
-					.catch(function() {
-						expect(element._fetchEntityWithToken).to.not.have.been.called;
-					});
-			});
-
-			it('calls _fetchEntityWithToken for the provided url', function() {
-				element._fetchEntityWithToken = sandbox.stub().returns(Promise.resolve(
-					window.D2L.Hypermedia.Siren.Parse(activities)
-				));
-				return element._getCustomRangeAction(periodUrl)
-					.then(function() {
-						expect(element._fetchEntityWithToken).to.have.been.calledWith(periodUrl);
-					});
 			});
 		});
 

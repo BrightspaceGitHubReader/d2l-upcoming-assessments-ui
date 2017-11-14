@@ -177,7 +177,7 @@
 			var self = this;
 
 			if (myActivitiesLink) {
-				return this._getCustomRangeAction(myActivitiesLink)
+				return this._getCustomRangeAction(myActivitiesLink, userUrl)
 					.then(function(actitiviesLink) {
 						return self._fetchEntityWithToken(actitiviesLink, getToken, userUrl);
 					});
@@ -195,14 +195,14 @@
 			return window.D2L.Hypermedia.Siren.Parse({});
 		},
 
-		_getCustomRangeAction: function(activitiesUrl) {
+		_getCustomRangeAction: function(activitiesUrl, userUrl) {
 			if (!activitiesUrl) {
 				return Promise.reject();
 			}
 
 			var self = this;
 
-			return this._fetchEntityWithToken(activitiesUrl, this.getToken, this.userUrl)
+			return this._fetchEntityWithToken(activitiesUrl, this.getToken, userUrl)
 				.then(function(activities) {
 					var currentTime = new Date();
 					var parameters = self._getCustomDateRangeParameters(currentTime);

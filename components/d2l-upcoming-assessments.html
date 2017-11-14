@@ -266,7 +266,7 @@
 					.then(function(userEntity) {
 						self._userName = (userEntity.getSubEntityByRel(self.HypermediaRels.firstName) || { properties: {} }).properties.name;
 						var myActivitiesLink = (userEntity.getLinkByRel(self.HypermediaRels.Activities.myActivities) || {}).href;
-						return self._getCustomRangeAction(myActivitiesLink)
+						return self._getCustomRangeAction(myActivitiesLink, self.userUrl)
 							.then(function(customActivitiesLink) {
 								return self._loadActivitiesForPeriod(customActivitiesLink);
 							})

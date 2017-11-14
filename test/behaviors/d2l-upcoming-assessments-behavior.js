@@ -416,4 +416,89 @@ describe('d2l upcoming assessments behavior', function() {
 				});
 		});
 	});
+
+	describe('_getCustomDateRangeParameters', function() {
+		it('gets the correct range when selected date is a Tuesday', function() {
+			var date = new Date('Tue Sep 12 2017 00:00:00');
+			var expected = {
+				start: 'Sept 10 2017 00:00:00',
+				end: 'Sept 23 2017 23:59:59'
+			};
+			var range = component._getCustomDateRangeParameters(date);
+
+			var start = new Date(expected.start).toISOString();
+			var endDate = new Date(expected.end);
+			endDate.setMilliseconds(999);
+			var end = endDate.toISOString();
+
+			expect(range.start).to.equal(start);
+			expect(range.end).to.equal(end);
+		});
+
+		it('gets the correct range when selected date is a Sunday', function() {
+			var date = new Date('Sun Sep 03 2017 00:00:00');
+			var expected = {
+				'start':'Sept 3 2017 00:00:00',
+				'end':'Sept 16 2017 23:59:59'
+			};
+			var range = component._getCustomDateRangeParameters(date);
+
+			var start = new Date(expected.start).toISOString();
+			var endDate = new Date(expected.end);
+			endDate.setMilliseconds(999);
+			var end = endDate.toISOString();
+
+			expect(range.start).to.equal(start);
+			expect(range.end).to.equal(end);
+		});
+
+		it('gets the correct range when selected date is a Saturday', function() {
+			var date = new Date('Sat Aug 26 2017 00:00:00');
+			var expected = {
+				'start':'Aug 20 2017 00:00:00',
+				'end':'Sept 2 2017 23:59:59'
+			};
+
+			var range = component._getCustomDateRangeParameters(date);
+
+			var start = new Date(expected.start).toISOString();
+			var endDate = new Date(expected.end);
+			endDate.setMilliseconds(999);
+			var end = endDate.toISOString();
+
+			expect(range.start).to.equal(start);
+			expect(range.end).to.equal(end);
+		});
+	});
+
+	describe('_getCustomRangeAction', function() {
+		var periodUrl = '/some/period/now/';
+		var activities = {
+			properties: {
+				start: '2017-07-19T16:20:07.567Z',
+				end: '2017-08-02T16:20:07.567Z'
+			}
+		};
+
+		it('does nothing if the provided url was not set', function() {
+			component._fetchEntityWithToken = sandbox.stub();
+			return component._getCustomRangeAction()
+				.then(function() {
+					return Promise.reject('Expected _getCustomRangeAction to reject');
+				})
+				.catch(function() {
+					expect(component._fetchEntityWithToken).to.not.have.been.called;
+				});
+		});
+
+		it('calls _fetchEntityWithToken for the provided url', function() {
+			component._fetchEntityWithToken = sandbox.stub().returns(Promise.resolve(
+				window.D2L.Hypermedia.Siren.Parse(activities)
+			));
+			return component._getCustomRangeAction(periodUrl)
+				.then(function() {
+					expect(component._fetchEntityWithToken).to.have.been.calledWith(periodUrl);
+				});
+		});
+	});
 });

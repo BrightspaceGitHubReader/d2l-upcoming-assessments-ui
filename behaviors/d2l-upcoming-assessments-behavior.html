@@ -174,9 +174,13 @@
 
 		_getUserActivityUsages: function(userEntity, getToken, userUrl) {
 			var myActivitiesLink = (userEntity.getLinkByRel(this.HypermediaRels.Activities.myActivities) || {}).href;
+			var self = this;
 
 			if (myActivitiesLink) {
-				return this._fetchEntityWithToken(myActivitiesLink, getToken, userUrl);
+				return this._getCustomRangeAction(myActivitiesLink)
+					.then(function(actitiviesLink) {
+						return self._fetchEntityWithToken(actitiviesLink, getToken, userUrl);
+					});
 			}
 		},
 
@@ -189,6 +193,57 @@
 
 			// API doesn't include the overdue link if user doesn't have any overdue activities
 			return window.D2L.Hypermedia.Siren.Parse({});
+		},
+
+		_getCustomRangeAction: function(activitiesUrl) {
+			if (!activitiesUrl) {
+				return Promise.reject();
+			}
+
+			var self = this;
+
+			return this._fetchEntityWithToken(activitiesUrl, this.getToken, this.userUrl)
+				.then(function(activities) {
+					var currentTime = new Date();
+					var parameters = self._getCustomDateRangeParameters(currentTime);
+					var action = (activities.getActionByName(self.HypermediaActions.activities.selectCustomDateRange) || {});
+
+					self._selectCustomDateRangeAction = action;
+					return self._createActionUrl(action, parameters);
+				});
+		},
+
+		_getCustomDateRangeParameters: function(selectedDate) {
+			var day = selectedDate.getDay();
+			var startDate = new Date(selectedDate.setDate(selectedDate.getDate() - day));
+			var start = startDate.toISOString();
+			var twoWeeksFromStart = new Date(startDate.setDate(startDate.getDate() + 13));
+			twoWeeksFromStart.setHours(23, 59, 59, 999);
+			var end = twoWeeksFromStart.toISOString();
+
+			return {
+				start: start,
+				end: end
+			};
+		},
+
+		_createActionUrl: function(action, parameters) {
+			var query = {};
+			if (action.fields) {
+				action.fields.forEach(function(field) {
+					if (parameters.hasOwnProperty(field.name)) {
+						query[field.name] = parameters[field.name];
+					} else {
+						query[field.name] = field.value;
+					}
+				});
+			}
+
+			var queryString = Object.keys(query).map(function(key) {
+				return key + '=' + query[key];
+			}).join('&');
+
+			return queryString ? action.href + '?' + queryString : action.href;
 		}
 	};
 

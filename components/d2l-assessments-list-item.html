@@ -37,8 +37,6 @@
 				line-height: 1;
 				display: flex;
 				flex-direction: column;
-				/* align-items: center; */
-				/* display: block; */
 			}
 
 			.info-container {
@@ -85,13 +83,9 @@
 				flex: 1;
 				align-items: center;
 				min-width: 0;
-				/* max-width: 100%; */
 			}
 
 			.course-name {
-				/* display: inline;
-				word-wrap: break-word;
-				overflow-wrap: break-word; */
 				overflow: hidden;
 				text-overflow: ellipsis;
 				white-space: nowrap;
@@ -114,7 +108,6 @@
 					<div class="assessment-info">
 						<div class="course-name">{{assessmentItem.courseName}}</div>
 						<div class="assessment-details">
-							<!-- <iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon> -->
 							<div class="assessment-type">[[_getAssessmentType(assessmentItem)]]</div>
 							<template is="dom-if" if="[[_hasDueDate(assessmentItem)]]">
 								<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>

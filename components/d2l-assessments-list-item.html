@@ -35,7 +35,8 @@
 				@apply --d2l-body-standard-text;
 				font-size: 12px;
 				line-height: 1;
-				display: block;
+				display: flex;
+				flex-direction: column;
 			}
 
 			.info-container {
@@ -85,13 +86,17 @@
 			}
 
 			.course-name {
-				display: inline;
-				word-wrap: break-word;
-				overflow-wrap: break-word;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
 			}
 
 			.date, .assessment-type {
 				display: inline;
+			}
+
+			.assessment-details {
+				margin-top: 0.2rem;
 			}
 		</style>
 			<div class="activity-info">
@@ -102,16 +107,17 @@
 					<h3 class="assessment-title">{{assessmentItem.name}}</h3>
 					<div class="assessment-info">
 						<div class="course-name">{{assessmentItem.courseName}}</div>
-						<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
-						<div class="assessment-type">[[_getAssessmentType(assessmentItem)]]</div>
-						<template is="dom-if" if="[[_hasDueDate(assessmentItem)]]">
-							<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
-							<div class="date">[[_getDueDateString(assessmentItem.dueDate)]]</div>
-						</template>
-						<template is="dom-if" if="[[_showEndDate(assessmentItem)]]">
-							<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
-							<div class="date">[[_getEndDateString(assessmentItem.endDate)]]</div>
-						</template>
+						<div class="assessment-details">
+							<div class="assessment-type">[[_getAssessmentType(assessmentItem)]]</div>
+							<template is="dom-if" if="[[_hasDueDate(assessmentItem)]]">
+								<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+								<div class="date">[[_getDueDateString(assessmentItem.dueDate)]]</div>
+							</template>
+							<template is="dom-if" if="[[_showEndDate(assessmentItem)]]">
+								<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+								<div class="date">[[_getEndDateString(assessmentItem.endDate)]]</div>
+							</template>
+						</div>
 					</div>
 				</div>
 			</div>

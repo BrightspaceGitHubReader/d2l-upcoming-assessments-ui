@@ -18,7 +18,10 @@
 	<template>
 		<style>
 			:host {
-				display: block;
+				display: flex;
+				flex-direction: column;
+				flex-grow: 1;
+				min-width: 0;
 			}
 
 			h2 {
@@ -103,25 +106,34 @@
 				color: var(--d2l-color-celestuba);
 			}
 
-			@media (min-width: 992px) {
+			/* @media (min-width: 992px) {
 				.view-all-assignments-link {
 					position: absolute;
 					bottom: 0;
 				}
+			} */
+
+			.wrapper {
+				flex-grow: 1;
 			}
 		</style>
 
 
-		<div class="no-upcoming-assessments"
-			 hidden$="[[!_showNoUpcomingAssessmentsMessage(_assessments, _showError)]]">
-			 [[_noUpcomingAssessments]]
+		<div class="wrapper">
+			<div class="no-upcoming-assessments"
+			 	 hidden$="[[!_showNoUpcomingAssessmentsMessage(_assessments, _showError)]]">
+			 	 [[_noUpcomingAssessments]]
+			</div>
+
+			<template is="dom-if" if="[[_showUpcomingAssessments(_assessments, _showError)]]">
+				<d2l-assessments-list assessment-items=[[_assessments]]></d2l-assessments-list>
+				<!-- <div class="no-upcoming-assessments">
+					[[_noUpcomingAssessments]]
+		  		</div> -->
+			</template>
+
+			<div hidden$="[[!_showError]]" class="error-message">[[localize('errorMessage')]]</div>
 		</div>
-
-		<template is="dom-if" if="[[_showUpcomingAssessments(_assessments, _showError)]]">
-			<d2l-assessments-list assessment-items=[[_assessments]]></d2l-assessments-list>
-		</template>
-
-		<div hidden$="[[!_showError]]" class="error-message">[[localize('errorMessage')]]</div>
 
 		<a class="view-all-assignments-link"
 			is="d2l-link"

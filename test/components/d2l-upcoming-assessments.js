@@ -104,9 +104,9 @@ describe('<d2l-upcoming-assessments>', function() {
 				});
 			});
 
-			it('should set the stored assessments to be the first four activities', function() {
+			it('should set the stored assessments to be the first three activities', function() {
 				return element._getInfo().then(function() {
-					expect(element._assessments.length).to.equal(4);
+					expect(element._assessments.length).to.equal(3);
 				});
 			});
 
@@ -261,7 +261,7 @@ describe('<d2l-upcoming-assessments>', function() {
 				});
 			});
 
-			it('should truncate the assessments at 4', function() {
+			it('should truncate the assessments at 3', function() {
 				var userUsage = {};
 				userUsage.getSubEntityByRel = sandbox.stub().returns();
 				userUsage.getLinkByRel = sandbox.stub().returns();
@@ -275,7 +275,7 @@ describe('<d2l-upcoming-assessments>', function() {
 
 				return element._getInfo()
 				.then(function() {
-					expect(element._assessments.toString()).to.equal([1, 2, 3, 4].toString());
+					expect(element._assessments.toString()).to.equal([1, 2, 3].toString());
 				});
 			});
 		});

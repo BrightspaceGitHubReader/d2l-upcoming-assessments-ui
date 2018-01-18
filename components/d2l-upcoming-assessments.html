@@ -237,7 +237,12 @@
 			},
 
 			openAllAssignmentsView: function() {
-				this.dispatchEvent(new CustomEvent('openAllWorkView', { bubbles: true }));
+				this.dispatchEvent(new CustomEvent('open-immersive-page', {
+					detail: {
+						pageName: 'view-all-work'
+					},
+					bubbles: true
+				}));
 			},
 
 			_getUpcomingAssessments: function(activities) {

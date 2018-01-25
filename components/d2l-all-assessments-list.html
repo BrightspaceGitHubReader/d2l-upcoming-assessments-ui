@@ -37,7 +37,7 @@
 			}
 		</style>
 			<template is="dom-repeat" items="[[_assessmentItemBuckets]]">
-				<div class="date-header">[[_getDateString(item.1)]]</div>
+				<h2 class="date-header">[[_getDateString(item.1)]]</h2>
 					<div role="list">
 						<template is="dom-repeat" items="[[item.1]]">
 							<d2l-all-assessments-list-item assessment-item="[[item]]"></d2l-assessments-list-item>

@@ -94,7 +94,12 @@
 			.info-container {
 				padding-right: 10px;
 			}
-			
+
+			:host-context([dir="rtl"]) .info-container  {
+				padding-right: 0;
+				padding-left: 10px;
+			}
+
 			.meta-info {
 				display: inline-flex;
 				flex: 1;

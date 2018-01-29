@@ -33,10 +33,14 @@
 			.meta-text {
 				@apply --d2l-body-standard-text;
 				font-size: 0.7rem;
+				line-height: 0.9rem;
 				display: flex;
 				flex-direction: row;
 				align-items: center;
 				word-wrap: break-word;
+			}
+
+			.meta-text.course-name {
 				word-break: break-word;
 			}
 
@@ -85,6 +89,15 @@
 				display: inline-flex;
 				flex: 1;
 				align-items: center;
+			}
+
+			.info-container {
+				padding-right: 10px;
+			}
+
+			:host-context([dir="rtl"]) .info-container  {
+				padding-right: 0;
+				padding-left: 10px;
 			}
 
 			.meta-info {
@@ -154,7 +167,7 @@
 							<div class="activity-status-badge ended-info" hidden$="[[!_showEnded]]">
 								[[localize('activityEnded')]]
 							</div>
-							<div class="meta-text">[[assessmentItem.courseName]]</div>
+							<div class="meta-text course-name">[[assessmentItem.courseName]]</div>
 							<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
 							<div class="meta-text">[[assessmentType]]</div>
 						</div>

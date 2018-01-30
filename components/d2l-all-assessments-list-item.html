@@ -148,13 +148,13 @@
 			}
 
 		</style>
-		<div role="listitem">
+		<div class$="[[_getAssessmentInfoCssClassNames(_canOpenActivityDetails)]]"
+			tabindex$="[[_getAssessmentInfoTabIndex(_canOpenActivityDetails)]]"
+			role$="[[_getAssessmentInfoRole(_canOpenActivityDetails)]]"
+			on-tap="_openActivityDetails"
+			on-keydown="_onKeydownOpenActivityDetails">
 			<div class="row">
-				<div class$="[[_getAssessmentInfoCssClassNames(_canOpenActivityDetails)]]"
-					tabindex$="[[_getAssessmentInfoTabIndex(_canOpenActivityDetails)]]"
-					role$="[[_getAssessmentInfoRole(_canOpenActivityDetails)]]"
-					on-tap="_openActivityDetails"
-					on-keydown="_onKeydownOpenActivityDetails">
+				<div class="activity-info">
 					<d2l-icon class="activity-icon" icon="[[assessmentIcon]]"></d2l-icon>
 					<div class="info-container">
 						<h3 class="assessment-title">[[assessmentItem.name]]</h3>
@@ -321,11 +321,9 @@
 		},
 
 		_getAssessmentInfoCssClassNames: function(canOpenActivityDetails) {
-			var classNames = 'activity-info';
 			if (canOpenActivityDetails) {
-				classNames += ' clickable';
+				return 'clickable';
 			}
-			return classNames;
 		},
 
 		_getAssessmentInfoTabIndex: function(canOpenActivityDetails) {
@@ -335,9 +333,11 @@
 		},
 
 		_getAssessmentInfoRole: function(canOpenActivityDetails) {
+			var role = 'listItem';
 			if (canOpenActivityDetails) {
-				return 'link';
+				role += ' link';
 			}
+			return role;
 		}
 
 	});

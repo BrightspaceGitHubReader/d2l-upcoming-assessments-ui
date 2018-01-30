@@ -1,4 +1,4 @@
-/* global describe, it, fixture, expect, beforeEach */
+/* global describe, it, fixture, expect, beforeEach, sinon */
 
 'use strict';
 
@@ -21,7 +21,7 @@ describe('<d2l-all-assessments-list-item>', function() {
 		return date;
 	}
 
-	function setAssessmentItem(isCompleted, isDueToday, isOverdue, isEnded) {
+	function setAssessmentItem(isCompleted, isDueToday, isOverdue, isEnded, type, userActivityUsageHref) {
 		// If due today, 0; if overdue, negative; otherwise, positive
 		var dueDateModifier = isDueToday ? 0 : isOverdue ? -3 : 3;
 		var endDateModifier = isEnded ? -1 : 5;
@@ -36,7 +36,8 @@ describe('<d2l-all-assessments-list-item>', function() {
 			isDueToday: isDueToday,
 			isOverdue: isOverdue,
 			isEnded: isEnded,
-			type: 'assignment'
+			type: type || 'assignment',
+			userActivityUsageHref: userActivityUsageHref || null
 		};
 
 		element.set('assessmentItem', item);
@@ -115,6 +116,46 @@ describe('<d2l-all-assessments-list-item>', function() {
 				var relativeDateString = element._getRelativeDateString(testCase.date);
 				expect(relativeDateString).to.match(testCase.result);
 			});
+		});
+	});
+
+	describe('opening the activity details page', function() {
+		var sandbox;
+		beforeEach(function() {
+			sandbox = sinon.sandbox.create();
+			element.dispatchEvent = sandbox.stub();
+		});
+
+		afterEach(function() {
+			sandbox.restore();
+		});
+
+		it('should not dispatch event if activity details is not enabled', function() {
+			setAssessmentItem(false, false, false, false, 'assignment', '/user/activity/url');
+			element.assignmentDetailsEnabled = false;
+			element._openActivityDetails();
+			expect(element.dispatchEvent).to.not.be.called;
+		});
+
+		it('should not dispatch event for non-assignment assessment items', function() {
+			setAssessmentItem(false, false, false, false, 'quiz');
+			element.assignmentDetailsEnabled = true;
+			element._openActivityDetails();
+			expect(element.dispatchEvent).to.not.be.called;
+		});
+
+		it('should not dispatch event if userActivityUsageHref is null', function() {
+			setAssessmentItem(false, false, false, false, 'assignment');
+			element.assignmentDetailsEnabled = true;
+			element._openActivityDetails();
+			expect(element.dispatchEvent).to.not.be.called;
+		});
+
+		it('should dispatch event when all conditions are met', function() {
+			setAssessmentItem(false, false, false, false, 'assignment', '/user/activity/url');
+			element.assignmentDetailsEnabled = true;
+			element._openActivityDetails();
+			expect(element.dispatchEvent).to.be.called;
 		});
 	});
 

@@ -151,6 +151,8 @@
 				var dueDateState = self._getDueDateState.call(self, userActivityUsage, overdueUserUsages);
 				var endDateState = self._getEndDateState.call(self, userActivityUsage);
 
+				var userActivityUsageHref = userActivityUsage.getLinkByRel('self').href;
+
 				var request = Promise.all([activityRequest, organizationRequest])
 					.then(function(response) {
 						var activity = response[0];
@@ -178,7 +180,8 @@
 							isDueToday: dueDateState.isDueToday,
 							isOverdue: dueDateState.isOverdue,
 							isEnded: endDateState.isEnded,
-							type: type
+							type: type,
+							userActivityUsageHref: userActivityUsageHref
 						};
 					});
 

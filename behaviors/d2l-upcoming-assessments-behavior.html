@@ -241,6 +241,7 @@
 		_getCustomDateRangeParameters: function(selectedDate) {
 			var day = selectedDate.getDay();
 			var startDate = new Date(selectedDate.setDate(selectedDate.getDate() - day));
+			startDate.setHours(0, 0, 0, 0);
 			var start = startDate.toISOString();
 			var twoWeeksFromStart = new Date(startDate.setDate(startDate.getDate() + 13));
 			twoWeeksFromStart.setHours(23, 59, 59, 999);

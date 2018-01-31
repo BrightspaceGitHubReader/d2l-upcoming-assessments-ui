@@ -143,8 +143,16 @@
 				display: none;
 			}
 
+			.clickable:hover {
+				cursor: pointer;
+			}
+
 		</style>
-		<div role="listitem">
+		<div class$="[[_getAssessmentInfoCssClassNames(_canOpenActivityDetails)]]"
+			tabindex$="[[_getAssessmentInfoTabIndex(_canOpenActivityDetails)]]"
+			role$="[[_getAssessmentInfoRole(_canOpenActivityDetails)]]"
+			on-tap="_openActivityDetails"
+			on-keydown="_onKeydownOpenActivityDetails">
 			<div class="row">
 				<div class="activity-info">
 					<d2l-icon class="activity-icon" icon="[[assessmentIcon]]"></d2l-icon>
@@ -224,6 +232,14 @@
 			_showEndsText: {
 				type: Boolean,
 				value: false
+			},
+			assignmentDetailsEnabled: {
+				type: Boolean,
+				value: false
+			},
+			_canOpenActivityDetails: {
+				type: Boolean,
+				computed: '_computeCanOpenActivityDetails(assessmentItem, assignmentDetailsEnabled)'
 			}
 		},
 
@@ -279,6 +295,49 @@
 			if (assessmentItem.type === 'assignment') this.assessmentType = this.localize('assignment');
 			else if (assessmentItem.type === 'quiz') this.assessmentType = this.localize('quiz');
 			else this.assessmentType = '';
+		},
+
+		_computeCanOpenActivityDetails: function(assessmentItem, assignmentDetailsEnabled) {
+			return assignmentDetailsEnabled && assessmentItem.type === 'assignment' && !!assessmentItem.userActivityUsageHref;
+		},
+
+		_openActivityDetails: function() {
+			var self = this;
+			if (this._canOpenActivityDetails) {
+				this.dispatchEvent(new CustomEvent('open-immersive-page', {
+					bubbles: true,
+					detail: {
+						pageName: 'activity-details',
+						userActivityUsageHref: self.assessmentItem.userActivityUsageHref
+					}
+				}));
+			}
+		},
+
+		_onKeydownOpenActivityDetails: function(e) {
+			if (e.keyCode === 13 || e.keyCode === 32) {
+				this._openActivityDetails();
+			}
+		},
+
+		_getAssessmentInfoCssClassNames: function(canOpenActivityDetails) {
+			if (canOpenActivityDetails) {
+				return 'clickable';
+			}
+		},
+
+		_getAssessmentInfoTabIndex: function(canOpenActivityDetails) {
+			if (canOpenActivityDetails) {
+				return 0;
+			}
+		},
+
+		_getAssessmentInfoRole: function(canOpenActivityDetails) {
+			var role = 'listItem';
+			if (canOpenActivityDetails) {
+				role += ' link';
+			}
+			return role;
 		}
 
 	});

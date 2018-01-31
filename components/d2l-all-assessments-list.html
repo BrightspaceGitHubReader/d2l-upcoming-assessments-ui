@@ -40,7 +40,10 @@
 				<h2 class="date-header">[[_getDateString(item.1)]]</h2>
 					<div role="list">
 						<template is="dom-repeat" items="[[item.1]]">
-							<d2l-all-assessments-list-item assessment-item="[[item]]"></d2l-assessments-list-item>
+							<d2l-all-assessments-list-item
+								assessment-item="[[item]]"
+								assignment-details-enabled=[[assignmentDetailsEnabled]]>
+							</d2l-assessments-list-item>
 						</template>
 					</div>
 				</div>
@@ -67,6 +70,10 @@
 					value: function() {
 						return [];
 					}
+				},
+				assignmentDetailsEnabled: {
+					type: Boolean,
+					value: false
 				}
 			},
 

@@ -62,7 +62,7 @@ describe('<d2l-all-assessments-list-item>', function() {
 						});
 
 						it('should show Complete activity badge correctly', function() {
-							var completionInfo = element.$$('.completion-info');
+							var completionInfo = element.$$('d2l-status-indicator[state="success"]');
 							expect(completionInfo).to.exist;
 
 							isCompleted
@@ -71,16 +71,16 @@ describe('<d2l-all-assessments-list-item>', function() {
 						});
 
 						it('should show Due Today badge correctly', function() {
-							var dueTodayInfo = element.$$('.due-today-info');
+							var dueTodayInfo = element.$$('d2l-status-indicator[state="default"]');
 							expect(dueTodayInfo).to.exist;
 
-							!isCompleted && isDueToday
+							!isCompleted && isDueToday && !isOverdue
 								? expect(dueTodayInfo.getAttribute('hidden')).to.be.null
 								: expect(dueTodayInfo.getAttribute('hidden')).to.not.be.null;
 						});
 
 						it('should show Overdue badge correctly', function() {
-							var overdueInfo = element.$$('.overdue-info');
+							var overdueInfo = element.$$('d2l-status-indicator[state="alert"]');
 							expect(overdueInfo.parentElement).to.exist;
 
 							!isCompleted && isOverdue && !isEnded
@@ -89,7 +89,7 @@ describe('<d2l-all-assessments-list-item>', function() {
 						});
 
 						it('should show Closed badge correctly', function() {
-							var endedInfo = element.$$('.ended-info');
+							var endedInfo = element.$$('d2l-status-indicator[state="null"]');
 							expect(endedInfo).to.exist;
 
 							!isCompleted && isEnded

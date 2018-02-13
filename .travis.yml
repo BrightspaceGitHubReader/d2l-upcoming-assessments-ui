@@ -1,17 +1,14 @@
 language: node_js
-node_js: 6
+node_js: node
 dist: trusty
 sudo: required
 before_script:
 - npm run test:lint:js
 - npm run test:lint:wc
-- export CHROME_BIN=/usr/bin/google-chrome
-- wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-- sudo gdebi --non-interactive google-chrome*.deb
 script:
 - set -e
-- xvfb-run wct test --skip-plugin sauce
-- 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then xvfb-run wct test --skip-plugin local; fi'
+- xvfb-run polymer test --skip-plugin sauce
+- 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then xvfb-run polymer test --skip-plugin local; fi'
 - if [ "$TRAVIS_BRANCH" == "master" ]; then frauci-update-version; fi
 env:
   global:
@@ -22,10 +19,3 @@ env:
   - secure: zUID1VHKhJymz+JIyn3DaxTKiS/NaSxByUB/gbVkEQ/7VGvi9kbmJYnq3FmtCj734auLcp5KUFLUZfN2UM5GhzSzJ3hc5DRVcvGw/wWA1UX01DYrojdw/V5DQREW+v1VoG6GBme8PdHCUUE+0OzxViQsZ4y90CanS4A8T/LjLl35i0Vuq2ZKvewdzBJrk4o6e5p2+B/82//iGhIZUiPvNfEPO2c7wsZ+WiyzyQQgtOL0/MJ7EV0h+KepXpcnA84AdOZAIKdeqOfEzXVbBorFl678JGzFiHsLUSB/zKADgiRPLDPOfhpbOxf7bp6S18fjyeLeDGpEBWvfVdkm9q0eHQKJNEr1bCPBDmS+Va86yqkpXgDkSFRyyk0dErj9Fx6q/0LcGPr8WlH9M/FRDDwBUgKqs/g8BzMihlqcRDWVyt6rlEfW7Udag96iP+zYmzRk8rpaEb8FF1gBJ1oxQA4Urr9jSAHUr1qUPwj2ZBlZb+G76svS1ZA2/3LjsfqfcNWSIJA3R4sNTH2OSVZjicAItLX1JWnYFSBNT9aG+w2RR1s9xf+H9b7lUT3mSdVacQ4GcYfX1hQrN9e2jtAisPFYd2aL6qjnXSrcAHtAuN7zUzcEW0DfhrKpiLpYwbpKnToemRS4C57djPGDh00Ylb7iGjQHu9CLADtFdK13N2N9SBo=
   #GITHUB_RELEASE_TOKEN
   - secure: FtoFWKq4wO/I3lTnzAnMSEQ3pn3/clOuQr4d7Qpli3tkHgMqbWDOFOL4+uD7Nlc+Oza+qWWzl+w2gOz+7QCRb1YJl1TgO2DjNEsSGIeGgs1+kbI3lb2fq2KWCK+VFBrWyAsOZ5e1ppYOA7coVoDppLdLswLqESyRB1+tT2AxLYcy21TbHC2JrNCPqFatgzqovf0rJoD6vCKPdYOoQpVcLbGM0DXTeIFslON107w7j2WkYPtZcq/TINNQD2hIAoKzvM2/fzI85oFzO4chIbUvl7p2Wf5TWHCYd8FWyv45xc7tBUH4AXYae6LD/+X8JlTrmYtdoRbt6tcbnHSAswAkq2iL/PG41hWnZ/D8w5An48qvvFgO5/dfnTqcZ9hDw7ExaxV2UvWWC0vK31Trvc724sRhEEV3Mlbpcop+t0QbGpFfnVhG+P6ZMFbyyM7UVxqAKQI1oR1nPfXhOtOVsyRPRkd2n4Ht8BZY6bIZdr74x1baxyvJzauMycg0oic1y6hth3iRkf1eaVPh/OZuSd1BHFOsZqe/cmOLFfDcA/tz+ECr5jeXcM00qhGHwsSkVLMgKNKr+yH1pC40Bgvk73hMwMhmCzXFuo2ernzHlBfIloZTqeSmYvteDqdGFUKQKKSUEpUedWzFxUSRWVxO4/9PcsyPktdLDUC/x/QkOIBM+h0=
-addons:
-  firefox: latest
-  apt:
-    packages:
-    - gdebi
-    - oracle-java8-installer
-    - oracle-java8-set-default

@@ -18,7 +18,8 @@
     "iron-a11y-keys": "^1.0.9",
     "iron-icon": "^1.0.12",
     "polymer": "Polymer/polymer#^1.9.2",
-    "vaadin-date-picker": "~1.2.3"
+    "vaadin-date-picker": "~1.2.3",
+    "siren-parser-import": "Brightspace/siren-parser-import#^7.0.0"
   },
   "devDependencies": {
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",

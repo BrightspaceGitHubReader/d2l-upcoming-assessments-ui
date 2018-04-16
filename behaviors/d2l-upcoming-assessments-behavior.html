@@ -143,7 +143,13 @@
 			overdueUserUsages = overdueUserUsages.concat(overdueAssignments);
 			overdueUserUsages = overdueUserUsages.concat(overdueQuizzes);
 
-			userActivityUsages.entities.forEach(function(userActivityUsage) {
+			var assignmentUserUsages = userActivityUsages.getSubEntitiesByClass(self.HypermediaClasses.activities.userAssignmentActivity);
+			var quizUserUsages = userActivityUsages.getSubEntitiesByClass(self.HypermediaClasses.activities.userQuizActivity);
+			var supportedUserUsages = [];
+			supportedUserUsages = supportedUserUsages.concat(assignmentUserUsages);
+			supportedUserUsages = supportedUserUsages.concat(quizUserUsages);
+
+			supportedUserUsages.forEach(function(userActivityUsage) {
 				var organizationRequest = self._getOrganizationRequest.call(self, userActivityUsage, getToken, userUrl);
 				var activityRequest = self._getActivityRequest.call(self, userActivityUsage, getToken, userUrl);
 

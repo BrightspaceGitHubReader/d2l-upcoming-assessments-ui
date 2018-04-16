@@ -325,6 +325,17 @@ describe('d2l upcoming assessments behavior', function() {
 			component._getActivityRequest = sandbox.stub().returns(Promise.resolve(activity));
 		});
 
+		it('should ignore non-supported user activity usages', function() {
+			userUsage = getUserActivityUsage('unsupported');
+			userUsages = parse({ entities: [userUsage] });
+
+			return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+				.then(function() {
+					expect(component._getOrganizationRequest).to.have.not.been.called;
+					expect(component._getActivityRequest).to.have.not.been.called;
+				});
+		});
+
 		it('should call _getOrganizationRequest for the organization', function() {
 			return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
 				.then(function() {

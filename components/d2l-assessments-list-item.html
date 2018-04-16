@@ -253,12 +253,14 @@
 				activityContainer.setAttribute('role', 'link');
 				activityContainer.setAttribute('tabIndex', 0);
 				activityContainer.addEventListener('tap', onTap);
+				activityContainer.addEventListener('touchend', onTap);
 				activityContainer.addEventListener('keydown', onKeydown);
 			} else {
 				activityContainer.classList.remove('has-activity-details');
 				activityContainer.removeAttribute('role', 'link');
 				activityContainer.removeAttribute('tabIndex', 0);
 				activityContainer.removeEventListener('tap', onTap);
+				activityContainer.removeEventListener('touchend', onTap);
 				activityContainer.removeEventListener('keydown', onKeydown);
 			}
 		}

@@ -87,6 +87,7 @@
 			},
 
 			_getAllAssessmentsInfo: function() {
+				this._resetData();
 				this._getInfo()
 					.then(this._formatPeriodText.bind(this));
 			},
@@ -121,6 +122,11 @@
 				}
 
 				this._currentPeriodText = this.localize('currentPeriod', 'startDate', startDateString, 'endDate', endDateString);
+			},
+
+			_resetData: function() {
+				this._currentPeriodText = null;
+				this._upcomingAssessmentsBehaviour_resetData();
 			}
 		});
 	</script>

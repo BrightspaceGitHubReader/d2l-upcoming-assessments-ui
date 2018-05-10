@@ -394,6 +394,16 @@
 			}
 
 			return statusConfig;
+		},
+
+		_upcomingAssessmentsBehaviour_resetData: function() {
+			this._showError = false;
+			this._firstName = null;
+			this._allActivities = [];
+			this._previousPeriodUrl = null;
+			this._nextPeriodUrl = null;
+			this._periodStart = null;
+			this._periodEnd = null;
 		}
 	};
 

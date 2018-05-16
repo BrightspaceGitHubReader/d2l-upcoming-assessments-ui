@@ -10,8 +10,7 @@
 
 <dom-module id="d2l-date-dropdown">
 	<template>
-		<!-- offscreen shared styles needed? -->
-		<style is="custom-style" include="d2l-offscreen-shared-styles">
+		<style>
 			:host {
 				display: block;
 			}
@@ -99,6 +98,10 @@
 					transform: translateY(10px);
 				}
 			}
+
+			.input {
+				height: 1.2rem;
+			}
 		</style>
 
 		<d2l-date-picker value="{{value}}" locale="[[locale]]" custom-overlay-style>
@@ -147,7 +150,6 @@
 
 				var self = this;
 
-				// Need to port the animation to the date picker
 				this.addEventListener('iron-overlay-opened', function() {
 					self.opened = true;
 					Polymer.updateStyles();

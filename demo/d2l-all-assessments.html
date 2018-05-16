@@ -5,14 +5,6 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 		<script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-		<script>
-			'use strict';
-			window.d2lfetch = {
-				fetch: function(req) {
-					return window.fetch(req.url);
-				}
-			};
-		</script>
 
 		<link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
 		<link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
@@ -23,7 +15,8 @@
 		</custom-style>
 		<style>
 			d2l-all-assessments {
-				max-width: 500px;
+				display: block;
+			    height: 100%;
 				box-shadow: 1px 1px 10px gray;
 				padding: 10px;
 			}
@@ -40,13 +33,13 @@
 					properties: {
 						userUrl: {
 							type: String,
-							value: ''
+							value: 'https://0618e64e-e41f-4c1c-9fee-849c8b61bc2d.users.api.dev.brightspace.com/20218'
 						},
 						getToken: {
 							type: Function,
 							value: function() {
 								return function() {
-									return Promise.resolve('foozleberries');
+									return Promise.resolve('eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjY0ZjU0MjE0LTQ2ODktNGRlNC05Mjg1LWY2ODQ3ZTcyZDMxOSJ9.eyJzdWIiOiIyMDIxOCIsImFjdHVhbHN1YiI6IjIwMjE3IiwidGVuYW50aWQiOiIwNjE4ZTY0ZS1lNDFmLTRjMWMtOWZlZS04NDljOGI2MWJjMmQiLCJzY29wZSI6ImNsYXNzX3N0cmVhbTphcnRpY2xlOnJlYWQgY2xhc3Nfc3RyZWFtOmF0dGFjaG1lbnQ6cmVhZCB1c2Vyczpvd25fcHJvZmlsZTpyZWFkIG9yZ2FuaXphdGlvbnM6b3JnYW5pemF0aW9uOnJlYWQgb3JnYW5pemF0aW9uczppbWFnZTpyZWFkIGVucm9sbG1lbnRzOm93bl9lbnJvbGxtZW50OnJlYWQgdGhlbWVzOnRoZW1lOnJlYWQgZm9saW86c2hhcmVkX2V2aWRlbmNlOnJlYWQgYWN0aXZpdGllczphY3Rpdml0eV91c2FnZTpyZWFkIGFjdGl2aXRpZXM6dXNlcl9hY3Rpdml0eV91c2FnZTpyZWFkIGFzc2lnbm1lbnRzOmZvbGRlcjpyZWFkIHF1aXp6ZXM6cXVpejpyZWFkIGdyYWRlczpncmFkZXZhbHVlczpyZWFkIGdyYWRlczpncmFkZW9iamVjdHM6cmVhZCIsImp0aSI6Ijg2YzJkNWRiLWZiZDctNGYwNi1iODIwLTc1MTEyN2M0ZTI3OCIsImlzcyI6Imh0dHBzOi8vYXBpLmJyaWdodHNwYWNlLmNvbS9hdXRoIiwiYXVkIjoiaHR0cHM6Ly9hcGkuYnJpZ2h0c3BhY2UuY29tL2F1dGgvdG9rZW4iLCJleHAiOjE1MjY1MTQ5ODYsIm5iZiI6MTUyNjUxMTM4Nn0.TwUE2GUObhdrnm7Vxh49iICETDxIDc0vnFxKKrB2fQjfQF4VLMJeCNdcC_-nxKbo2AHZpcgl3kdFh7cOHrGMr17g5pl8KWB069IaZ-_0L1edT4befbNWipyySXco9e65d16Dt_2LbN0AupDjOiMoetgP2MSuh9w8ujzimu3OlhkCo1Tl2dDodiy2XZA_5k5K0_lxzPo_-4RoRhzWz7MpseLhdawyAcPQvzKfPSJMmAgPPyYGO7fmBrEd3nG6e8Yz4KAkhKREWVATBTelRAteMBAkjnqRajBQ2JjesKfY3XcgioEjOIgLDqNflIKpTRV1HnwnXIvwxsIFNwXR5TtHOA');
 								};
 							}
 						}
@@ -54,39 +47,14 @@
 				});
 			</script>
 		</dom-module>
-		<div class="vertical-section-container centered">
-			<h2>With Assessments</h2>
+		<div>
+			<h2>All Assessments</h2>
 			<demo-snippet>
 				<template>
-					<d2l-all-assessments-demo
-						user-url="data/user.withactivities.json">
+					<d2l-all-assessments-demo>
 					</d2l-all-assessments-demo>
 				</template>
 			</demo-snippet>
-			<h2>Empty State</h2>
-			<demo-snippet>
-				<template>
-					<d2l-all-assessments-demo
-						user-url="data/user.noactivities.json">
-					</d2l-all-assessments-demo>
-				</template>
-			</demo-snippet>
-			<h2>Error State</h2>
-			<demo-snippet>
-				<template>
-					<d2l-all-assessments-demo
-						user-url="does-not-exist.json">
-					</d2l-all-assessments-demo>
-				</template>
-			</demo-snippet>
-			<script>
-				setTimeout(function() {
-					document.querySelectorAll('d2l-upcoming-assessments').forEach(function(assessment) {
-						assessment.getToken = function() { return Promise.resolve('foozleberries'); };
-						assessment.isActivityUpcoming = function() { return true; };
-					}, 100);
-				});
-			</script>
 		</div>
 	</body>
 </html>

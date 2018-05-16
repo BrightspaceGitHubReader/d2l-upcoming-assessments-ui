@@ -101,7 +101,7 @@
 			}
 		</style>
 
-		<d2l-date-picker value="{{value}}" locale="[[locale]]">
+		<d2l-date-picker value="{{value}}" locale="[[locale]]" custom-overlay-style>
 			<iron-a11y-keys target="[[_target]]" keys="enter" on-keys-pressed="_onEnter"></iron-a11y-keys>
 			<iron-a11y-keys target="[[_target]]" keys="up down" on-keys-pressed="_onUpDown"></iron-a11y-keys>
 			<div class="input">
@@ -139,7 +139,7 @@
 				locale: String,
 				value: {
 					type: String,
-					observer: "handleValueChanged"
+					observer: 'handleValueChanged'
 				}
 			},
 			ready: function() {
@@ -150,7 +150,7 @@
 				// Need to port the animation to the date picker
 				this.addEventListener('iron-overlay-opened', function() {
 					self.opened = true;
-					self.$$('d2l-date-picker').updateStyles();
+					Polymer.updateStyles();
 				});
 
 				this.addEventListener('iron-overlay-canceled', function(e) {
@@ -159,11 +159,10 @@
 
 				this.addEventListener('iron-overlay-closed', function() {
 					self.opened = false;
-					self.$$('d2l-date-picker').updateStyles();
+					Polymer.updateStyles();
 				});
 			},
 			handleValueChanged: function(value) {
-				console.log('value', value);
 				if (value) {
 					var dateInfo = value.split(/\s*-\s*/g);
 					var year = dateInfo[0];

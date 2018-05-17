@@ -10,7 +10,7 @@
     "postinstall": "polymer install --variants",
     "test": "npm run test:lint:js && npm run test:lint:wc && npm run test:wct",
     "test:local": "npm run test:lint:js && npm run test:lint:wc && npm run test:wct:local",
-    "test:lint:js": "eslint --ext .js,.html . behaviors/ components/ demo/ lang/ test/",
+    "test:lint:js": "eslint --ext .js,.html behaviors/ components/ demo/ lang/ test/",
     "test:lint:wc": "polymer lint",
     "test:wct": "polymer test -p",
     "test:wct:local": "cross-env LAUNCHPAD_BROWSERS=chrome polymer test -p --skip-plugin sauce"
@@ -33,9 +33,9 @@
     "eslint": "^4.13.1",
     "eslint-config-brightspace": "^0.4.0",
     "eslint-config-google": "^0.9.1",
-    "eslint-plugin-html": "^4.0.1",
+    "eslint-plugin-html": "~4.0.1",
     "frau-ci": "^1.33.2",
-    "polymer-cli": "^1.7.0",
+    "polymer-cli": "~1.6.0",
     "web-component-tester": "^6.5.0"
   }
 }

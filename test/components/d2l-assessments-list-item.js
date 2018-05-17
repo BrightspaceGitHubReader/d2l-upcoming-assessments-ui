@@ -102,17 +102,17 @@ describe('<d2l-assessments-list-item>', function() {
 		it('has a completion checkmark when completed', function(done) {
 			setActivityItem('assignment', true);
 			Polymer.RenderStatus.afterNextRender(element, () => {
-			//element.$$('template').render();
 				expect(element.$$('.completion-icon')).to.exist;
 				done();
 			});
 		});
 
-		it('doesn\'t have a completion checkmark when not completed', function() {
+		it('doesn\'t have a completion checkmark when not completed', function(done) {
 			setActivityItem('quiz');
-			element.$$('template').render();
-
-			expect(element.$$('.completion-icon')).to.not.exist;
+			Polymer.RenderStatus.afterNextRender(element, () => {
+				expect(element.$$('.completion-icon')).to.not.exist;
+				done();
+			});
 		});
 
 	});
@@ -161,17 +161,22 @@ describe('<d2l-assessments-list-item>', function() {
 			{ event: 'enter' },
 			{ event: 'space' }
 		].forEach(testCase => {
-			it(`should not dispatch event for non-assignment grade items and event is ${testCase.event}`, function() {
+			it(`should not dispatch event for non-assignment grade items and event is ${testCase.event}`, function(done) {
 				element.activityDetailsEnabled = true;
 				var processedEvent = getEvent(testCase.event);
 
 				setActivityItem('quiz', false, '/path/to/userActivityUsageQuiz');
 				container.dispatchEvent(processedEvent);
-				expect(element.dispatchEvent).to.not.be.called;
+				Polymer.RenderStatus.afterNextRender(element, () => {
+					expect(element.dispatchEvent).to.not.be.called;
 
-				setActivityItem(null, false, null);
-				container.dispatchEvent(processedEvent);
-				expect(element.dispatchEvent).to.not.be.called;
+					setActivityItem(null, false, null);
+					container.dispatchEvent(processedEvent);
+					Polymer.RenderStatus.afterNextRender(element, () => {
+						expect(element.dispatchEvent).to.not.be.called;
+						done();
+					});
+				});
 			});
 		});
 

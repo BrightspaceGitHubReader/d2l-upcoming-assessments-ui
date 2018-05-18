@@ -32,9 +32,10 @@
         "vaadin-date-picker": "Brightspace/vaadin-date-picker#^1.2.6"
       },
       "resolutions": {
-        "iron-a11y-keys-behavior": "1 - 2",
-        "iron-selector": "1 - 2",
+        "iron-a11y-keys-behavior": "^2.0.0",
+        "iron-selector": "^2.0.0",
         "iron-dropdown": "^2.0.0",
+        "iron-overlay-behavior": "^2.0.0",
         "iron-resizable-behavior": "^2.0.0",
         "webcomponentsjs": "^0.7.24",
         "polymer": "^1.9.0",

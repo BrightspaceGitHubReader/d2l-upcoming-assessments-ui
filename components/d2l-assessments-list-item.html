@@ -227,11 +227,10 @@
 		},
 
 		_computeCanOpenActivityDetails: function(assessmentItem, activityDetailsEnabled) {
-			return
-				activityDetailsEnabled &&
-				assessmentItem &&
-				assessmentItem.type === 'assignment' &&
-				!!assessmentItem.userActivityUsageHref;
+			return activityDetailsEnabled
+				&& assessmentItem
+				&& assessmentItem.type === 'assignment'
+				&& !!assessmentItem.userActivityUsageHref;
 		},
 
 		_canOpenActivityDetailsUpdated: function() {

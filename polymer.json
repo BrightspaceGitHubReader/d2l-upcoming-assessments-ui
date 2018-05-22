@@ -1,6 +1,5 @@
 {
   "lint": {
-    "rules": ["polymer-2-hybrid"],
-    "filesToIgnore": ["index.html"]
+    "rules": ["polymer-2-hybrid"]
   }
 }

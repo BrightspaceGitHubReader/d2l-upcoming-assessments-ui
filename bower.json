@@ -6,7 +6,7 @@
     "d2l-localize-behavior": "^1.1.0",
     "d2l-colors": "^3.1.2",
     "d2l-date-picker": "BrightspaceUI/date-picker#^1.0.0",
-    "d2l-fetch-siren-entity-behavior": "Brightspace/d2l-fetch-siren-entity-behavior#^4.0.0",
+    "d2l-fetch-siren-entity-behavior": "Brightspace/d2l-fetch-siren-entity-behavior#^5.0.2",
     "d2l-hm-constants-behavior": "Brightspace/d2l-hm-constants-behavior#^5.7.0",
     "d2l-icons": "^4.10.0",
     "d2l-link": "^4.0.0",

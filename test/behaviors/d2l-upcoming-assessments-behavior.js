@@ -457,6 +457,7 @@ describe('d2l upcoming assessments behavior', function() {
 					expect(response[0].statusConfig.state).to.equal('success');
 					expect(response[0].statusConfig.text).to.equal('complete');
 					expect(response[0].type).to.equal('assignment');
+					expect(response[0].isCompleted).to.equal(true);
 				});
 		});
 	});

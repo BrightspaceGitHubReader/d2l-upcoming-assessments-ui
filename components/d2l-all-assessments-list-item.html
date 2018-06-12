@@ -191,6 +191,10 @@
 			}
 
 			[hidden] {
+				display: none !important;
+			}
+
+			.default-hidden {
 				display: none;
 			}
 
@@ -211,7 +215,7 @@
 					</div>
 				</div>
 				<div class="row meta-container">
-					<div class="spacer" hidden></div>
+					<div class="spacer default-hidden"></div>
 					<div class="meta-info">
 						<div class="spacer"></div>
 						<d2l-status-indicator state="[[_statusConfig.state]]" text="[[localize(_statusConfig.text)]]" hidden$="[[!_statusConfig]]"></d2l-status-indicator>

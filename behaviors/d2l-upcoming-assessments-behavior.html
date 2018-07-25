@@ -3,6 +3,7 @@
 <link rel="import" href="../../d2l-hm-constants-behavior/d2l-hm-constants-behavior.html">
 <link rel="import" href="../../siren-parser-import/siren-parser.html">
 <link rel="import" href="./date-behavior.html">
+<link rel="import" href="./types-behavior.html">
 
 <script>
 	'use strict';
@@ -93,28 +94,23 @@
 			};
 		},
 
-		_getActivityType: function(activity) {
-			var type;
-			if (activity.hasClass(this.HypermediaClasses.assignments.assignment)) {
-				type = 'assignment';
-			} else if (activity.hasClass(this.HypermediaClasses.quizzes.quiz)) {
-				type = 'quiz';
-			} else if (activity.hasClass(this.HypermediaClasses.discussions.topic)) {
-				type = 'discussion';
-			}
-
-			return type;
-		},
-
 		_getOrganizationRequest: function(userActivityUsage, getToken, userUrl) {
 			var organizationLink = (userActivityUsage.getLinkByRel(this.HypermediaRels.organization) || {}).href;
 			return this._fetchEntityWithToken(organizationLink, getToken, userUrl);
 		},
 
+		_findActivityHref: function(userActivityUsage) {
+			for (var i=0; i<this._types.length; i++) {
+				var link = userActivityUsage.getLinkByRel((this._types[0] || {}).activityRel);
+				if (link) {
+					return link.href;
+				}
+			}
+			return '';
+		},
+
 		_getActivityRequest: function(userActivityUsage, getToken, userUrl) {
-			var activityLink = (userActivityUsage.getLinkByRel(this.HypermediaRels.assignment)
-					|| userActivityUsage.getLinkByRel(this.HypermediaRels.quiz)
-					|| userActivityUsage.getLinkByRel(this.HypermediaRels.Discussions.topic) || {}).href;
+			var activityLink = this._findActivityHref(userActivityUsage);
 			return Promise.resolve(this._fetchEntityWithToken(activityLink, getToken, userUrl))
 				.catch(function(err) {
 					var status = typeof err === 'number' ? err : err && err.status;
@@ -125,16 +121,12 @@
 				});
 		},
 
-		_getAssignmentInstructions: function(activity) {
-			return this._getRichTextValuePreferPlainText(activity.getSubEntityByRel(this.HypermediaRels.Assignments.instructions));
-		},
-
-		_getQuizDescription: function(activity) {
-			return this._getRichTextValuePreferPlainText(activity.getSubEntityByRel(this.HypermediaRels.Quizzes.description));
-		},
-
-		_getDiscussionDescription: function(activity) {
-			return this._getRichTextValuePreferPlainText(activity.getSubEntityByRel(this.HypermediaRels.Discussions.description));
+		_getInstructions(activity, type) {
+			var item = this._types[type];
+			if (!item) {
+				return '';
+			}
+			return this._getRichTextValuePreferPlainText(activity.getSubEntityByRel(item.instructionsRel));
 		},
 
 		_getRichTextValuePreferPlainText: function(richtextEntity) {
@@ -144,6 +136,15 @@
 			}
 
 			return richtextEntity.properties.text || richtextEntity.properties.html;
+		},
+
+		_concatActivityUsageTypes: function(usageList) {
+			var usages = [];
+			this._types.forEach(function(type) {
+				var entities = usageList.getSubEntitiesByClass(type.userActivityUsageClass);
+				var usages = usages.concat(overdueEntities);
+			});
+			return usages;
 		},
 
 		/*
@@ -157,22 +158,8 @@
 			var requests = [];
 			var self = this;
 
-			var overdueAssignments = overdueUserActivityUsages.getSubEntitiesByClass(self.HypermediaClasses.activities.userAssignmentActivity);
-			var overdueQuizzes = overdueUserActivityUsages.getSubEntitiesByClass(self.HypermediaClasses.activities.userQuizActivity);
-			var overdueDiscussions = overdueUserActivityUsages.getSubEntitiesByClass(self.HypermediaClasses.activities.userDiscussionActivity);
-			var overdueUserUsages = [];
-			overdueUserUsages = overdueUserUsages.concat(overdueAssignments);
-			overdueUserUsages = overdueUserUsages.concat(overdueQuizzes);
-			overdueUserUsages = overdueUserUsages.concat(overdueDiscussions);
-
-			var assignmentUserUsages = userActivityUsages.getSubEntitiesByClass(self.HypermediaClasses.activities.userAssignmentActivity);
-			var quizUserUsages = userActivityUsages.getSubEntitiesByClass(self.HypermediaClasses.activities.userQuizActivity);
-			var discussionUserUsages = userActivityUsages.getSubEntitiesByClass(self.HypermediaClasses.activities.userDiscussionActivity);
-
-			var supportedUserUsages = [];
-			supportedUserUsages = supportedUserUsages.concat(assignmentUserUsages);
-			supportedUserUsages = supportedUserUsages.concat(quizUserUsages);
-			supportedUserUsages = supportedUserUsages.concat(discussionUserUsages);
+			var overdueUserUsages = this._concatActivityUsageTypes(overdueUserActivityUsages);
+			var supportedUserUsages = this._concatActivityUsageTypes(userActivityUsages);
 
 			supportedUserUsages.forEach(function(userActivityUsage) {
 				var organizationRequest = self._getOrganizationRequest.call(self, userActivityUsage, getToken, userUrl);
@@ -202,15 +189,8 @@
 							return null;
 						}
 
-						var type = self._getActivityType.call(self, activity);
-						var info;
-						if (type === 'quiz') {
-							info = self._getQuizDescription.call(self, activity);
-						} else if (type === 'assignment') {
-							info = self._getAssignmentInstructions.call(self, activity);
-						} else if (type === 'discussion') {
-							info = self._getDiscussionDescription.call(self, activity);
-						}
+						var type = this._getActivityType(activity);
+						var info = this._getInstructions(type, activity);
 
 						return {
 							name: activity.properties.name,
@@ -223,7 +203,7 @@
 							userActivityUsageHref: userActivityUsageHref,
 							isCompleted: completionState.isCompleted
 						};
-					});
+					}.bind(this));
 
 				requests.push(request);
 			});
@@ -425,6 +405,7 @@
 
 	window.D2L.UpcomingAssessments.UpcomingAssessmentsBehavior = [
 		window.D2L.UpcomingAssessments.DateBehavior,
+		D2L.UpcomingAssessments.TypesBehavior,
 		D2L.PolymerBehaviors.FetchSirenEntityBehavior,
 		window.D2L.Hypermedia.HMConstantsBehavior,
 		upcomingAssessmentsBehaviorImpl

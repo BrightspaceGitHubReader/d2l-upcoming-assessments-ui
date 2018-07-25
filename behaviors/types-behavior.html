@@ -1,0 +1,58 @@
+<link rel="import" href="../../d2l-hm-constants-behavior/d2l-hm-constants-behavior.html">
+
+<script>
+	'use strict';
+
+	window.D2L = window.D2L || {};
+	window.D2L.UpcomingAssessments = window.D2L.UpcomingAssessments || {};
+
+	/*
+	* @polymerBehavior window.D2L.UpcomingAssessments.TypesBehavior
+	*/
+	var typesBehaviorImpl = {
+		_getActivityType: function(activity) {
+			var type;
+			if (activity.hasClass(this.HypermediaClasses.assignments.assignment)) {
+				type = 'assignment';
+			} else if (activity.hasClass(this.HypermediaClasses.quizzes.quiz)) {
+				type = 'quiz';
+			} else if (activity.hasClass(this.HypermediaClasses.discussions.topic)) {
+				type = 'discussion';
+			}
+
+			return type;
+		},
+
+		_types: {
+			assignment: {
+				icon: 'assignments',
+				assessmentType: 'assignment',
+				canOpen: true,
+				instructionsRel: this.HypermediaRels.Assignments.instructions,
+				userActivityUsageClass: this.HypermediaClasses.activities.userAssignmentActivity,
+				activityRel: this.HypermediaRels.assignment
+			},
+			discussion: {
+				icon: 'discussions',
+				assessmentType: 'discussion',
+				canOpen: true,
+				instructionsRel: this.HypermediaRels.Discussions.description,
+				userActivityUsageClass: this.HypermediaClasses.activities.userDiscussionActivity,
+				activityRel: this.HypermediaRels.Discussions.topic
+			},
+			quiz: {
+				icon: 'quizzing',
+				assessmentType: 'quiz',
+				canOpen: false,
+				instructionsRel: this.HypermediaRels.Quizzes.description,
+				userActivityUsageClass: this.HypermediaClasses.activities.userQuizActivity,
+				activityRel: this.HypermediaRels.quiz
+			}
+		}
+	};
+
+	window.D2L.UpcomingAssessments.TypesBehavior = [
+		typesBehaviorImpl
+	];
+
+</script>

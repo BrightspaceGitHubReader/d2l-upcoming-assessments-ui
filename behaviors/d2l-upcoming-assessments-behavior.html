@@ -100,8 +100,8 @@
 		},
 
 		_findActivityHref: function(userActivityUsage) {
-			for (var i=0; i<this._types.length; i++) {
-				var link = userActivityUsage.getLinkByRel((this._types[0] || {}).activityRel);
+			for (var i=0; i<this._allTypes.length; i++) {
+				var link = userActivityUsage.getLinkByRel((this._types[this.allTypes[i]] || {}).activityRel);
 				if (link) {
 					return link.href;
 				}
@@ -140,7 +140,8 @@
 
 		_concatActivityUsageTypes: function(usageList) {
 			var usages = [];
-			this._types.forEach(function(type) {
+			this._allTypes.forEach(function(typeString) {
+				var type = this._types[typeString];
 				var entities = usageList.getSubEntitiesByClass(type.userActivityUsageClass);
 				var usages = usages.concat(overdueEntities);
 			});

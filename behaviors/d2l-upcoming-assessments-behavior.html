@@ -100,7 +100,7 @@
 		},
 
 		_findActivityHref: function(userActivityUsage) {
-			for (var i=0; i<this._allTypes.length; i++) {
+			for (var i = 0; i < this._allTypes.length; i++) {
 				var link = userActivityUsage.getLinkByRel((this._types[this._allTypes[i]] || {}).activityRel);
 				if (link) {
 					return link.href;

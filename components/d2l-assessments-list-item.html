@@ -216,7 +216,7 @@
 		},
 
 		_getAssessmentIcon: function(assessmentItem) {
-			var item = this._types[assessmentItem.type];
+			var item = this._types[(assessmentItem || {}).type];
 			if (item) {
 				return 'd2l-tier2:' + item.icon;
 			}
@@ -231,14 +231,9 @@
 			return '';
 		},
 
-		_canOpenType: function(assessmentItem) {
-			var item = this._types((assessmentItem || {}).type);
-			return !!((item || {}).canOpen);
-		},
-
 		_computeCanOpenActivityDetails: function(assessmentItem, activityDetailsEnabled) {
 			return activityDetailsEnabled
-				&& this._canOpenType(assessmentItem)
+				&& this._canOpenItemType(assessmentItem)
 				&& !!assessmentItem.userActivityUsageHref;
 		},
 

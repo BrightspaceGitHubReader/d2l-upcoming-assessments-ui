@@ -10,54 +10,65 @@
 	* @polymerBehavior window.D2L.UpcomingAssessments.TypesBehavior
 	*/
 	var typesBehaviorImpl = {
+		properties: {
+			_types: {
+				type: Object,
+				value: function () {
+					return {
+						assignment: {
+							icon: 'assignments',
+							assessmentType: 'assignment',
+							canOpen: true,
+							instructionsRel: this.HypermediaRels.Assignments.instructions,
+							userActivityUsageClass: this.HypermediaClasses.activities.userAssignmentActivity,
+							activityRel: this.HypermediaRels.assignment,
+							activityClass: this.HypermediaClasses.assignments.assignment
+						},
+						discussion: {
+							icon: 'discussions',
+							assessmentType: 'discussion',
+							canOpen: true,
+							instructionsRel: this.HypermediaRels.Discussions.description,
+							userActivityUsageClass: this.HypermediaClasses.activities.userDiscussionActivity,
+							activityRel: this.HypermediaRels.Discussions.topic,
+							activityClass: this.HypermediaClasses.discussions.topic
+						},
+						quiz: {
+							icon: 'quizzing',
+							assessmentType: 'quiz',
+							canOpen: false,
+							instructionsRel: this.HypermediaRels.Quizzes.description,
+							userActivityUsageClass: this.HypermediaClasses.activities.userQuizActivity,
+							activityRel: this.HypermediaRels.quiz,
+							activityClass: this.HypermediaClasses.quizzes.quiz
+						}
+					}
+				}
+			}
+		},
+
+		_allTypes: ['assignment','discussion', 'quiz'],
+
 		_getActivityType: function(activity) {
 			var type;
 			for (var i=0; i<this._allTypes.length; i++) {
-				var type = this._types[this._allTypes[i]];
+				var typeName = this._allTypes[i];
+				var type = this._types[typeName];
 				if (activity.hasClass(type.activityClass)) {
-					return activity.type;
+					return typeName;
 				}
 			}
 			return undefined;
 		},
 
-		_allTypes: ['assignment','discussion', 'quiz'],
-
-		_types: {
-			assignment: {
-				type: 'assignment',
-				icon: 'assignments',
-				assessmentType: 'assignment',
-				canOpen: true,
-				instructionsRel: this.HypermediaRels.Assignments.instructions,
-				userActivityUsageClass: this.HypermediaClasses.activities.userAssignmentActivity,
-				activityRel: this.HypermediaRels.assignment,
-				activityClass: this.HypermediaClasses.assignments.assignment
-			},
-			discussion: {
-				type: 'discussion',
-				icon: 'discussions',
-				assessmentType: 'discussion',
-				canOpen: true,
-				instructionsRel: this.HypermediaRels.Discussions.description,
-				userActivityUsageClass: this.HypermediaClasses.activities.userDiscussionActivity,
-				activityRel: this.HypermediaRels.Discussions.topic,
-				activityClass: this.HypermediaClasses.discussions.topic
-			},
-			quiz: {
-				type: 'quiz',
-				icon: 'quizzing',
-				assessmentType: 'quiz',
-				canOpen: false,
-				instructionsRel: this.HypermediaRels.Quizzes.description,
-				userActivityUsageClass: this.HypermediaClasses.activities.userQuizActivity,
-				activityRel: this.HypermediaRels.quiz,
-				activityClass: this.HypermediaClasses.quizzes.quiz
-			}
+		_canOpenItemType: function(assessmentItem) {
+			var item = this._types[(assessmentItem || {}).type];
+			return !!((item || {}).canOpen);
 		}
 	};
 
 	window.D2L.UpcomingAssessments.TypesBehavior = [
+		window.D2L.Hypermedia.HMConstantsBehavior,
 		typesBehaviorImpl
 	];
 

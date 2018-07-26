@@ -101,7 +101,7 @@
 
 		_findActivityHref: function(userActivityUsage) {
 			for (var i=0; i<this._allTypes.length; i++) {
-				var link = userActivityUsage.getLinkByRel((this._types[this.allTypes[i]] || {}).activityRel);
+				var link = userActivityUsage.getLinkByRel((this._types[this._allTypes[i]] || {}).activityRel);
 				if (link) {
 					return link.href;
 				}
@@ -121,7 +121,7 @@
 				});
 		},
 
-		_getInstructions(activity, type) {
+		_getInstructions(type, activity) {
 			var item = this._types[type];
 			if (!item) {
 				return '';
@@ -143,8 +143,8 @@
 			this._allTypes.forEach(function(typeString) {
 				var type = this._types[typeString];
 				var entities = usageList.getSubEntitiesByClass(type.userActivityUsageClass);
-				var usages = usages.concat(overdueEntities);
-			});
+				usages = usages.concat(entities);
+			}.bind(this));
 			return usages;
 		},
 
@@ -157,21 +157,20 @@
 			}
 
 			var requests = [];
-			var self = this;
 
 			var overdueUserUsages = this._concatActivityUsageTypes(overdueUserActivityUsages);
 			var supportedUserUsages = this._concatActivityUsageTypes(userActivityUsages);
 
 			supportedUserUsages.forEach(function(userActivityUsage) {
-				var organizationRequest = self._getOrganizationRequest.call(self, userActivityUsage, getToken, userUrl);
-				var activityRequest = self._getActivityRequest.call(self, userActivityUsage, getToken, userUrl);
+				var organizationRequest = this._getOrganizationRequest.call(this, userActivityUsage, getToken, userUrl);
+				var activityRequest = this._getActivityRequest.call(this, userActivityUsage, getToken, userUrl);
 
-				var completionState = self._getCompletionState.call(self, userActivityUsage);
-				var dueDateState = self._getDueDateState.call(self, userActivityUsage, overdueUserUsages);
-				var endDateState = self._getEndDateState.call(self, userActivityUsage);
-				var exemptState = self._getExemptState.call(self, userActivityUsage);
+				var completionState = this._getCompletionState.call(this, userActivityUsage);
+				var dueDateState = this._getDueDateState.call(this, userActivityUsage, overdueUserUsages);
+				var endDateState = this._getEndDateState.call(this, userActivityUsage);
+				var exemptState = this._getExemptState.call(this, userActivityUsage);
 
-				var statusConfig = self._createStatusConfig(
+				var statusConfig = this._createStatusConfig(
 					completionState.isCompleted,
 					endDateState.isEnded,
 					exemptState.isExempt,
@@ -207,7 +206,7 @@
 					}.bind(this));
 
 				requests.push(request);
-			});
+			}.bind(this));
 
 			return Promise.all(requests)
 				.then(function(responses) {

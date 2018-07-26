@@ -13,7 +13,7 @@
 		properties: {
 			_types: {
 				type: Object,
-				value: function () {
+				value: function() {
 					return {
 						assignment: {
 							icon: 'assignments',
@@ -42,16 +42,15 @@
 							activityRel: this.HypermediaRels.quiz,
 							activityClass: this.HypermediaClasses.quizzes.quiz
 						}
-					}
+					};
 				}
 			}
 		},
 
-		_allTypes: ['assignment','discussion', 'quiz'],
+		_allTypes: ['assignment', 'discussion', 'quiz'],
 
 		_getActivityType: function(activity) {
-			var type;
-			for (var i=0; i<this._allTypes.length; i++) {
+			for (var i = 0; i < this._allTypes.length; i++) {
 				var typeName = this._allTypes[i];
 				var type = this._types[typeName];
 				if (activity.hasClass(type.activityClass)) {

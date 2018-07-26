@@ -221,27 +221,16 @@ describe('d2l upcoming assessments behavior', function() {
 		});
 	});
 
-	describe('_getAssignmentInstructions', function() {
+	describe('_getInstructions assignment', function() {
 		it('should return the text value from the richtext instructions entity', function() {
 			sandbox.spy(component, '_getRichTextValuePreferPlainText');
 			var assignment = getActivity('assignment');
-			var instructions = component._getAssignmentInstructions(assignment);
+			var instructions = component._getInstructions('assignment', assignment);
 
 			expect(component._getRichTextValuePreferPlainText).to.be.calledOnce;
 			expect(instructions).to.equal(activityInstructions);
 		});
 
-	});
-
-	describe('_getQuizDescription', function() {
-		it('should return the text value from the richtext description entity', function() {
-			sandbox.spy(component, '_getRichTextValuePreferPlainText');
-			var quiz = getActivity('quiz');
-			var description = component._getQuizDescription(quiz);
-
-			expect(component._getRichTextValuePreferPlainText).to.be.calledOnce;
-			expect(description).to.equal(quizDescription);
-		});
 	});
 
 	describe('_getRichTextValuePreferPlainText', function() {
@@ -373,28 +362,13 @@ describe('d2l upcoming assessments behavior', function() {
 				});
 		});
 
-		it('should set the info property to the value returned from _getAssignmentInstructions if the activity is an assignment', function() {
-			component._getAssignmentInstructions = sandbox.stub().returns('bonita bonita bonita');
-			component._getQuizDescription = sandbox.stub().returns('time for new flava in ya ear');
+		it('should set the info property to the value returned from _getInstructions', function() {
+			component._getInstructions = sandbox.stub().returns('bonita bonita bonita');
 
 			return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
 				.then(function(response) {
-					expect(component._getAssignmentInstructions).to.be.called;
-					expect(component._getQuizDescription).not.to.be.called;
+					expect(component._getInstructions).to.be.called;
 					expect(response[0].info).to.equal('bonita bonita bonita');
-				});
-		});
-
-		it('should set the info property to the value returned from _getQuizDescription if the activity is a quiz', function() {
-			component._getActivityRequest = sandbox.stub().returns(Promise.resolve(getActivity('quiz')));
-			component._getAssignmentInstructions = sandbox.stub().returns('bonita bonita bonita');
-			component._getQuizDescription = sandbox.stub().returns('time for new flava in ya ear');
-
-			return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
-				.then(function(response) {
-					expect(component._getAssignmentInstructions).not.to.be.called;
-					expect(component._getQuizDescription).to.be.called;
-					expect(response[0].info).to.equal('time for new flava in ya ear');
 				});
 		});
 
@@ -412,15 +386,13 @@ describe('d2l upcoming assessments behavior', function() {
 
 		it('should not fail when some of the activity requests fail', function() {
 			component._getActivityRequest.onSecondCall().returns(Promise.resolve(null));
-			component._getAssignmentInstructions = sandbox.stub().returns('bonita bonita bonita');
-			component._getQuizDescription = sandbox.stub().returns('time for new flava in ya ear');
+			component._getInstructions = sandbox.stub().returns('bonita bonita bonita');
 
 			userUsages = parse({ entities: [userUsage, userUsage] });
 
 			return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
 				.then(function(response) {
-					expect(component._getAssignmentInstructions).to.be.called;
-					expect(component._getQuizDescription).not.to.be.called;
+					expect(component._getInstructions).to.be.called;
 					expect(response[0].info).to.equal('bonita bonita bonita');
 				});
 		});

@@ -1,4 +1,5 @@
 <link rel="import" href="../../d2l-hm-constants-behavior/d2l-hm-constants-behavior.html">
+<link rel="import" href="./d2l-status-badge-behavior.html">
 
 <script>
 	'use strict';
@@ -22,7 +23,8 @@
 							instructionsRel: this.HypermediaRels.Assignments.instructions,
 							userActivityUsageClass: this.HypermediaClasses.activities.userAssignmentActivity,
 							activityRel: this.HypermediaRels.assignment,
-							activityClass: this.HypermediaClasses.assignments.assignment
+							activityClass: this.HypermediaClasses.assignments.assignment,
+							getStatusBadge: this._getStatusBadge
 						},
 						discussion: {
 							icon: 'discussions',
@@ -31,7 +33,8 @@
 							instructionsRel: this.HypermediaRels.Discussions.description,
 							userActivityUsageClass: this.HypermediaClasses.activities.userDiscussionActivity,
 							activityRel: this.HypermediaRels.Discussions.topic,
-							activityClass: this.HypermediaClasses.discussions.topic
+							activityClass: this.HypermediaClasses.discussions.topic,
+							getStatusBadge: this._getDiscussionStatusBadge
 						},
 						quiz: {
 							icon: 'quizzing',
@@ -40,7 +43,8 @@
 							instructionsRel: this.HypermediaRels.Quizzes.description,
 							userActivityUsageClass: this.HypermediaClasses.activities.userQuizActivity,
 							activityRel: this.HypermediaRels.quiz,
-							activityClass: this.HypermediaClasses.quizzes.quiz
+							activityClass: this.HypermediaClasses.quizzes.quiz,
+							getStatusBadge: this._getStatusBadge
 						}
 					};
 				}
@@ -68,6 +72,7 @@
 
 	window.D2L.UpcomingAssessments.TypesBehavior = [
 		window.D2L.Hypermedia.HMConstantsBehavior,
+		window.D2L.UpcomingAssessments.StatusBadgeBehavior,
 		typesBehaviorImpl
 	];
 

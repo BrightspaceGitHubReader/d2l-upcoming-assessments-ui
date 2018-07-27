@@ -1,6 +1,3 @@
-<link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../d2l-fetch-siren-entity-behavior/d2l-fetch-siren-entity-behavior.html">
-<link rel="import" href="../../d2l-hm-constants-behavior/d2l-hm-constants-behavior.html">
 <link rel="import" href="../../siren-parser-import/siren-parser.html">
 <link rel="import" href="./date-behavior.html">
 <link rel="import" href="./types-behavior.html">
@@ -39,59 +36,6 @@
 			_nextPeriodUrl: String,
 			_periodStart: String,
 			_periodEnd: String
-		},
-
-		_completeText: 'activityComplete',
-		_endedText: 'activityEnded',
-		_exemptedText: 'activityExempted',
-		_overdueText: 'activityOverdue',
-		_dueTodayText: 'activityDueToday',
-
-		_getCompletionState: function(userActivityUsage) {
-			return {
-				isCompleted: !!userActivityUsage.getSubEntityByClass(this.HypermediaClasses.activities.complete)
-			};
-		},
-
-		_getDueDateState: function(userActivityUsage, overdueUserActivityUsages) {
-			var activityIsOverdue = false;
-			var activityIsDueToday = false;
-			var dueDate;
-			var dueDateEntity = userActivityUsage.getSubEntityByClass(this.HypermediaClasses.dates.dueDate);
-			if (dueDateEntity) {
-				dueDate = dueDateEntity.properties.date;
-				activityIsDueToday = this.getDateDiffInCalendarDays(dueDate) === 0;
-				activityIsOverdue = overdueUserActivityUsages.some(function(overdueUserUsage) {
-					return overdueUserUsage.getLinkByRel('self').href === userActivityUsage.getLinkByRel('self').href;
-				});
-			}
-
-			return {
-				dueDate: dueDate,
-				isOverdue: activityIsOverdue,
-				isDueToday: activityIsDueToday
-			};
-		},
-
-		_getEndDateState: function(userActivityUsage) {
-			var activityIsEnded = false;
-			var endDate;
-			var endDateEntity = userActivityUsage.getSubEntityByClass(this.HypermediaClasses.dates.endDate);
-			if (endDateEntity) {
-				endDate = endDateEntity.properties.date;
-				activityIsEnded = this.getDateDiffInCalendarDays(endDate) < 0;
-			}
-
-			return {
-				endDate: endDate,
-				isEnded: activityIsEnded
-			};
-		},
-
-		_getExemptState: function(userActivityUsage) {
-			return {
-				isExempt: userActivityUsage.hasClass(this.HypermediaClasses.activities.exempt)
-			};
 		},
 
 		_getOrganizationRequest: function(userActivityUsage, getToken, userUrl) {
@@ -148,6 +92,14 @@
 			return usages;
 		},
 
+		_getActivityStatus: function(type, userActivityUsage, activity) {
+			var item = this._types[type];
+			if (!item) {
+				return '';
+			}
+			return item.getStatusBadge(userActivityUsage, activity);
+		},
+
 		/*
 		* Returns an object that contains the information required to populate an assessment list item
 		*/
@@ -164,20 +116,6 @@
 			supportedUserUsages.forEach(function(userActivityUsage) {
 				var organizationRequest = this._getOrganizationRequest.call(this, userActivityUsage, getToken, userUrl);
 				var activityRequest = this._getActivityRequest.call(this, userActivityUsage, getToken, userUrl);
-
-				var completionState = this._getCompletionState.call(this, userActivityUsage);
-				var dueDateState = this._getDueDateState.call(this, userActivityUsage, overdueUserUsages);
-				var endDateState = this._getEndDateState.call(this, userActivityUsage);
-				var exemptState = this._getExemptState.call(this, userActivityUsage);
-
-				var statusConfig = this._createStatusConfig(
-					completionState.isCompleted,
-					endDateState.isEnded,
-					exemptState.isExempt,
-					dueDateState.isOverdue,
-					dueDateState.isDueToday
-				);
-
 				var userActivityUsageHref = userActivityUsage.getLinkByRel('self').href;
 
 				var request = Promise.all([activityRequest, organizationRequest])
@@ -190,6 +128,7 @@
 						}
 
 						var type = this._getActivityType(activity);
+						var statusConfig = this._getActivityStatusForType(type, userActivityUsage, activity);
 						var info = this._getInstructions(type, activity);
 
 						return {
@@ -357,39 +296,6 @@
 			}).join('&');
 
 			return queryString ? action.href + '?' + queryString : action.href;
-		},
-
-		_createStatusConfig: function(isCompleted, isEnded, isExempt, isOverdue, isDueToday) {
-			var statusConfig = null;
-
-			if (isCompleted) {
-				statusConfig = {
-					state: 'success',
-					text: this._completeText
-				};
-			} else if (isEnded) {
-				statusConfig = {
-					state: 'null',
-					text: this._endedText
-				};
-			} else if (isExempt) {
-				statusConfig = {
-					state: 'success',
-					text: this._exemptedText
-				};
-			} else if (isOverdue) {
-				statusConfig = {
-					state: 'alert',
-					text: this._overdueText
-				};
-			} else if (isDueToday) {
-				statusConfig = {
-					state: 'default',
-					text: this._dueTodayText
-				};
-			}
-
-			return statusConfig;
 		},
 
 		_upcomingAssessmentsBehaviour_resetData: function() {

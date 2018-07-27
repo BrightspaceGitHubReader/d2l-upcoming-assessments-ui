@@ -1,0 +1,156 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../d2l-fetch-siren-entity-behavior/d2l-fetch-siren-entity-behavior.html">
+<link rel="import" href="../../d2l-hm-constants-behavior/d2l-hm-constants-behavior.html">
+
+<script>
+	'use strict';
+
+	window.D2L = window.D2L || {};
+	window.D2L.UpcomingAssessments = window.D2L.UpcomingAssessments || {};
+
+	/*
+	* @polymerBehavior window.D2L.UpcomingAssessments.StatusBadgeBehavior
+	*/
+	var statusBadgeBehaviorImpl = {
+		properties: {},
+		_completeState: {text: 'activityComplete', state: 'success'},
+		_endedState: {text: 'activityEnded', state: 'null'},
+		_exemptedState: {text: 'activityExempted', state: 'success'},
+		_overdueState: {text: 'activityOverdue', state: 'alert'},
+		_dueTodayState: {text: 'activityDueToday', state: 'default'},
+		_endsTodayState: {text: 'activityEndsToday', state: 'default'},
+
+		_createStatusConfig: function(isCompleted, isEnded, isExempt, isOverdue, isDueToday) {
+			var statusConfig = null;
+
+			if (isCompleted) {
+				statusConfig = this._completeState;
+			} else if (isEnded) {
+				statusConfig = this._endedState;
+			} else if (isExempt) {
+				statusConfig = this._exemptedState;
+			} else if (isOverdue) {
+				statusConfig = this._overdueState;
+			} else if (isDueToday) {
+				statusConfig = this._dueTodayState;
+			}
+
+			return statusConfig;
+		},
+
+		_createDiscussionStatusConfig: function(isCompleted, isEnded, isExempt, isOverdue, isDueToday) {
+			var statusConfig = null;
+
+			if (isEnded) {
+				statusConfig = this._endedState;
+			} else if (isExempt) {
+				statusConfig = this._exemptedState;
+			} else if (isDueToday) {
+				statusConfig = this._endsTodayState;
+			}
+
+			return statusConfig;
+		},
+
+		_getDiscussionsStatusBadge: function(userActivityUsage, activity) {
+
+		},
+
+		_getStatusBadge: function(userActivityUsage) {
+			var completionState = this._getCompletionState.call(userActivityUsage);
+			var dueDateState = this._getDueDateState.call(userActivityUsage, overdueUserUsages);
+			var endDateState = this._getEndDateState.call(userActivityUsage);
+			var exemptState = this._getExemptState.call(userActivityUsage);
+
+			var statusConfig = this._createStatusConfig(
+				completionState.isCompleted,
+				endDateState.isEnded,
+				exemptState.isExempt,
+				dueDateState.isOverdue,
+				dueDateState.isDueToday
+			);
+		},
+
+		_getCompletionState: function(userActivityUsage) {
+			return {
+				isCompleted: !!userActivityUsage.getSubEntityByClass(this.HypermediaClasses.activities.complete)
+			};
+		},
+
+		// TODO: does it make sense to continue doing it like this?
+		_getDueDateState: function(userActivityUsage, overdueUserActivityUsages) {
+			var activityIsOverdue = false;
+			var activityIsDueToday = false;
+			var dueDateEntity = userActivityUsage.getSubEntityByClass(this.HypermediaClasses.dates.dueDate);
+			if (dueDateEntity) {
+				var dueDate = dueDateEntity.properties.date;
+				activityIsDueToday = this.getDateDiffInCalendarDays(dueDate) === 0;
+				activityIsOverdue = overdueUserActivityUsages.some(function(overdueUserUsage) {
+					return overdueUserUsage.getLinkByRel('self').href === userActivityUsage.getLinkByRel('self').href;
+				});
+			}
+
+			return {
+				isOverdue: activityIsOverdue,
+				isDueToday: activityIsDueToday
+			};
+		},
+
+		_getEndDateState: function(userActivityUsage) {
+			var activityIsEnded = false;
+			var endDateEntity = userActivityUsage.getSubEntityByClass(this.HypermediaClasses.dates.endDate);
+			if (endDateEntity) {
+				var endDate = endDateEntity.properties.date;
+				activityIsEnded = this.getDateDiffInCalendarDays(endDate) < 0;
+			}
+
+			return {
+				isEnded: activityIsEnded
+			};
+		},
+
+		_getExemptState: function(userActivityUsage) {
+			return {
+				isExempt: userActivityUsage.hasClass(this.HypermediaClasses.activities.exempt)
+			};
+		},
+
+		_getDiscussionsEndDateState: function(activity) {
+			var endDateEntities = activity.getSubEntitiesByClass(this.HypermediaClasses.dates.endDate);
+			var isEnded = false;
+			var endsToday = false;
+
+			endDateEntities.forEach(function(entity) {
+				var dateDetails = this._getDateDetails(entity);
+				isEnded = dateDetails.isEnded || isEnded;
+				endsToday = dateDetails.endsToday || endsToday;
+			}.bind(this));
+			return {
+				isEnded: isEnded,
+				endsToday: endsToday
+			};
+		},
+
+		_getDateDetails: function(entity) {
+			if (!entity) {
+				return {};
+			}
+
+			var now = new Date();
+			var endDate = entity.properties.date;
+			var activityDate = new Date(endDate);
+
+			return {
+				isEnded: activityDate < now,
+				endsToday: this._activityDetails_getDateDiffInCalendarDays(endDate) === 0
+			};
+		},
+	};
+
+	window.D2L.UpcomingAssessments.StatusBadgeBehavior = [
+		D2L.PolymerBehaviors.FetchSirenEntityBehavior,
+		window.D2L.Hypermedia.HMConstantsBehavior,
+		statusBadgeBehaviorImpl
+	];
+
+</script>

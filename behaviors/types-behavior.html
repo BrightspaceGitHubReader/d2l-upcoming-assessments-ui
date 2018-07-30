@@ -1,5 +1,5 @@
 <link rel="import" href="../../d2l-hm-constants-behavior/d2l-hm-constants-behavior.html">
-<link rel="import" href="./d2l-status-badge-behavior.html">
+<link rel="import" href="./status-badge-behavior.html">
 
 <script>
 	'use strict';
@@ -24,7 +24,8 @@
 							userActivityUsageClass: this.HypermediaClasses.activities.userAssignmentActivity,
 							activityRel: this.HypermediaRels.assignment,
 							activityClass: this.HypermediaClasses.assignments.assignment,
-							getStatusBadge: this._getStatusBadge
+							noCompletion: false,
+							useActivityForDates: false
 						},
 						discussion: {
 							icon: 'discussions',
@@ -34,7 +35,8 @@
 							userActivityUsageClass: this.HypermediaClasses.activities.userDiscussionActivity,
 							activityRel: this.HypermediaRels.Discussions.topic,
 							activityClass: this.HypermediaClasses.discussions.topic,
-							getStatusBadge: this._getDiscussionStatusBadge
+							noCompletion: true,
+							useActivityForDates: true
 						},
 						quiz: {
 							icon: 'quizzing',
@@ -44,7 +46,8 @@
 							userActivityUsageClass: this.HypermediaClasses.activities.userQuizActivity,
 							activityRel: this.HypermediaRels.quiz,
 							activityClass: this.HypermediaClasses.quizzes.quiz,
-							getStatusBadge: this._getStatusBadge
+							noCompletion: false,
+							useActivityForDates: false
 						}
 					};
 				}

@@ -1,6 +1,7 @@
 <link rel="import" href="../../siren-parser-import/siren-parser.html">
 <link rel="import" href="./date-behavior.html">
 <link rel="import" href="./types-behavior.html">
+<link rel="import" href="./status-badge-behavior.html">
 
 <script>
 	'use strict';
@@ -92,12 +93,12 @@
 			return usages;
 		},
 
-		_getActivityStatus: function(type, userActivityUsage, activity) {
+		_getActivityStatus: function(type, userActivityUsage, overdueUserUsages, activity) {
 			var item = this._types[type];
 			if (!item) {
 				return '';
 			}
-			return item.getStatusBadge(userActivityUsage, activity);
+			return this._getStatusBadge(userActivityUsage, overdueUserUsages, activity, item);
 		},
 
 		/*
@@ -128,7 +129,7 @@
 						}
 
 						var type = this._getActivityType(activity);
-						var statusConfig = this._getActivityStatusForType(type, userActivityUsage, activity);
+						var statusConfig = this._getActivityStatus(type, userActivityUsage, overdueUserUsages, activity);
 						var info = this._getInstructions(type, activity);
 
 						return {
@@ -142,7 +143,7 @@
 							userActivityUsageHref: userActivityUsageHref,
 							isCompleted: completionState.isCompleted
 						};
-					}.bind(this));
+					}.bind(this)).catch(console.log);
 
 				requests.push(request);
 			}.bind(this));
@@ -314,6 +315,7 @@
 		D2L.UpcomingAssessments.TypesBehavior,
 		D2L.PolymerBehaviors.FetchSirenEntityBehavior,
 		window.D2L.Hypermedia.HMConstantsBehavior,
+		window.D2L.UpcomingAssessments.StatusBadgeBehavior,
 		upcomingAssessmentsBehaviorImpl
 	];
 

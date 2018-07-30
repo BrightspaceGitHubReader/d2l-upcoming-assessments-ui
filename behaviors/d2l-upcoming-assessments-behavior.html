@@ -129,21 +129,21 @@
 						}
 
 						var type = this._getActivityType(activity);
-						var statusConfig = this._getActivityStatus(type, userActivityUsage, overdueUserUsages, activity);
+						var statusDetails = this._getActivityStatus(type, userActivityUsage, overdueUserUsages, activity);
 						var info = this._getInstructions(type, activity);
 
 						return {
 							name: activity.properties.name,
 							courseName: organization.properties.name,
 							info: info,
-							dueDate: dueDateState.dueDate,
-							endDate: endDateState.endDate,
-							statusConfig: statusConfig,
+							dueDate: statusDetails.dueDateState.dueDate,
+							endDate: statusDetails.endDateState.endDate,
+							statusConfig: statusDetails.statusConfig,
 							type: type,
 							userActivityUsageHref: userActivityUsageHref,
-							isCompleted: completionState.isCompleted
+							isCompleted: statusDetails.completionState.isCompleted
 						};
-					}.bind(this)).catch(console.log);
+					}.bind(this));
 
 				requests.push(request);
 			}.bind(this));

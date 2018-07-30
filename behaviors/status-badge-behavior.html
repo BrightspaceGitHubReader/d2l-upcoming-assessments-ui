@@ -48,14 +48,19 @@
 			var dateEntity = typeProps.useActivityForDates ? activity : userActivityUsage;
 			var endDateState = this._getEndDateState(dateEntity);
 
-			return this._createStatusConfig(
-				completionState.isCompleted,
-				endDateState.isEnded,
-				exemptState.isExempt,
-				dueDateState.isOverdue,
-				dueDateState.isDueToday,
-				endDateState.endsToday
-			);
+			return {
+				statusConfig: this._createStatusConfig(
+					completionState.isCompleted,
+					endDateState.isEnded,
+					exemptState.isExempt,
+					dueDateState.isOverdue,
+					dueDateState.isDueToday,
+					endDateState.endsToday
+				),
+				completionState: completionState,
+				dueDateState: dueDateState,
+				endDateState: endDateState
+			};
 		},
 
 		_getCompletionState: function(userActivityUsage) {
@@ -68,8 +73,9 @@
 			var activityIsOverdue = false;
 			var activityIsDueToday = false;
 			var dueDateEntity = userActivityUsage.getSubEntityByClass(this.HypermediaClasses.dates.dueDate);
+			var dueDate;
 			if (dueDateEntity) {
-				var dueDate = dueDateEntity.properties.date;
+				dueDate = dueDateEntity.properties.date;
 				activityIsDueToday = this.getDateDiffInCalendarDays(dueDate) === 0;
 				activityIsOverdue = overdueUserActivityUsages.some(function(overdueUserUsage) {
 					return overdueUserUsage.getLinkByRel('self').href === userActivityUsage.getLinkByRel('self').href;
@@ -78,7 +84,8 @@
 
 			return {
 				isOverdue: activityIsOverdue,
-				isDueToday: activityIsDueToday
+				isDueToday: activityIsDueToday,
+				dueDate: dueDate
 			};
 		},
 
@@ -86,15 +93,20 @@
 			var endDateEntities = dateEntity.getSubEntitiesByClass(this.HypermediaClasses.dates.endDate);
 			var isEnded = false;
 			var endsToday = false;
+			var endDate;
 
 			endDateEntities.forEach(function(entity) {
 				var dateDetails = this._getDateDetails(entity);
 				isEnded = dateDetails.isEnded || isEnded;
 				endsToday = dateDetails.endsToday || endsToday;
+				if (!endDate || endDate > dateDetails.date) {
+					endDate = dateDetails.date;
+				}
 			}.bind(this));
 			return {
 				isEnded: isEnded,
-				endsToday: endsToday
+				endsToday: endsToday,
+				endDate: endDate
 			};
 		},
 
@@ -115,7 +127,8 @@
 
 			return {
 				isEnded: activityDate < now,
-				endsToday: this.getDateDiffInCalendarDays(endDate) === 0
+				endsToday: this.getDateDiffInCalendarDays(endDate) === 0,
+				date: activityDate
 			};
 		},
 	};

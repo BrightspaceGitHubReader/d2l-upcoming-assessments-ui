@@ -188,7 +188,7 @@ describe('d2l upcoming assessments behavior', function() {
 
 						var dueDateState = component._getDueDateState(usage, overdueUserUsages);
 
-						expect(dueDateState.dueDate).to.equal(dueDate);
+						expect(dueDateState.dueDate).to.deep.equal(dueDate);
 						expect(dueDateState.isOverdue).to.equal(dueDateModifier < 0);
 						expect(dueDateState.isDueToday).to.equal(dueDateModifier === 0);
 					});
@@ -203,7 +203,7 @@ describe('d2l upcoming assessments behavior', function() {
 
 						var endDateState = component._getEndDateState(usage);
 
-						expect(endDateState.endDate).to.equal(endDate);
+						expect(endDateState.endDate).to.deep.equal(endDate);
 						expect(endDateState.isEnded).to.equal(endDateModifier < 0);
 					});
 				});
@@ -656,25 +656,27 @@ describe('d2l upcoming assessments behavior', function() {
 		permutations = addPermutations(permutations, 'isOverdue');
 		permutations = addPermutations(permutations, 'isEnded');
 		permutations = addPermutations(permutations, 'isExempt');
+		permutations = addPermutations(permutations, 'endsToday');
 
 		permutations.forEach(function(permutation) {
-			var {isCompleted, isDueToday, isOverdue, isEnded, isExempt} = permutation;
+			var {isCompleted, isDueToday, isOverdue, isEnded, isExempt, endsToday} = permutation;
 			var testName = `when activity is ${isCompleted ? '' : 'not'} completed`
 					+ ` and is ${isDueToday ? '' : 'not'} due today`
 					+ ` and is ${isOverdue ? '' : 'not'} overdue`
 					+ ` and is ${isEnded ? '' : 'not'} ended`
-					+ ` and is ${isExempt ? '' : 'not'} exempt`;
+					+ ` and is ${isExempt ? '' : 'not'} exempt`
+					+ ` and is ${endsToday ? '' : 'not'} ending today`;
 
 			describe(testName, function() {
 				it('should return statusConfig correctly', function() {
-					var statusConfig = component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday);
+					var statusConfig = component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday, endsToday);
 					expect(!!statusConfig).to.eql(
-						isCompleted || isDueToday || isOverdue || isEnded || isExempt
+						isCompleted || isDueToday || isOverdue || isEnded || isExempt || endsToday
 					);
 				});
 
 				it('should set complete correctly', function() {
-					var statusConfig = (component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday) || {});
+					var statusConfig = (component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday, endsToday) || {});
 					expect(statusConfig.state === 'success').to.eql(
 						isCompleted || (!isCompleted && !isEnded && isExempt)
 					);
@@ -684,7 +686,7 @@ describe('d2l upcoming assessments behavior', function() {
 				});
 
 				it('should set closed correctly', function() {
-					var statusConfig = (component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday) || {});
+					var statusConfig = (component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday, endsToday) || {});
 					expect(statusConfig.state === 'null').to.eql(
 						!isCompleted && isEnded
 					);
@@ -694,7 +696,7 @@ describe('d2l upcoming assessments behavior', function() {
 				});
 
 				it('should set overdue correctly', function() {
-					var statusConfig = (component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday) || {});
+					var statusConfig = (component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday, endsToday) || {});
 					expect(statusConfig.state === 'alert').to.eql(
 						!isCompleted && !isEnded && !isExempt && isOverdue
 					);
@@ -704,23 +706,31 @@ describe('d2l upcoming assessments behavior', function() {
 				});
 
 				it('should set due today correctly', function() {
-					var statusConfig = (component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday) || {});
-					expect(statusConfig.state === 'default').to.eql(
-						!isCompleted && !isEnded && !isExempt && !isOverdue && isDueToday
-					);
-					expect(statusConfig.text === 'activityDueToday').to.eql(
-						!isCompleted && !isEnded && !isExempt && !isOverdue && isDueToday
-					);
+					var statusConfig = (component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday, endsToday) || {});
+					var shouldShowDueToday = !isCompleted && !isEnded && !isExempt && !isOverdue && isDueToday;
+					if (shouldShowDueToday) {
+						expect(statusConfig.state === 'default').to.eql(true);
+						expect(statusConfig.text === 'activityDueToday').to.eql(true);
+					}
 				});
 
 				it('should set exempted correctly', function() {
-					var statusConfig = (component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday) || {});
+					var statusConfig = (component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday, endsToday) || {});
 					expect(statusConfig.state === 'success').to.eql(
 						isCompleted || (!isCompleted && !isEnded && isExempt)
 					);
 					expect(statusConfig.text === 'activityExempted').to.eql(
 						!isCompleted && !isEnded && isExempt
 					);
+				});
+
+				it('should set ends today correctly', function() {
+					var statusConfig = (component._createStatusConfig(isCompleted, isEnded, isExempt, isOverdue, isDueToday, endsToday) || {});
+					var shouldShowEndsToday = !(isCompleted || isDueToday || isOverdue || isEnded || isExempt) && endsToday;
+					if (shouldShowEndsToday) {
+						expect(statusConfig.state === 'default').to.eql(true);
+						expect(statusConfig.text === 'activityEndsToday').to.eql(true);
+					}
 				});
 			});
 		});

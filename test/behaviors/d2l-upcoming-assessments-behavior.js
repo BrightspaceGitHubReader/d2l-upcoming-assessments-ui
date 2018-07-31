@@ -200,6 +200,7 @@ describe('d2l upcoming assessments behavior', function() {
 				[-1, 0, 1].forEach(function(endDateModifier) {
 					it('should return correct state for ' + type + ' with end date ' + endDateModifier + ' days away', function() {
 						endDate = nowish(endDateModifier);
+						endDate.setMinutes(endDate.getMinutes() + 5);
 						var usage = getUserActivityUsage(type);
 
 						var endDateState = component._getEndDateState(usage);

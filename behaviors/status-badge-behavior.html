@@ -41,12 +41,11 @@
 			return statusConfig;
 		},
 
-		_getStatusBadge: function(userActivityUsage, overdueUserUsages, activity, typeProps) {
+		_getStatusBadge: function(userActivityUsage, overdueUserUsages, typeProps) {
 			var completionState = typeProps.noCompletion ? {} : this._getCompletionState(userActivityUsage);
 			var exemptState = this._getExemptState(userActivityUsage);
 			var dueDateState = this._getDueDateState(userActivityUsage, overdueUserUsages);
-			var dateEntity = typeProps.useActivityForDates ? activity : userActivityUsage;
-			var endDateState = this._getEndDateState(dateEntity);
+			var endDateState = this._getEndDateState(userActivityUsage);
 
 			return {
 				statusConfig: this._createStatusConfig(
@@ -90,19 +89,18 @@
 		},
 
 		_getEndDateState: function(dateEntity) {
-			var endDateEntities = dateEntity.getSubEntitiesByClass(this.HypermediaClasses.dates.endDate);
+			var endDateEntity = dateEntity.getSubEntityByClass(this.HypermediaClasses.dates.endDate);
 			var isEnded = false;
 			var endsToday = false;
 			var endDate;
 
-			endDateEntities.forEach(function(entity) {
-				var dateDetails = this._getDateDetails(entity);
-				isEnded = dateDetails.isEnded || isEnded;
-				endsToday = dateDetails.endsToday || endsToday;
-				if (!endDate || endDate > dateDetails.date) {
-					endDate = dateDetails.date;
-				}
-			}.bind(this));
+			if (endDateEntity) {
+				var dateDetails = this._getDateDetails(endDateEntity);
+				isEnded = dateDetails.isEnded;
+				endsToday = dateDetails.endsToday;
+				endDate = dateDetails.date;
+			}
+
 			return {
 				isEnded: isEnded,
 				endsToday: endsToday,

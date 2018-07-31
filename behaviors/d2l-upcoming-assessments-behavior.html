@@ -93,12 +93,12 @@
 			return usages;
 		},
 
-		_getActivityStatus: function(type, userActivityUsage, overdueUserUsages, activity) {
+		_getActivityStatus: function(type, userActivityUsage, overdueUserUsages) {
 			var item = this._types[type];
 			if (!item) {
 				return '';
 			}
-			return this._getStatusBadge(userActivityUsage, overdueUserUsages, activity, item);
+			return this._getStatusBadge(userActivityUsage, overdueUserUsages, item);
 		},
 
 		/*
@@ -129,7 +129,7 @@
 						}
 
 						var type = this._getActivityType(activity);
-						var statusDetails = this._getActivityStatus(type, userActivityUsage, overdueUserUsages, activity);
+						var statusDetails = this._getActivityStatus(type, userActivityUsage, overdueUserUsages);
 						var info = this._getInstructions(type, activity);
 
 						return {

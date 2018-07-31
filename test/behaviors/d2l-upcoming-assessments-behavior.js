@@ -183,6 +183,7 @@ describe('d2l upcoming assessments behavior', function() {
 				[-1, 0, 1].forEach(function(dueDateModifier) {
 					it('should return correct state for ' + type + ' with due date ' + dueDateModifier + ' days away', function() {
 						dueDate = nowish(dueDateModifier);
+						dueDate.setMinutes(dueDate.getMinutes() + 5);
 						var usage = getUserActivityUsage(type);
 						var overdueUserUsages = dueDateModifier < 0 ? [usage] : [];
 

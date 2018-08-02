@@ -1,6 +1,8 @@
 {
   "activityComplete": "Complete",
   "activityDueToday": "Due Today",
+  "activityEndsToday": "Ends Today",
+  "activityEndsToday": "Ends Today",
   "activityEnded": "Closed",
   "activityExempted": "Exempted",
   "activityOverdue": "Overdue",

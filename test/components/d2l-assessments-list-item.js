@@ -62,6 +62,10 @@ describe('<d2l-assessments-list-item>', function() {
 	beforeEach(function() {
 		element = fixture('basic');
 		sandbox = sinon.sandbox.create();
+		element.flags = {
+			assignmentDetailsEnabled: true,
+			discussionDetailsEnabled: true
+		};
 	});
 
 	describe('smoke test', function() {
@@ -151,17 +155,17 @@ describe('<d2l-assessments-list-item>', function() {
 		});
 
 		[
-			{ assignmentLocation: '/path/to/userActivityUsageAssignment', activityDetailsEnabled: false, event: 'click' },
-			{ assignmentLocation: '/path/to/userActivityUsageAssignment', activityDetailsEnabled: false, event: 'enter' },
-			{ assignmentLocation: '/path/to/userActivityUsageAssignment', activityDetailsEnabled: false, event: 'space' },
-			{ assignmentLocation: null, activityDetailsEnabled: true, event: 'click' },
-			{ assignmentLocation: null, activityDetailsEnabled: true, event: 'enter' },
-			{ assignmentLocation: null, activityDetailsEnabled: true, event: 'space' },
-			{ assignmentLocation: '/path/to/userActivityUsageAssignment', activityDetailsEnabled: true, event: 'tab' }
+			{ assignmentLocation: '/path/to/userActivityUsageAssignment', flags: { activityDetailsEnabled: false }, event: 'click' },
+			{ assignmentLocation: '/path/to/userActivityUsageAssignment', flags: { activityDetailsEnabled: false }, event: 'enter' },
+			{ assignmentLocation: '/path/to/userActivityUsageAssignment', flags: { activityDetailsEnabled: false }, event: 'space' },
+			{ assignmentLocation: null, flags: { activityDetailsEnabled: true }, event: 'click' },
+			{ assignmentLocation: null, flags: { activityDetailsEnabled: true }, event: 'enter' },
+			{ assignmentLocation: null, flags: { activityDetailsEnabled: true }, event: 'space' },
+			{ assignmentLocation: '/path/to/userActivityUsageAssignment', flags: { activityDetailsEnabled: true }, event: 'tab' }
 		].forEach(testCase => {
-			it(`should not dispatch event if assignment details enabled is ${testCase.activityDetailsEnabled}, userActivityUsageHref is ${testCase.assignmentLocation}, and event is ${testCase.event}`, function() {
+			it(`should not dispatch event if assignment details enabled is ${testCase.flags.activityDetailsEnabled}, userActivityUsageHref is ${testCase.assignmentLocation}, and event is ${testCase.event}`, function() {
+				element.flags = testCase.flags;
 				setActivityItem('assignment', false, testCase.assignmentLocation);
-				element.activityDetailsEnabled = testCase.activityDetailsEnabled;
 				var processedEvent = getEvent(testCase.event);
 				container.dispatchEvent(processedEvent, true);
 				expect(element.dispatchEvent).to.not.be.called;
@@ -174,7 +178,10 @@ describe('<d2l-assessments-list-item>', function() {
 			{ event: 'space' }
 		].forEach(testCase => {
 			it(`should not dispatch event for quiz grade items and event is ${testCase.event}`, function(done) {
-				element.activityDetailsEnabled = true;
+				element.flags = {
+					activityDetailsEnabled: true,
+					discussionDetailsEnabled: true
+				};
 				var processedEvent = getEvent(testCase.event);
 
 				setActivityItem('quiz', false, '/path/to/userActivityUsageQuiz');
@@ -201,7 +208,10 @@ describe('<d2l-assessments-list-item>', function() {
 			{ type: 'discussion', event: 'space' }
 		].forEach(testCase => {
 			it(`should dispatch event for ${testCase.type} when all conditions are met and event is ${testCase.event}`, function() {
-				element.activityDetailsEnabled = true;
+				element.flags = {
+					assignmentDetailsEnabled: true,
+					discussionDetailsEnabled: true
+				};
 				setActivityItem(testCase.type, false, '/path/to/userActivityUsageAssignment');
 				var processedEvent = getEvent(testCase.event);
 				container.dispatchEvent(processedEvent);

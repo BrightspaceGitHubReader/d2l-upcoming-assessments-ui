@@ -7,6 +7,10 @@ describe('<d2l-all-assessments-list-item>', function() {
 
 	beforeEach(function() {
 		element = fixture('basic');
+		element.flags = {
+			assignmentDetailsEnabled: true,
+			discussionDetailsEnabled: true
+		};
 	});
 
 	describe('smoke test', function() {
@@ -89,36 +93,36 @@ describe('<d2l-all-assessments-list-item>', function() {
 		});
 
 		it('should not dispatch event if activity details is not enabled', function() {
+			element.flags = { assignmentDetailsEnabled: false };
 			setAssessmentItem(false, false, false, null, 'assignment', '/user/activity/url');
-			element.assignmentDetailsEnabled = false;
 			element._openActivityDetails();
 			expect(element.dispatchEvent).to.not.be.called;
 		});
 
 		it('should not dispatch event for quiz assessment items', function() {
+			element.flags = { assignmentDetailsEnabled: true };
 			setAssessmentItem(false, false, false, null, 'quiz');
-			element.assignmentDetailsEnabled = true;
 			element._openActivityDetails();
 			expect(element.dispatchEvent).to.not.be.called;
 		});
 
 		it('should not dispatch event if userActivityUsageHref is null', function() {
+			element.flags = { assignmentDetailsEnabled: true };
 			setAssessmentItem(false, false, false, null, 'assignment');
-			element.assignmentDetailsEnabled = true;
 			element._openActivityDetails();
 			expect(element.dispatchEvent).to.not.be.called;
 		});
 
 		it('should dispatch event when all conditions are met for an assignment', function() {
+			element.flags = { assignmentDetailsEnabled: true };
 			setAssessmentItem(false, false, false, null, 'assignment', '/user/activity/url');
-			element.assignmentDetailsEnabled = true;
 			element._openActivityDetails();
 			expect(element.dispatchEvent).to.be.called;
 		});
 
 		it('should dispatch event when all conditions are met for a discussion', function() {
+			element.flags = { discussionDetailsEnabled: true };
 			setAssessmentItem(false, false, false, null, 'discussion', '/user/activity/url');
-			element.assignmentDetailsEnabled = true;
 			element._openActivityDetails();
 			expect(element.dispatchEvent).to.be.called;
 		});

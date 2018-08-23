@@ -94,7 +94,19 @@ describe('d2l upcoming assessments behavior', function() {
 		} else {
 			subEntities.push(getInstructions());
 		}
-		var activityClass = type === 'discussion' ? 'https://discussions.api.brightspace.com/rels/topic' : type;
+		var activityClass = type === 'discussion' ? 'topic' : type;
+		var rel;
+		switch (type) {
+			case 'assignment':
+				rel = 'https://api.brightspace.com/rels/assignment';
+				break;
+			case 'discussion':
+				rel = 'https://discussions.api.brightspace.com/rels/topic';
+				break;
+			case 'quiz':
+				rel = 'https://api.brightspace.com/rels/quiz';
+				break;
+		}
 
 		var entity = {
 			class: [activityClass],
@@ -106,7 +118,7 @@ describe('d2l upcoming assessments behavior', function() {
 				rel: ['self'],
 				href: activityHref
 			}],
-			rel: [type === 'assignment' ? 'https://assignments.api.brightspace.com/rels/assignment' : null]
+			rel: [rel]
 		};
 
 		return parse(entity);
@@ -219,6 +231,16 @@ describe('d2l upcoming assessments behavior', function() {
 
 					expect(activityType).to.equal(type);
 				});
+			});
+		});
+	});
+
+	['quiz', 'assignment', 'discussion'].forEach(function(type) {
+		describe('_findActivityHref ' + type, function() {
+			it('should find the activityHref', function() {
+				var activityUsage = getUserActivityUsage(type);
+				var result = component._findActivityHref(activityUsage);
+				expect(result).to.equal(activityHref);
 			});
 		});
 	});

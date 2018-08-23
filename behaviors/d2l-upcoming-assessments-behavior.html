@@ -46,7 +46,11 @@
 
 		_findActivityHref: function(userActivityUsage) {
 			for (var i = 0; i < this._allTypes.length; i++) {
-				var link = userActivityUsage.getLinkByRel((this._types[this._allTypes[i]] || {}).activityRel);
+				var activityRel = (this._types[this._allTypes[i]] || {}).activityRel;
+				if (!activityRel) {
+					continue;
+				}
+				var link = userActivityUsage.getLinkByRel(activityRel);
 				if (link) {
 					return link.href;
 				}

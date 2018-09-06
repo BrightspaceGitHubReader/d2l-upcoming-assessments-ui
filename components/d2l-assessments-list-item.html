@@ -217,10 +217,15 @@
 
 		_getAssessmentIcon: function(assessmentItem) {
 			var item = this._types[(assessmentItem || {}).type];
-			if (item) {
+			if (!item) {
+				return '';
+			}
+
+			if (typeof item.icon == "function") {
+				return item.icon(assessmentItem);
+			} else {
 				return 'd2l-tier2:' + item.icon;
 			}
-			return '';
 		},
 
 		_getAssessmentType: function(assessmentItem) {

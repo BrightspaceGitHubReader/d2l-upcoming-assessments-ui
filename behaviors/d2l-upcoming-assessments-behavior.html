@@ -105,6 +105,13 @@
 			return this._getStatusBadge(userActivityUsage, overdueUserUsages, item);
 		},
 
+		_getIconSetKey(entity, tierClass) {
+			if (!entity.getSubEntityByClass(tierClass)) {
+				return null;
+			}
+			return (entity.getSubEntityByClass(tierClass)).properties.iconSetKey;
+		},
+
 		/*
 		* Returns an object that contains the information required to populate an assessment list item
 		*/
@@ -136,8 +143,10 @@
 						var statusDetails = this._getActivityStatus(type, userActivityUsage, overdueUserUsages);
 						var info = this._getInstructions(type, activity);
 
+						var tier2IconKey = this._getIconSetKey(activity, 'tier2');
+
 						return {
-							name: activity.properties.name,
+							name: activity.properties.name || activity.properties.title,
 							courseName: organization.properties.name,
 							info: info,
 							dueDate: statusDetails.dueDateState.dueDate,
@@ -145,7 +154,8 @@
 							statusConfig: statusDetails.statusConfig,
 							type: type,
 							userActivityUsageHref: userActivityUsageHref,
-							isCompleted: statusDetails.completionState.isCompleted
+							isCompleted: statusDetails.completionState.isCompleted,
+							tier2IconKey: tier2IconKey,
 						};
 					}.bind(this));
 

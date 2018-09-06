@@ -8,6 +8,7 @@
   "assignment": "Opdracht",
   "closeSimpleOverlayText": "Terug naar dashboard",
   "closeSimpleOverlayTextMobile": "Dashboard",
+  "content": "Content",
   "currentPeriod": "{startDate} - {endDate}",
   "discussion": "Discussie",
   "dueDateShort": "Uiterste datum {dueDate}",

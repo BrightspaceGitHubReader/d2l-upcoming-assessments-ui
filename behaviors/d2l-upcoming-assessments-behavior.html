@@ -105,7 +105,7 @@
 			return this._getStatusBadge(userActivityUsage, overdueUserUsages, item);
 		},
 
-		_getIconSetKey(entity, tierClass) {
+		_getIconSetKey: function(entity, tierClass) {
 			if (!entity.getSubEntityByClass(tierClass)) {
 				return null;
 			}

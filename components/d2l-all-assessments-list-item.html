@@ -330,7 +330,7 @@
 				this.assessmentIcon = '';
 				return;
 			}
-			if (typeof item.icon == "function") {
+			if (typeof item.icon === 'function') {
 				this.assessmentIcon = item.icon(assessmentItem);
 			} else {
 				this.assessmentIcon = item ? ('d2l-tier3:' + item.icon) : '';

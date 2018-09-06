@@ -41,6 +41,8 @@ describe('d2l upcoming assessments behavior', function() {
 			activityRel = 'https://api.brightspace.com/rels/quiz';
 		} else if (type === 'assignment') {
 			activityRel = 'https://api.brightspace.com/rels/assignment';
+		} else if (type === 'content') {
+			activityRel = 'https://api.brightspace.com/rels/content';
 		} else if (type === 'discussion') {
 			activityRel = 'https://discussions.api.brightspace.com/rels/topic';
 		}
@@ -94,17 +96,25 @@ describe('d2l upcoming assessments behavior', function() {
 		} else {
 			subEntities.push(getInstructions());
 		}
-		var activityClass = type === 'discussion' ? 'topic' : type;
+		var activityClass;
+
 		var rel;
 		switch (type) {
 			case 'assignment':
 				rel = 'https://api.brightspace.com/rels/assignment';
+				activityClass = type;
 				break;
 			case 'discussion':
 				rel = 'https://discussions.api.brightspace.com/rels/topic';
+				activityClass = 'topic';
 				break;
 			case 'quiz':
 				rel = 'https://api.brightspace.com/rels/quiz';
+				activityClass = type;
+				break;
+			case 'content':
+				rel = 'https://api.brightspace.com/rels/content';
+				activityClass = 'sequenced-activity';
 				break;
 		}
 
@@ -177,7 +187,7 @@ describe('d2l upcoming assessments behavior', function() {
 		sandbox.restore();
 	});
 
-	['assignment', 'quiz'].forEach(function(type) {
+	['assignment', 'quiz', 'content'].forEach(function(type) {
 		describe(type, function() {
 			describe('_getCompletionState', function() {
 				[true, false].forEach(function(isCompleted) {
@@ -235,7 +245,7 @@ describe('d2l upcoming assessments behavior', function() {
 		});
 	});
 
-	['quiz', 'assignment', 'discussion'].forEach(function(type) {
+	['quiz', 'assignment', 'discussion', 'content'].forEach(function(type) {
 		describe('_findActivityHref ' + type, function() {
 			it('should find the activityHref', function() {
 				var activityUsage = getUserActivityUsage(type);

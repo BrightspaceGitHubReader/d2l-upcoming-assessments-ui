@@ -8,6 +8,7 @@
   "assignment": "과제",
   "closeSimpleOverlayText": "대시보드로 돌아가기",
   "closeSimpleOverlayTextMobile": "대시보드",
+  "content": "Content",
   "currentPeriod": "{startDate} - {endDate}",
   "discussion": "토론",
   "dueDateShort": "기한: {dueDate}",

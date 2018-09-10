@@ -8,6 +8,7 @@
   "assignment": "Travail",
   "closeSimpleOverlayText": "Retour au tableau de bord",
   "closeSimpleOverlayTextMobile": "Tableau de bord",
+  "content": "Content",
   "currentPeriod": "{startDate} - {endDate}",
   "discussion": "Discussion",
   "dueDateShort": "Échéance {dueDate}",

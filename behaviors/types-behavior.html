@@ -48,13 +48,30 @@
 							activityClass: this.HypermediaClasses.quizzes.quiz,
 							noCompletion: false,
 							activityDetailsFeatureFlag: 'NOT_IMPLEMENTED'
+						},
+						content: {
+							icon: function(assessmentItem) {
+								// content icons always tier 2
+								if (assessmentItem.tier2IconKey) {
+									return assessmentItem.tier2IconKey;
+								}
+								return 'd2l-tier2:content';
+							},
+							assessmentType: 'content',
+							canOpen: false,
+							instructionsRel: this.HypermediaRels.Content.description,
+							userActivityUsageClass: this.HypermediaClasses.activities.userContentActivity,
+							activityRel: this.HypermediaRels.content,
+							activityClass: this.HypermediaClasses.content.sequencedActivity,
+							noCompletion: false,
+							activityDetailsFeatureFlag: 'NOT_IMPLEMENTED'
 						}
 					};
 				}
 			}
 		},
 
-		_allTypes: ['assignment', 'discussion', 'quiz'],
+		_allTypes: ['assignment', 'discussion', 'quiz', 'content'],
 
 		_getActivityType: function(activity) {
 			for (var i = 0; i < this._allTypes.length; i++) {

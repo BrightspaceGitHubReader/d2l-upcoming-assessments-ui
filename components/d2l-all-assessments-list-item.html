@@ -326,7 +326,15 @@
 
 		_updateAssessmentIcon: function(assessmentItem) {
 			var item = this._types[(assessmentItem || {}).type];
-			this.assessmentIcon = item ? ('d2l-tier3:' + item.icon) : '';
+			if (!item) {
+				this.assessmentIcon = '';
+				return;
+			}
+			if (typeof item.icon === 'function') {
+				this.assessmentIcon = item.icon(assessmentItem);
+			} else {
+				this.assessmentIcon = item ? ('d2l-tier3:' + item.icon) : '';
+			}
 		},
 
 		_updateAssessmentType: function(assessmentItem) {

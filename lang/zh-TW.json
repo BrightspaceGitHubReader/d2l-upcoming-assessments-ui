@@ -8,6 +8,7 @@
   "assignment": "作業",
   "closeSimpleOverlayText": "返回儀表板",
   "closeSimpleOverlayTextMobile": "儀表板",
+  "content": "Content",
   "currentPeriod": "{startDate} - {endDate}",
   "discussion": "討論",
   "dueDateShort": "截止於 {dueDate}",

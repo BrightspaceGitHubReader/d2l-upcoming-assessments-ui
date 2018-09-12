@@ -290,7 +290,7 @@
 					return activity.dueDate || activity.endDate;
 				})
 				.sort(function(a, b) {
-					return (a.dueDate || a.endDate) > (b.dueDate || b.endDate);
+					return (new Date(a.dueDate || a.endDate)) > (new Date(b.dueDate || b.endDate)) ? 1 : -1;
 				});
 		},
 

@@ -61,7 +61,7 @@
 							canOpen: false,
 							instructionsRel: this.HypermediaRels.Content.description,
 							userActivityUsageClass: this.HypermediaClasses.activities.userContentActivity,
-							filterUsages: function(userActivityUsage) {
+							usagePredicate: function(userActivityUsage) {
 								return userActivityUsage && userActivityUsage.hasClass(this.HypermediaClasses.content.topic);
 							},
 							activityRel: this.HypermediaRels.content,

@@ -92,8 +92,8 @@
 			this._allTypes.forEach(function(typeString) {
 				var type = this._types[typeString];
 				var entities = usageList.getSubEntitiesByClass(type.userActivityUsageClass);
-				if (type.filterUsages) {
-					entities = entities.filter(type.filterUsages.bind(this));
+				if (type.usagePredicate) {
+					entities = entities.filter(type.usagePredicate.bind(this));
 				}
 				usages = usages.concat(entities);
 			}.bind(this));

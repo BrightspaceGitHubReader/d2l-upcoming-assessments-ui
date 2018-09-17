@@ -63,7 +63,7 @@
 							userActivityUsageClass: this.HypermediaClasses.activities.userContentActivity,
 							usagePredicate: function(userActivityUsage) {
 								return userActivityUsage && userActivityUsage.hasClass(this.HypermediaClasses.content.topic);
-							},
+							}.bind(this),
 							activityRel: this.HypermediaRels.content,
 							activityClass: this.HypermediaClasses.content.sequencedActivity,
 							noCompletion: false,

@@ -35,7 +35,12 @@ describe('d2l upcoming assessments behavior', function() {
 		return window.D2L.Hypermedia.Siren.Parse(entity);
 	}
 
-	function getUserActivityUsage(type, isComplete, isExempt) {
+	function getUserActivityUsage(type, isComplete, isExempt, isModuleContent) {
+		var classList = ['activity', 'user-' + type + '-activity'];
+		if (isExempt) {
+			classList.push('exempt');
+		}
+
 		var activityRel;
 		if (type === 'quiz') {
 			activityRel = 'https://api.brightspace.com/rels/quiz';
@@ -43,13 +48,9 @@ describe('d2l upcoming assessments behavior', function() {
 			activityRel = 'https://api.brightspace.com/rels/assignment';
 		} else if (type === 'content') {
 			activityRel = 'https://api.brightspace.com/rels/content';
+			classList.push(isModuleContent ? 'module' : 'topic');
 		} else if (type === 'discussion') {
 			activityRel = 'https://discussions.api.brightspace.com/rels/topic';
-		}
-
-		var classList = ['activity', 'user-' + type + '-activity'];
-		if (isExempt) {
-			classList.push('exempt');
 		}
 
 		var entity = {
@@ -379,6 +380,28 @@ describe('d2l upcoming assessments behavior', function() {
 				.then(function() {
 					expect(component._getOrganizationRequest).to.have.not.been.called;
 					expect(component._getActivityRequest).to.have.not.been.called;
+				});
+		});
+
+		it('should ignore content module user activity usages', function() {
+			userUsage = getUserActivityUsage('content', false, false, true);
+			userUsages = parse({ entities: [userUsage] });
+
+			return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+				.then(function() {
+					expect(component._getOrganizationRequest).to.have.not.been.called;
+					expect(component._getActivityRequest).to.have.not.been.called;
+				});
+		});
+
+		it('should include content topic user activity usages', function() {
+			userUsage = getUserActivityUsage('content', false, false, false);
+			userUsages = parse({ entities: [userUsage] });
+
+			return component._getUserActivityUsagesInfos(userUsages, overdueUserUsages, getToken, userUrl)
+				.then(function() {
+					expect(component._getOrganizationRequest).to.have.been.called;
+					expect(component._getActivityRequest).to.have.been.called;
 				});
 		});
 

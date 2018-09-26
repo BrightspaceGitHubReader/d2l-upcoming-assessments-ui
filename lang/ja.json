@@ -1,15 +1,28 @@
+<<<<<<< HEAD
 {
    "activityComplete" : "完了",
    "activityDueToday" : "本日期限",
    "activityEnded" : "クローズ",
    "activityEndsToday" : "本日終了",
+=======
+﻿{
+   "activityComplete" : "完了",
+   "activityDueToday" : "本日期限",
+   "activityEnded" : "クローズ",
+   "activityEndsToday" : "Ends Today",
+>>>>>>> Translation updates
    "activityExempted" : "免除",
    "activityOverdue" : "期限切れ",
    "assignment" : "課題",
    "closeSimpleOverlayText" : "ダッシュボードに戻る",
    "closeSimpleOverlayTextMobile" : "ダッシュボード",
+<<<<<<< HEAD
    "content": "Content",
    "currentPeriod" : "{startDate}～{endDate}",
+=======
+   "content" : "コンテンツ",
+   "currentPeriod" : "{startDate} - {endDate}",
+>>>>>>> Translation updates
    "discussion" : "ディスカッション",
    "dueDateLongImminent" : "{prefix}: {dueDate}",
    "dueDateShort" : "期限 {dueDate}",

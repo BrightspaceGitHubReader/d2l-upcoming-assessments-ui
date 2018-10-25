@@ -8,7 +8,7 @@
    "assignment" : "Übung",
    "closeSimpleOverlayText" : "Zurück zum Dashboard",
    "closeSimpleOverlayTextMobile" : "Dashboard",
-   "content": "Inhalt",
+   "content" : "Inhalt",
    "currentPeriod" : "{startDate} – {endDate}",
    "discussion" : "Diskussion",
    "dueDateLongImminent" : "{prefix}: {dueDate}",

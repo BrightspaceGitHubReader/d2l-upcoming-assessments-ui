@@ -62,6 +62,7 @@
 			<script>
 				setTimeout(function() {
 					document.querySelectorAll('d2l-upcoming-assessments').forEach(function(assessment) {
+						assessment._isWhitelisted = function() { return true; };
 						assessment.getToken = function() { return Promise.resolve('foozleberries'); };
 						assessment.isActivityUpcoming = function() { return true; };
 					}, 100);

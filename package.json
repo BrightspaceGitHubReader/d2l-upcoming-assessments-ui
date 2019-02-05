@@ -9,9 +9,9 @@
   "scripts": {
     "postinstall": "polymer install --variants",
     "build": "gulp build",
-    "test": "npm run test:lint:js && npm run test:lint:wc && npm run test:wct",
-    "test:local": "npm run test:lint:js && npm run test:lint:wc && npm run test:wct:local",
-    "test:lint:js": "eslint --ext .js,.html behaviors/ components/ demo/ lang/ test/",
+    "test": "npm run test:lint:html && npm run test:lint:wc && npm run test:wct",
+    "test:local": "npm run test:lint:html && npm run test:lint:wc && npm run test:wct:local",
+    "test:lint:html": "eslint --ext .js,.html behaviors/ components/ demo/ lang/ test/",
     "test:lint:wc": "polymer lint",
     "test:wct": "polymer test -p",
     "test:wct:local": "cross-env LAUNCHPAD_BROWSERS=chrome polymer test -p --skip-plugin sauce"

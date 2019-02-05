@@ -11,7 +11,6 @@
     "d2l-hm-constants-behavior": "Brightspace/d2l-hm-constants-behavior#^5.19.4",
     "d2l-icons": "^4.14.2",
     "d2l-link": "^4.0.0",
-    "d2l-page-load-progress": "^2.0.1",
     "d2l-status-indicator": "^1.0.1",
     "d2l-typography": "^6.0.0",
     "fetch": "^2.0.3",

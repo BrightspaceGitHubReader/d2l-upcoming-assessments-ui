@@ -1,0 +1,5 @@
+{
+  "extends": [
+    "brightspace/wct-config"
+  ]
+}

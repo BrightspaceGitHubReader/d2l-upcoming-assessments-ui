@@ -1,6 +1,7 @@
 /* global describe, it, expect, fixture, beforeEach, afterEach, sinon */
 
-'use strict';
+import SirenParse from 'siren-parser';
+import './d2l-upcoming-assessments-behavior-consumer.js';
 
 describe('d2l upcoming assessments behavior', function() {
 	var component, sandbox, getToken, userUrl, completionDate, dueDate, endDate;
@@ -51,7 +52,7 @@ describe('d2l upcoming assessments behavior', function() {
 	}
 
 	function parse(entity) {
-		return window.D2L.Hypermedia.Siren.Parse(entity);
+		return SirenParse(entity);
 	}
 
 	function getUserActivityUsage(type, isComplete, isExempt, isModuleContent) {
@@ -570,7 +571,7 @@ describe('d2l upcoming assessments behavior', function() {
 
 	describe('_getCustomRangeAction', function() {
 		it('returns a URL for the correct period', function() {
-			const parsedActivitiesEntity = window.D2L.Hypermedia.Siren.Parse(activitiesEntity);
+			const parsedActivitiesEntity = SirenParse(activitiesEntity);
 			const testDate = new Date(2019, 0, 29);
 			const actionUrl = component._getCustomRangeAction(parsedActivitiesEntity, testDate);
 			const expectedStartDate = new Date(2019, 0, 27, 0, 0, 0, 0).toISOString();
@@ -600,8 +601,8 @@ describe('d2l upcoming assessments behavior', function() {
 			};
 
 			const fetchEntityStub = sinon.stub();
-			fetchEntityStub.onFirstCall().returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(userEntity)));
-			fetchEntityStub.onSecondCall().returns(Promise.resolve(window.D2L.Hypermedia.Siren.Parse(activitiesEntity)));
+			fetchEntityStub.onFirstCall().returns(Promise.resolve(SirenParse(userEntity)));
+			fetchEntityStub.onSecondCall().returns(Promise.resolve(SirenParse(activitiesEntity)));
 
 			component.isActivityUpcoming = sinon.stub().returns(true);
 			component._fetchEntityWithToken = fetchEntityStub;
@@ -650,7 +651,7 @@ describe('d2l upcoming assessments behavior', function() {
 			}]
 		}].forEach(ctx => {
 			it(ctx.description, function() {
-				const parsedUserEntity = window.D2L.Hypermedia.Siren.Parse(
+				const parsedUserEntity = SirenParse(
 					Object.assign({}, userEntity, {
 						links: ctx.links
 					})
@@ -696,7 +697,7 @@ describe('d2l upcoming assessments behavior', function() {
 			const startDate = new Date(2017, 6, 16).toISOString();
 			const endDate = new Date(2017, 6, 29, 23, 59, 59, 999).toISOString();
 
-			const parsedActivitiesEntity = window.D2L.Hypermedia.Siren.Parse(activitiesEntity);
+			const parsedActivitiesEntity = SirenParse(activitiesEntity);
 
 			return component._loadActivitiesForPeriod(parsedActivitiesEntity, new Date('2017-07-21T16:20:07.567Z'))
 				.then(function() {
@@ -706,7 +707,7 @@ describe('d2l upcoming assessments behavior', function() {
 		});
 
 		it('should not update the assessments with the activities in the period', function() {
-			const parsedActivitiesEntity = window.D2L.Hypermedia.Siren.Parse(activitiesEntity);
+			const parsedActivitiesEntity = SirenParse(activitiesEntity);
 
 			return component._loadActivitiesForPeriod(parsedActivitiesEntity, new Date('2017-07-21T16:20:07.567Z'))
 				.then(function() {

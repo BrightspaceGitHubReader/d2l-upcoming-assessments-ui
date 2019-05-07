@@ -109,8 +109,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-date-dropdown">
 		</style>
 
 		<d2l-date-picker value="{{value}}" locale="[[locale]]" custom-overlay-style="">
-			<iron-a11y-keys target="[[_target]]" keys="enter" on-keys-pressed="_onEnter"></iron-a11y-keys>
-			<iron-a11y-keys target="[[_target]]" keys="up down" on-keys-pressed="_onUpDown"></iron-a11y-keys>
 			<div class="input">
 				<d2l-link href="javascript:void(0);" on-focus="_handleFocus" on-tap="_handleTap">
 					<span class="currentPeriod">[[currentPeriodText]]</span>
@@ -120,6 +118,8 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-date-dropdown">
 					<div></div>
 				</div>
 			</div>
+			<iron-a11y-keys target="[[_target]]" keys="enter" on-keys-pressed="_onEnter"></iron-a11y-keys>
+			<iron-a11y-keys target="[[_target]]" keys="up down" on-keys-pressed="_onUpDown"></iron-a11y-keys>
 		</d2l-date-picker>
 	</template>
 
@@ -151,6 +151,10 @@ Polymer({
 	},
 	ready: function() {
 		this._target = this.$$('d2l-link');
+		// HACK: d2l-date-picker now expects that an input element should be passed in,
+		// This is a change in behavior from previously, and should be fixed,
+		// But for now we can fix the issue by adding a 'checkValidity' function to the first element
+		this.$$('.input').checkValidity = () => true;
 
 		var self = this;
 

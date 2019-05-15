@@ -1,9 +1,11 @@
 import 'd2l-localize-behavior/d2l-localize-behavior.js';
 import '../build/langterms/ar.js';
+import '../build/langterms/da-dk';
 import '../build/langterms/de.js';
 import '../build/langterms/en.js';
 import '../build/langterms/es.js';
 import '../build/langterms/fr.js';
+import '../build/langterms/fr-fr.js';
 import '../build/langterms/ja.js';
 import '../build/langterms/ko.js';
 import '../build/langterms/nl.js';
@@ -24,10 +26,12 @@ window.D2L.UpcomingAssessments.LocalizeBehaviorImpl = {
 			value: function() {
 				return {
 					'ar': this.ar,
+					'da-dk': this['da-dk'],
 					'de': this.de,
 					'en': this.en,
 					'es': this.es,
 					'fr': this.fr,
+					'fr-fr': this['fr-fr'],
 					'ja': this.ja,
 					'ko': this.ko,
 					'nl': this.nl,

@@ -24,25 +24,16 @@ var typesBehaviorImpl = {
 						noCompletion: false,
 						activityDetailsFeatureFlag: 'assignmentDetailsEnabled'
 					},
-					discussion: {
-						icon: 'discussions',
-						assessmentType: 'discussion',
-						canOpen: true,
-						instructionsRel: Rels.Discussions.description,
-						userActivityUsageClass: Classes.activities.userDiscussionActivity,
-						activityRel: Rels.Discussions.topic,
-						activityClass: Classes.discussions.topic,
-						noCompletion: true,
-						activityDetailsFeatureFlag: 'discussionDetailsEnabled'
-					},
-					quiz: {
-						icon: 'quizzing',
-						assessmentType: 'quiz',
+					checklistItem: {
+						icon: function() {
+							return 'd2l-tier2:checklist'; // checklist doesn't have a tier3 icon
+						},
+						assessmentType: 'checklistItem',
 						canOpen: false,
-						instructionsRel: Rels.Quizzes.description,
-						userActivityUsageClass: Classes.activities.userQuizActivity,
-						activityRel: Rels.quiz,
-						activityClass: Classes.quizzes.quiz,
+						instructionsRel: Rels.Checklists.description,
+						userActivityUsageClass: Classes.activities.userChecklistActivity,
+						activityRel: Rels.Checklists.checklistItem,
+						activityClass: 'checklist-item',
 						noCompletion: false,
 						activityDetailsFeatureFlag: 'NOT_IMPLEMENTED'
 					},
@@ -65,13 +56,48 @@ var typesBehaviorImpl = {
 						activityClass: Classes.content.sequencedActivity,
 						noCompletion: false,
 						activityDetailsFeatureFlag: 'NOT_IMPLEMENTED'
+					},
+					discussion: {
+						icon: 'discussions',
+						assessmentType: 'discussion',
+						canOpen: true,
+						instructionsRel: Rels.Discussions.description,
+						userActivityUsageClass: Classes.activities.userDiscussionActivity,
+						activityRel: Rels.Discussions.topic,
+						activityClass: Classes.discussions.topic,
+						noCompletion: true,
+						activityDetailsFeatureFlag: 'discussionDetailsEnabled'
+					},
+					quiz: {
+						icon: 'quizzing',
+						assessmentType: 'quiz',
+						canOpen: false,
+						instructionsRel: Rels.Quizzes.description,
+						userActivityUsageClass: Classes.activities.userQuizActivity,
+						activityRel: Rels.quiz,
+						activityClass: Classes.quizzes.quiz,
+						noCompletion: false,
+						activityDetailsFeatureFlag: 'NOT_IMPLEMENTED'
+					},
+					survey: {
+						icon: function() {
+							return 'd2l-tier2:surveys';
+						},
+						assessmentType: 'survey',
+						canOpen: false,
+						userActivityUsageClass: Classes.activities.userSurveyActivity,
+						activityRel: Rels.Surveys.survey,
+						activityClass: 'survey',
+						noCompletion: false,
+						instructionsRel: Rels.Surveys.description,
+						activityDetailsFeatureFlag: 'NOT_IMPLEMENTED'
 					}
 				};
 			}
 		}
 	},
 
-	_allTypes: ['assignment', 'discussion', 'quiz', 'content'],
+	_allTypes: ['assignment', 'discussion', 'quiz', 'content', 'survey', 'checklistItem'],
 
 	_getActivityType: function(activity) {
 		for (var i = 0; i < this._allTypes.length; i++) {

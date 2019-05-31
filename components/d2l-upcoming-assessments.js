@@ -78,6 +78,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-upcoming-assessments">
 				font-size: 0.7rem;
 				font-weight: normal;
 				margin-bottom: 0;
+				display: inline-block;
 			}
 
 			.no-assessments-in-time-frame {

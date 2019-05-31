@@ -80,6 +80,10 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-upcoming-assessments">
 				margin-bottom: 0;
 			}
 
+			.view-all-assignments-link {
+				display: inline-block;
+			}
+
 			.no-assessments-in-time-frame {
 				text-align: center;
 			}
@@ -134,9 +138,11 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-upcoming-assessments">
 			<div hidden$="[[!_showError]]" class="error-message">[[localize('errorMessage')]]</div>
 		</div>
 
-		<d2l-link class="view-all-assignments-link" href="javascript:void(0);" on-tap="openAllAssignmentsView" on-keypress="_keypressOpenAllAssignmentsView" hidden$="[[_showError]]" tabindex="0">
-			<h3 class="view-all-assignments-text">[[localize('viewAllAssignments')]]</h3>
-	</d2l-link>
+		<div class="link-wrapper">
+			<d2l-link class="view-all-assignments-link" href="javascript:void(0);" on-tap="openAllAssignmentsView" on-keypress="_keypressOpenAllAssignmentsView" hidden$="[[_showError]]" tabindex="0">
+				<h3 class="view-all-assignments-text">[[localize('viewAllAssignments')]]</h3>
+			</d2l-link>
+		</div>
 	</template>
 
 

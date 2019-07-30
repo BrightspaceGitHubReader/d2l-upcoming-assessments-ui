@@ -68,7 +68,6 @@
     "d2l-typography": "BrightspaceUI/typography#semver:^7",
     "whatwg-fetch": "^2.0.0",
     "@polymer/iron-a11y-keys": "^3.0.0",
-    "@polymer/iron-icon": "^3.0.0",
     "@polymer/polymer": "^3.0.0",
     "siren-parser": "^8.0.0"
   }

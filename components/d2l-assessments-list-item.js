@@ -1,5 +1,4 @@
 import '@polymer/polymer/polymer-legacy.js';
-import '@polymer/iron-icon/iron-icon.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
 import 'd2l-colors/d2l-colors.js';
 import 'd2l-icons/d2l-icon.js';
@@ -53,16 +52,16 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-assessments-list-item">
 				width: calc(100% - 44px);
 			}
 
-			iron-icon.completion-icon {
+			d2l-icon.completion-icon {
 				fill: var(--d2l-color-olivine);
 				margin-left: 10px;
 			}
-			:host(:dir(rtl)) iron-icon.completion-icon {
+			:host(:dir(rtl)) d2l-icon.completion-icon {
 				margin-left: 0;
 				margin-right: 10px;
 			}
 
-			iron-icon.separator-icon {
+			d2l-icon.separator-icon {
 				opacity: 0.8;
 				width: 14px;
 				height: 14px;
@@ -133,11 +132,11 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-assessments-list-item">
 							<div class="assessment-details">
 								<div class="assessment-type">[[_getAssessmentType(assessmentItem)]]</div>
 								<template is="dom-if" if="[[_hasDueDate(assessmentItem)]]">
-									<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+									<d2l-icon class="separator-icon" icon="d2l-tier1:bullet"></d2l-icon>
 									<div class="date">[[_getDueDateString(assessmentItem.dueDate)]]</div>
 								</template>
 								<template is="dom-if" if="[[_showEndDate(assessmentItem)]]">
-									<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+									<d2l-icon class="separator-icon" icon="d2l-tier1:bullet"></d2l-icon>
 									<div class="date">[[_getEndDateString(assessmentItem.endDate)]]</div>
 								</template>
 							</div>
@@ -145,7 +144,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-assessments-list-item">
 					</div>
 				</div>
 				<template is="dom-if" if="[[_isCompleted(assessmentItem)]]">
-					<iron-icon class="completion-icon" icon="d2l-tier1:check"></iron-icon>
+					<d2l-icon class="completion-icon" icon="d2l-tier1:check"></d2l-icon>
 				</template>
 			</div>
 	</template>

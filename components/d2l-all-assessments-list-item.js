@@ -2,8 +2,8 @@ import '@polymer/polymer/polymer-legacy.js';
 import 'd2l-colors/d2l-colors.js';
 import 'd2l-icons/d2l-icon.js';
 import 'd2l-icons/tier3-icons.js';
+import 'd2l-icons/tier1-icons.js';
 import 'd2l-typography/d2l-typography-shared-styles.js';
-import '@polymer/iron-icon/iron-icon.js';
 import 'd2l-status-indicator/d2l-status-indicator.js';
 import '../behaviors/date-behavior.js';
 import '../behaviors/localize-behavior.js';
@@ -124,10 +124,8 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-assessments-list-item">
 				padding-right: 30px;
 			}
 
-			iron-icon.separator-icon {
+			d2l-icon.separator-icon {
 				opacity: 0.8;
-				width: 18px;
-				height: 18px;
 			}
 
 			:host(:dir(rtl)) .info {
@@ -220,13 +218,13 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-assessments-list-item">
 						<d2l-status-indicator state="[[_statusConfig.state]]" text="[[localize(_statusConfig.text)]]" hidden$="[[!_statusConfig]]"></d2l-status-indicator>
 						<div class="meta-text" hidden$="[[!_showEndsText]]">
 							<div class="meta-text emphasis">[[_endsText]]</div>
-							<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+							<d2l-icon class="separator-icon" icon="d2l-tier1:bullet"></d2l-icon>
 						</div>
 					</div>
 					<div class="meta-info">
 						<div class="spacer"></div>
 						<div class="meta-text course-name">[[assessmentItem.courseName]]</div>
-						<iron-icon class="separator-icon" icon="d2l-tier1:bullet"></iron-icon>
+						<d2l-icon class="separator-icon" icon="d2l-tier1:bullet"></d2l-icon>
 						<div class="meta-text">[[assessmentType]]</div>
 					</div>
 				</div>

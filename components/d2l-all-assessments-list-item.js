@@ -126,8 +126,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-assessments-list-item">
 
 			d2l-icon.separator-icon {
 				opacity: 0.8;
-				width: 18px;
-				height: 18px;
 			}
 
 			:host(:dir(rtl)) .info {

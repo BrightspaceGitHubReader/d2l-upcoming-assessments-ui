@@ -51,7 +51,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-assessments">
 		</template>
 		<div hidden$="[[_hasActivities(_allActivities)]]" class="no-assessments-in-time-frame">[[_noAssessmentsInThisTimeFrame]]</div>
 	</template>
-	
 </dom-module>`;
 
 document.head.appendChild($_documentContainer.content);
@@ -95,6 +94,10 @@ Polymer({
 	},
 
 	_getAllAssessmentsInfo: function() {
+		if (this.__dateChangeAbortController) {
+			this.__dateChangeAbortController.abort();
+		}
+
 		this._resetData();
 		this._getInfo()
 			.then(this._formatPeriodText.bind(this));
@@ -106,12 +109,39 @@ Polymer({
 
 	_onDateValueChanged: function(e) {
 		if (e.detail.date) {
-			return this._loadActivitiesForPeriod(this.__activitiesEntity, e.detail.date)
+			if (this.__dateChangeAbortController) {
+				this.__dateChangeAbortController.abort();
+			}
+
+			if (!this.__dateChangeActivityLoadRequest) {
+				this.__dateChangeActivityLoadRequest = Promise.resolve();
+			}
+
+			this.__dateChangeActivityLoadRequest = this.__dateChangeActivityLoadRequest
+				.then(() => {
+					this.__dateChangeAbortController = new AbortController();
+
+					return this._loadActivitiesForPeriod({
+						activitiesEntity: this.__activitiesEntity,
+						dateObj: e.detail.date,
+						abortSignal: (this.__dateChangeAbortController || {}).signal,
+						getToken: this.getToken,
+						userUrl: this.userUrl,
+					});
+				})
 				.then(this._formatPeriodText.bind(this))
-				.catch(function() {
-					self._showError = true;
-					self._firstName = null;
+				.then(() => {
+					this.__dateChangeAbortController = null;
+				}, (e) => {
+					this.__dateChangeAbortController = null;
+
+					if (!(e instanceof Error) || e.name !== 'AbortError') {
+						this._showError = true;
+						this._firstName = null;
+					}
 				});
+
+			return this.__dateChangeActivityLoadRequest;
 		}
 	},
 

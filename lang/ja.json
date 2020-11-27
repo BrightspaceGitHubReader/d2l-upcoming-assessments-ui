@@ -1,5 +1,5 @@
 {
-   "activityComplete" : "完了",
+   "activityComplete" : "の完了",
    "activityDueToday" : "本日期限",
    "activityEnded" : "クローズ",
    "activityEndsToday" : "本日終了",
@@ -9,7 +9,7 @@
    "closeSimpleOverlayText" : "ダッシュボードに戻る",
    "closeSimpleOverlayTextMobile" : "ダッシュボード",
    "content" : "コンテンツ",
-   "currentPeriod" : "{startDate} - {endDate}",
+   "currentPeriod" : "{startDate}～{endDate}",
    "discussion" : "ディスカッション",
    "dueDateLongImminent" : "{prefix}: {dueDate}",
    "dueDateShort" : "期限 {dueDate}",

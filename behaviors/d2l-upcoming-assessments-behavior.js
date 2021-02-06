@@ -386,7 +386,7 @@ var upcomingAssessmentsBehaviorImpl = {
 			action.fields.forEach(function(field) {
 				if (parameters.hasOwnProperty(field.name)) {
 					query[field.name] = parameters[field.name];
-				} else {
+				} else if (field.value !== undefined) {
 					query[field.name] = field.value;
 				}
 			});

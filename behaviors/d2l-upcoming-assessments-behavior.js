@@ -424,7 +424,10 @@ var upcomingAssessmentsBehaviorImpl = {
 		} else {
 			activityEntities = activities.entities || [];
 		}
-		var supportedActivities = activityEntities.filter(this._isSupportedType.bind(this));
+		var supportedActivities = activityEntities
+			.filter(this._isSupportedType.bind(this))
+			.filter(x => !x.hasClass('broken'));
+
 		var activitiesContext = this._createNormalizedEntityMap(supportedActivities);
 		var flattenedActivities = Array.from(activitiesContext.activitiesMap.values());
 		return self._hydrateActivityEntities(flattenedActivities, getToken, userUrl, abortSignal)

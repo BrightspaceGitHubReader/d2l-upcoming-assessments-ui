@@ -20,7 +20,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-assessments-list-item">
 
 			.assessment-info {
 				display: flex;
-				margin: 10px 10px;
+				margin: 10px;
 				background-color: var(--d2l-color-white);
 				border: 1px var(--d2l-color-titanius) solid;
 				border-radius: 4px;

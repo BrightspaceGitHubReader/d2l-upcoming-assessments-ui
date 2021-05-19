@@ -20,7 +20,7 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-assessments-list-item">
 
 			.assessment-info {
 				display: flex;
-				margin: 10px auto;
+				margin: 10px;
 				background-color: var(--d2l-color-white);
 				border: 1px var(--d2l-color-titanius) solid;
 				border-radius: 4px;
@@ -48,6 +48,11 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-all-assessments-list-item">
 			.assessment-title {
 				@apply --d2l-heading-3;
 				margin: 0;
+				word-break: break-word;
+				display: -webkit-box;
+				-webkit-box-orient: vertical;
+				-webkit-line-clamp: 2;
+				overflow: hidden;
 			}
 
 			.row {

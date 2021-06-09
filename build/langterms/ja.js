@@ -15,8 +15,6 @@ window.D2L.UpcomingAssessments.LangJaBehavior = {
 		"activityExempted": "免除",
 		"activityOverdue": "期限切れ",
 		"assignment": "課題",
-		"closeSimpleOverlayText": "ダッシュボードに戻る",
-		"closeSimpleOverlayTextMobile": "ダッシュボード",
 		"content": "コンテンツ",
 		"currentPeriod": "{startDate} - {endDate}",
 		"discussion": "ディスカッション",

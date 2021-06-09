@@ -15,8 +15,6 @@ window.D2L.UpcomingAssessments.LangZhBehavior = {
 		"activityExempted": "已免除",
 		"activityOverdue": "过期",
 		"assignment": "作业",
-		"closeSimpleOverlayText": "返回仪表板",
-		"closeSimpleOverlayTextMobile": "仪表板",
 		"content": "内容",
 		"currentPeriod": "{startDate} - {endDate}",
 		"discussion": "讨论",

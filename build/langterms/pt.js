@@ -15,8 +15,6 @@ window.D2L.UpcomingAssessments.LangPtBehavior = {
 		"activityExempted": "Isento",
 		"activityOverdue": "Atraso",
 		"assignment": "Atribuição",
-		"closeSimpleOverlayText": "Voltar ao Painel",
-		"closeSimpleOverlayTextMobile": "Painel",
 		"content": "Conteúdo",
 		"currentPeriod": "{startDate} - {endDate}",
 		"discussion": "Discussão",

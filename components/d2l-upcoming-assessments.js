@@ -38,25 +38,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-upcoming-assessments">
 				margin-left: 15px;
 			}
 
-			d2l-simple-overlay {
-				border-top: 0;
-				user-select: text;
-				-webkit-user-select: text;
-				-moz-user-select: text;
-				-ms-user-select: text;
-			}
-
-			d2l-simple-overlay-close-button {
-				line-height: 60px;
-				padding: 0px;
-			}
-
-			d2l-simple-overlay-close-button span {
-				@apply --d2l-body-small-text;
-				text-transform: uppercase;
-				padding-left: 7px;
-			}
-
 			.period-selection-container {
 				display: flex;
 				justify-content: center;
@@ -97,26 +78,6 @@ $_documentContainer.innerHTML = `<dom-module id="d2l-upcoming-assessments">
 				margin-left: auto;
 				margin-right: auto;
 				max-width: 1230px;
-			}
-
-			.overlay-close-button-content-wrapper {
-				display: inline-flex;
-				align-items: center;
-				vertical-align: middle;
-				border: 1px solid transparent;
-				padding: 8px;
-				outline: 0;
-			}
-
-			.overlay-close-button-content-wrapper:focus, .overlay-close-button-content-wrapper:hover {
-				border-radius: 0.3rem;
-				border-color: var(--d2l-color-celestuba);
-				outline: 0;
-			}
-
-			.overlay-close-button-content-wrapper:hover span, .overlay-close-button-content-wrapper:focus span,
-			.overlay-close-button-content-wrapper:hover d2l-icon, .overlay-close-button-content-wrapper:focus d2l-icon {
-				color: var(--d2l-color-celestuba);
 			}
 
 			.wrapper {
@@ -184,9 +145,6 @@ Polymer({
 			type: String,
 			computed: 'localize("noUpcomingAssessments", "userName", _firstName)'
 		},
-		_closeSimpleOverlayText: {
-			type: String
-		},
 		_selectCustomDateRangeAction: Object
 	},
 
@@ -203,12 +161,6 @@ Polymer({
 	observers: [
 		'_onApiConfigChanged(userUrl, getToken)'
 	],
-
-	ready: function() {
-		var mql = window.matchMedia('(max-width: 767px)');
-		this._updateCloseSimpleOverlayText(mql.matches);
-		mql.addListener(this._mobileBreakpointListener.bind(this));
-	},
 
 	_debounceTime: 20,
 
@@ -279,20 +231,9 @@ Polymer({
 		this._setLoaded(true);
 	},
 
-	_mobileBreakpointListener: function(mqlevent) {
-		this._updateCloseSimpleOverlayText(mqlevent.matches);
-	},
-
-	_updateCloseSimpleOverlayText: function(isMobile) {
-		this._closeSimpleOverlayText = isMobile
-			? this.localize('closeSimpleOverlayTextMobile')
-			: this.localize('closeSimpleOverlayText');
-	},
-
 	_resetData: function() {
 		this._setTotalCount(0);
 		this._assessments = [];
-		this._closeSimpleOverlayText = '';
 		this._selectCustomDateRangeAction = null;
 		this._setLoaded(false);
 		this._upcomingAssessmentsBehaviour_resetData();

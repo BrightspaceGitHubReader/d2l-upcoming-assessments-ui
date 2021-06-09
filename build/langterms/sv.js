@@ -15,8 +15,6 @@ window.D2L.UpcomingAssessments.LangSvBehavior = {
 		"activityExempted": "Undantagen",
 		"activityOverdue": "Försenad",
 		"assignment": "Uppgift",
-		"closeSimpleOverlayText": "Tillbaka till instrumentpanelen",
-		"closeSimpleOverlayTextMobile": "Instrumentpanel",
 		"content": "Innehåll",
 		"currentPeriod": "{startDate}–{endDate}",
 		"discussion": "Diskussion",

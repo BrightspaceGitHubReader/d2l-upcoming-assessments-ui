@@ -15,8 +15,6 @@ window.D2L.UpcomingAssessments.LangEsBehavior = {
 		"activityExempted": "Eximido",
 		"activityOverdue": "Vencido",
 		"assignment": "Asignación",
-		"closeSimpleOverlayText": "Volver al panel",
-		"closeSimpleOverlayTextMobile": "Panel",
 		"content": "Contenido",
 		"currentPeriod": "{startDate} - {endDate}",
 		"discussion": "Debate",

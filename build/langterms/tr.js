@@ -15,8 +15,6 @@ window.D2L.UpcomingAssessments.LangTrBehavior = {
 		"activityExempted": "Muaf",
 		"activityOverdue": "Süresi Dolmuş",
 		"assignment": "Ödev",
-		"closeSimpleOverlayText": "Panoya Geri Dön",
-		"closeSimpleOverlayTextMobile": "Pano",
 		"content": "İçerik",
 		"currentPeriod": "{startDate} - {endDate}",
 		"discussion": "Tartışma",

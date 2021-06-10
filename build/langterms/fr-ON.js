@@ -15,8 +15,6 @@ window.D2L.UpcomingAssessments.LangFrONBehavior = {
 		"activityExempted": "Exempté",
 		"activityOverdue": "En retard",
 		"assignment": "Tâche",
-		"closeSimpleOverlayText": "Retour au tableau de bord",
-		"closeSimpleOverlayTextMobile": "Tableau de bord",
 		"content": "Contenu",
 		"currentPeriod": "{startDate} - {endDate}",
 		"discussion": "Discussion",

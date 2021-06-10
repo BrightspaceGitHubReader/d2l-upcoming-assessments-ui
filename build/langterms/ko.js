@@ -15,8 +15,6 @@ window.D2L.UpcomingAssessments.LangKoBehavior = {
 		"activityExempted": "면제됨",
 		"activityOverdue": "기한 경과",
 		"assignment": "과제",
-		"closeSimpleOverlayText": "대시보드로 돌아가기",
-		"closeSimpleOverlayTextMobile": "대시보드",
 		"content": "콘텐츠",
 		"currentPeriod": "{startDate} - {endDate}",
 		"discussion": "토론",

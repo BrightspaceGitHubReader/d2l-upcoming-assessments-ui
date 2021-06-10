@@ -15,8 +15,6 @@ window.D2L.UpcomingAssessments.LangDeBehavior = {
 		"activityExempted": "Ausgenommen",
 		"activityOverdue": "Überfällig",
 		"assignment": "Übung",
-		"closeSimpleOverlayText": "Zurück zum Dashboard",
-		"closeSimpleOverlayTextMobile": "Dashboard",
 		"content": "Inhalt",
 		"currentPeriod": "{startDate} – {endDate}",
 		"discussion": "Diskussion",

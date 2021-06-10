@@ -6,8 +6,6 @@
    "activityExempted" : "免修",
    "activityOverdue" : "逾期",
    "assignment" : "作業",
-   "closeSimpleOverlayText" : "返回儀表板",
-   "closeSimpleOverlayTextMobile" : "儀表板",
    "content" : "內容",
    "currentPeriod" : "{startDate} - {endDate}",
    "discussion" : "討論",

@@ -15,8 +15,6 @@ window.D2L.UpcomingAssessments.LangDadkBehavior = {
 		"activityExempted": "Undtaget",
 		"activityOverdue": "Forsinket",
 		"assignment": "Opgave",
-		"closeSimpleOverlayText": "Tilbage til kontrolpanel",
-		"closeSimpleOverlayTextMobile": "Kontrolpanel",
 		"content": "Indhold",
 		"currentPeriod": "{startDate} – {endDate}",
 		"discussion": "Diskussion",

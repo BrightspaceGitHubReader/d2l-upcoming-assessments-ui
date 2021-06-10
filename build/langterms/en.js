@@ -16,8 +16,6 @@ window.D2L.UpcomingAssessments.LangEnBehavior = {
 		"activityOverdue": "Overdue",
 		"assignment": "Assignment",
 		"checklistItem": "Checklist Item",
-		"closeSimpleOverlayText": "Back to Dashboard",
-		"closeSimpleOverlayTextMobile": "Dashboard",
 		"content": "Content",
 		"currentPeriod": "{startDate} - {endDate}",
 		"discussion": "Discussion",

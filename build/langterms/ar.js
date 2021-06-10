@@ -15,8 +15,6 @@ window.D2L.UpcomingAssessments.LangArBehavior = {
 		"activityExempted": "معفى",
 		"activityOverdue": "تم تجاوز تاريخ الاستحقاق",
 		"assignment": "الفرض",
-		"closeSimpleOverlayText": "العودة إلى لوحة المعلومات",
-		"closeSimpleOverlayTextMobile": "لوحة المعلومات",
 		"content": "المحتوى",
 		"currentPeriod": "{startDate} - {endDate}",
 		"discussion": "المناقشة",

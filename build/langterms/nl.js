@@ -15,8 +15,6 @@ window.D2L.UpcomingAssessments.LangNlBehavior = {
 		"activityExempted": "Uitgesloten",
 		"activityOverdue": "Achterstallig",
 		"assignment": "Opdracht",
-		"closeSimpleOverlayText": "Terug naar dashboard",
-		"closeSimpleOverlayTextMobile": "Dashboard",
 		"content": "Inhoud",
 		"currentPeriod": "{startDate} - {endDate}",
 		"discussion": "Discussie",
